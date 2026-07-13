@@ -1,0 +1,33 @@
+@import "tailwindcss";
+
+:root {
+  --bg: #FAF7F0;
+  --accent: #1A5F7A;
+  --accent-light: #2A7F9A;
+  --card: #FFFFFF;
+  --text: #1A1A2E;
+  --text-muted: #6B7280;
+  --text-light: #9CA3AF;
+  --gold: #C9A84C;
+  --gold-light: #F0D080;
+  --green: #1B7A4A;
+  --green-light: #2EA864;
+  --border: #E8E0D0;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  font-family: 'Hind Siliguri', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  margin: 0;
+}
+
+.arabic {
+  font-family: 'Amiri', serif;
+  direction: rtl;
+}
+
+::-webkit-scrollbar { display: none; }
+* { scrollbar-width: none; ms-overflow-style: none; }
