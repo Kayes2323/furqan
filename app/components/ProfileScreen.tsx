@@ -1,14 +1,14 @@
 'use client';
-import { useState } from 'react';
+import { useTheme } from '../lib/theme';
 
 export default function ProfileScreen() {
-  const [dark, setDark] = useState(false);
+  const { theme, toggle } = useTheme();
+  const isDark = theme === 'dark';
 
   return (
     <div>
-      {/* Hero */}
       <div style={{
-        background: 'linear-gradient(135deg, #1A1A2E, #1A5F7A)',
+        background: isDark ? '#1A1D27' : 'linear-gradient(135deg, #1A1A2E, #1A5F7A)',
         padding: '52px 20px 24px', textAlign: 'center', color: 'white',
       }}>
         <div style={{
@@ -20,7 +20,7 @@ export default function ProfileScreen() {
         <div style={{ fontSize: 12, opacity: 0.7, marginTop: 2 }}>Google দিয়ে লগিন করুন (ঐচ্ছিক)</div>
         <div style={{ display: 'flex', justifyContent: 'center', gap: 30, marginTop: 16 }}>
           {[['০', 'বুকমার্ক'], ['১', 'দিন'], ['৭', 'আয়াত']].map(([num, label]) => (
-            <div key={label} style={{ textAlign: 'center' }}>
+            <div key={label}>
               <div style={{ fontSize: 20, fontWeight: 700, color: '#F0D080' }}>{num}</div>
               <div style={{ fontSize: 10, opacity: 0.7, marginTop: 2 }}>{label}</div>
             </div>
@@ -29,26 +29,34 @@ export default function ProfileScreen() {
       </div>
 
       <div style={{ padding: 16 }}>
-        {/* Account */}
         <Section title="অ্যাকাউন্ট">
-          <Item icon="🔑" title="Google দিয়ে লগিন" sub="বুকমার্ক ও ইতিহাস সংরক্ষণ করুন" />
+          <Item icon="🔑" title="Google দিয়ে লগিন" sub="বুকমার্ক ও ইতিহাস সংরক্ষণ" />
         </Section>
 
         <Section title="সেটিংস">
+          {/* Dark mode toggle */}
           <div style={itemStyle}>
-            <div style={{ fontSize: 20 }}>🌙</div>
+            <div style={{ fontSize: 20 }}>{isDark ? '☀️' : '🌙'}</div>
             <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)' }}>ডার্ক মোড</div>
-              <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 1 }}>চোখের আরাম</div>
+              <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)' }}>
+                {isDark ? 'লাইট মোড' : 'ডার্ক মোড'}
+              </div>
+              <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 1 }}>
+                {isDark ? 'এখন ডার্ক মোড চালু' : 'চোখের আরামের জন্য'}
+              </div>
             </div>
-            <div onClick={() => setDark(!dark)} style={{
-              width: 44, height: 24, background: dark ? 'var(--accent)' : 'var(--border)',
-              borderRadius: 12, position: 'relative', cursor: 'pointer', transition: 'background 0.3s',
+            <div onClick={toggle} style={{
+              width: 48, height: 26,
+              background: isDark ? 'var(--accent)' : 'var(--border)',
+              borderRadius: 13, position: 'relative', cursor: 'pointer',
+              transition: 'background 0.3s',
             }}>
               <div style={{
-                width: 20, height: 20, background: 'white', borderRadius: '50%',
-                position: 'absolute', top: 2, left: dark ? 22 : 2,
-                transition: 'left 0.3s', boxShadow: '0 1px 4px rgba(0,0,0,0.2)',
+                width: 22, height: 22, background: 'white', borderRadius: '50%',
+                position: 'absolute', top: 2,
+                left: isDark ? 24 : 2,
+                transition: 'left 0.3s',
+                boxShadow: '0 1px 4px rgba(0,0,0,0.25)',
               }} />
             </div>
           </div>
