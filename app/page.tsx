@@ -15,7 +15,7 @@ export default function App() {
     <div style={{
       maxWidth: 430,
       margin: '0 auto',
-      minHeight: '100dvh',
+      height: '100dvh',
       background: 'var(--bg)',
       display: 'flex',
       flexDirection: 'column',
