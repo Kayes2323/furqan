@@ -1,20 +1,24 @@
-const CACHE = 'furqan-v1';
-const OFFLINE_URLS = [
+const CACHE = 'furqan-v2';
+const STATIC = [
   '/',
+  '/offline.html',
   '/manifest.json',
   '/icon-192.png',
   '/icon-512.png',
+  '/apple-touch-icon.png',
 ];
 
-// Install — cache essential files
+// Install
 self.addEventListener('install', e => {
   e.waitUntil(
-    caches.open(CACHE).then(cache => cache.addAll(OFFLINE_URLS))
+    caches.open(CACHE).then(cache => {
+      return cache.addAll(STATIC);
+    })
   );
   self.skipWaiting();
 });
 
-// Activate — clean old caches
+// Activate — delete old caches
 self.addEventListener('activate', e => {
   e.waitUntil(
     caches.keys().then(keys =>
@@ -24,20 +28,31 @@ self.addEventListener('activate', e => {
   self.clients.claim();
 });
 
-// Fetch — cache first, then network
+// Fetch
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
+  if (!e.request.url.startsWith('http')) return;
 
   e.respondWith(
-    caches.match(e.request).then(cached => {
-      if (cached) return cached;
-      return fetch(e.request).then(response => {
+    fetch(e.request)
+      .then(response => {
+        // Cache successful responses
         if (response.ok) {
           const clone = response.clone();
           caches.open(CACHE).then(cache => cache.put(e.request, clone));
         }
         return response;
-      }).catch(() => caches.match('/'));
-    })
+      })
+      .catch(() => {
+        // Return cached version or offline page
+        return caches.match(e.request).then(cached => {
+          if (cached) return cached;
+          // For navigation requests show offline page
+          if (e.request.mode === 'navigate') {
+            return caches.match('/offline.html');
+          }
+          return new Response('Offline', { status: 503 });
+        });
+      })
   );
 });
