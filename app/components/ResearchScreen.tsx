@@ -24,9 +24,8 @@ export default function ResearchScreen() {
   const [loading, setLoading] = useState(true);
   const [articleLoading, setArticleLoading] = useState(false);
   const [fontSize, setFontSize] = useState(14);
-  const [selectedText, setSelectedText] = useState('');
   const [showHighlightBar, setShowHighlightBar] = useState(false);
-  const contentRef = useRef<HTMLDivElement>(null);
+  const [selectedText, setSelectedText] = useState('');
 
   useEffect(() => {
     async function load() {
@@ -59,7 +58,6 @@ export default function ResearchScreen() {
     setActiveCat(cat); setSelectedArticle(null); loadArticles(cat.id);
   }
 
-  // Text selection handler
   function handleSelection() {
     const sel = window.getSelection();
     if (sel && sel.toString().trim().length > 2) {
@@ -74,29 +72,33 @@ export default function ResearchScreen() {
   if (selectedArticle) {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: 'var(--bg)' }}>
-        {/* Header */}
-        <div style={{
-          background: isDark ? '#1A1D27' : 'linear-gradient(135deg, #1A3A4A, #1A5F7A)',
-          padding: '48px 20px 16px', color: 'white', flexShrink: 0,
-          borderBottom: isDark ? '1px solid var(--border)' : 'none',
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
-            <button onClick={() => { setSelectedArticle(null); setShowHighlightBar(false); }} style={{
-              background: 'rgba(255,255,255,0.15)', border: 'none',
-              color: 'white', padding: '6px 14px', borderRadius: 20,
-              fontSize: 12, cursor: 'pointer', fontFamily: 'Hind Siliguri, sans-serif',
-            }}>← ফিরে যাও</button>
-            <span style={{ fontSize: 11, opacity: 0.6 }}>{activecat?.icon} {activecat?.name}</span>
-          </div>
-          <div style={{ fontSize: 18, fontWeight: 700, lineHeight: 1.4 }}>{selectedArticle.title}</div>
-          <div style={{ fontSize: 12, opacity: 0.7, marginTop: 4 }}>{selectedArticle.subtitle}</div>
 
-          {/* Reading controls */}
-          <div style={{ display: 'flex', gap: 8, marginTop: 12, alignItems: 'center' }}>
-            <span style={{ fontSize: 10, opacity: 0.6 }}>অক্ষর:</span>
+        {/* STICKY MINI HEADER */}
+        <div style={{
+          background: isDark ? '#1A1D27' : '#1A5F7A',
+          padding: '44px 16px 10px',
+          display: 'flex', alignItems: 'center', gap: 10,
+          flexShrink: 0, zIndex: 10,
+          boxShadow: '0 2px 12px rgba(0,0,0,0.15)',
+        }}>
+          <button onClick={() => { setSelectedArticle(null); setShowHighlightBar(false); }} style={{
+            background: 'rgba(255,255,255,0.15)', border: 'none',
+            color: 'white', padding: '6px 14px', borderRadius: 20,
+            fontSize: 12, cursor: 'pointer', fontFamily: 'Hind Siliguri, sans-serif',
+            flexShrink: 0,
+          }}>← ফিরে যাও</button>
+          <div style={{ flex: 1, overflow: 'hidden' }}>
+            <div style={{ fontSize: 13, fontWeight: 700, color: 'white', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              {selectedArticle.title}
+            </div>
+            <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.6)', marginTop: 1 }}>
+              {activecat?.icon} {activecat?.name}
+            </div>
+          </div>
+          <div style={{ display: 'flex', gap: 4 }}>
             {[12, 14, 16, 18].map(s => (
               <button key={s} onClick={() => setFontSize(s)} style={{
-                width: 28, height: 28, borderRadius: 8, border: 'none',
+                width: 26, height: 26, borderRadius: 8, border: 'none',
                 background: fontSize === s ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.15)',
                 color: fontSize === s ? '#1A5F7A' : 'white',
                 fontSize: 10, fontWeight: 700, cursor: 'pointer',
@@ -121,18 +123,26 @@ export default function ResearchScreen() {
           </div>
         )}
 
-        {/* Content */}
+        {/* SCROLLABLE CONTENT */}
         <div
-          ref={contentRef}
           onMouseUp={handleSelection}
           onTouchEnd={handleSelection}
           style={{ flex: 1, overflowY: 'auto', padding: '20px 18px 60px' }}
         >
+          {/* Article title inside content */}
+          <h1 style={{
+            fontSize: 20, fontWeight: 800, color: 'var(--text)',
+            marginBottom: 4, lineHeight: 1.4,
+          }}>{selectedArticle.title}</h1>
+          <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 20 }}>
+            {selectedArticle.subtitle}
+          </div>
+
           <div style={{ fontSize }}>
             <MarkdownRenderer content={selectedArticle.content} />
           </div>
 
-          {/* NUR CTA at bottom */}
+          {/* NUR CTA */}
           <div style={{
             background: isDark ? 'rgba(27,122,74,0.12)' : 'rgba(27,122,74,0.06)',
             border: '1px dashed rgba(27,122,74,0.4)',
@@ -141,12 +151,8 @@ export default function ResearchScreen() {
           }}>
             <div style={{ fontFamily: 'Amiri, serif', fontSize: 28, color: 'var(--green, #1B7A4A)' }}>ن</div>
             <div>
-              <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--green, #1B7A4A)' }}>
-                NUR কে জিজ্ঞেস করো
-              </div>
-              <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 2 }}>
-                এই বিষয়ে আরো গভীরে যেতে চাও?
-              </div>
+              <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--green, #1B7A4A)' }}>NUR কে জিজ্ঞেস করো</div>
+              <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 2 }}>এই বিষয়ে আরো গভীরে যেতে চাও?</div>
             </div>
           </div>
         </div>
