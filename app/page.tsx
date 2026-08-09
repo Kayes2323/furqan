@@ -3,7 +3,6 @@ import { useState } from 'react';
 import HomeScreen from './components/HomeScreen';
 import TafsirScreen from './components/TafsirScreen';
 import NurScreen from './components/NurScreen';
-import KnowledgeScreen from './components/KnowledgeScreen';
 import ResearchScreen from './components/ResearchScreen';
 import ProfileScreen from './components/ProfileScreen';
 import BottomNav from './components/BottomNav';
@@ -27,15 +26,7 @@ export default function App() {
         {screen === 'home' && <HomeScreen onNavigate={setScreen} />}
         {screen === 'tafsir' && <TafsirScreen />}
         {screen === 'nur' && <NurScreen />}
-        {screen === 'knowledge' && <KnowledgeScreen onNavigate={setScreen} />}
         {screen === 'research' && <ResearchScreen />}
-        {screen === 'sirah' && (
-          <div style={{ padding: '52px 20px', textAlign: 'center', color: 'var(--text-muted)' }}>
-            <div style={{ fontSize: 40, marginBottom: 12 }}>🌙</div>
-            <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--text)', marginBottom: 6 }}>সীরাত শীঘ্রই আসছে</div>
-            <div style={{ fontSize: 13 }}>রাসূলুল্লাহ ﷺ-এর জীবনী নিয়ে কাজ চলছে</div>
-          </div>
-        )}
         {screen === 'profile' && <ProfileScreen />}
       </div>
       <BottomNav current={screen} onNavigate={setScreen} />

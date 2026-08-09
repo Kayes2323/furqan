@@ -7,9 +7,6 @@ interface Props {
 }
 
 export default function BottomNav({ current, onNavigate }: Props) {
-  // "জ্ঞান" tab থাকে active যখন knowledge, research, বা sirah — যেকোনো একটাতে থাকি
-  const isKnowledgeActive = current === 'knowledge' || current === 'research' || current === 'sirah';
-
   return (
     <div style={{
       background: 'var(--card)',
@@ -43,7 +40,7 @@ export default function BottomNav({ current, onNavigate }: Props) {
         <span style={{ fontSize: 8, color: 'rgba(255,255,255,0.85)', fontWeight: 700, letterSpacing: 0.5 }}>NUR</span>
       </button>
 
-      <NavItem icon="🕮" label="জ্ঞান" active={isKnowledgeActive} onClick={() => onNavigate('knowledge')} />
+      <NavItem icon="🔬" label="গবেষণা" active={current === 'research'} onClick={() => onNavigate('research')} />
       <NavItem icon="👤" label="প্রোফাইল" active={current === 'profile'} onClick={() => onNavigate('profile')} />
     </div>
   );

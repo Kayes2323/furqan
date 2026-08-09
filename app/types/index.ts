@@ -1,4 +1,4 @@
-export type Screen = 'home' | 'tafsir' | 'nur' | 'knowledge' | 'research' | 'sirah' | 'profile';
+export type Screen = 'home' | 'tafsir' | 'nur' | 'research' | 'profile';
 
 export interface Surah {
   number: number;

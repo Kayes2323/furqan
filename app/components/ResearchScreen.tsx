@@ -1,34 +1,19 @@
 'use client';
 import { useState } from 'react';
 import { researchCategories } from '../lib/research-data';
-import type { Screen } from '../types';
 
-interface Props {
-  onNavigate?: (s: Screen) => void;
-}
-
-export default function ResearchScreen({ onNavigate }: Props) {
+export default function ResearchScreen() {
   const [active, setActive] = useState(researchCategories[0]);
 
   return (
     <div>
       {/* Header */}
       <div style={{
-        background: 'var(--accent)',
+        background: 'linear-gradient(135deg, #1A1A2E, #1A3A4A)',
         padding: '52px 20px 20px', color: 'white',
-        display: 'flex', alignItems: 'center', gap: 12,
       }}>
-        {onNavigate && (
-          <button onClick={() => onNavigate('knowledge')} style={{
-            width: 32, height: 32, borderRadius: '50%',
-            background: 'rgba(255,255,255,0.15)', border: 'none',
-            color: 'white', fontSize: 14, cursor: 'pointer', flexShrink: 0,
-          }}>←</button>
-        )}
-        <div>
-          <div style={{ fontSize: 20, fontWeight: 700, marginBottom: 4 }}>🔬 গবেষণা কেন্দ্র</div>
-          <div style={{ fontSize: 12, opacity: 0.7 }}>কুরআন ও হাদিস — বিজ্ঞান, অর্থ, সমাজ, দর্শন</div>
-        </div>
+        <div style={{ fontSize: 20, fontWeight: 700, marginBottom: 4 }}>🔬 গবেষণা কেন্দ্র</div>
+        <div style={{ fontSize: 12, opacity: 0.7 }}>কুরআন ও হাদিস — বিজ্ঞান, অর্থ, সমাজ, দর্শন</div>
       </div>
 
       {/* Category grid */}
