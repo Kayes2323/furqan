@@ -1,8 +1,8 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
-import { getChapter, getNextChapter, getPrevChapter } from '../lib/sirah-data';
+import { getChapter, getNextChapter, getPrevChapter, getPart } from '../lib/sirah-data';
 import { saveLastRead, markCompleted, saveScroll, getScroll } from '../lib/sirah-progress';
-import BackButton from './BackButton';
+import type { ContentBlock } from '../lib/sirah-types';
 
 interface Props {
   chapterId: string;
@@ -11,11 +11,63 @@ interface Props {
 }
 
 const FONT_SIZES = [15, 16.5, 18, 20];
+const OCR_MARK = '[OCR UNCLEAR — REVIEW REQUIRED]';
+
+function renderBlockText(text: string) {
+  if (!text.includes(OCR_MARK)) return text;
+  const parts = text.split(OCR_MARK);
+  return parts.map((part, i) => (
+    <span key={i}>
+      {part}
+      {i < parts.length - 1 && (
+        <mark style={{
+          background: 'rgba(201,168,76,.2)', color: '#8B6914',
+          padding: '1px 4px', borderRadius: 4, fontSize: '.85em',
+        }}>
+          {OCR_MARK}
+        </mark>
+      )}
+    </span>
+  ));
+}
+
+function BlockView({ block, fontSize }: { block: ContentBlock; fontSize: number }) {
+  if (block.type === 'heading') {
+    return (
+      <h3 style={{
+        fontSize: 18, fontWeight: 700, color: 'var(--text)',
+        margin: '32px 0 14px', lineHeight: 1.5,
+      }}>
+        {renderBlockText(block.text)}
+      </h3>
+    );
+  }
+  if (block.type === 'subheading') {
+    return (
+      <h4 style={{
+        fontSize: 16, fontWeight: 700, color: 'var(--text)',
+        margin: '26px 0 12px', lineHeight: 1.5,
+      }}>
+        {renderBlockText(block.text)}
+      </h4>
+    );
+  }
+  return (
+    <p style={{
+      fontSize, lineHeight: 2.05, color: 'var(--text-dim, #3D4757)',
+      marginBottom: 22, letterSpacing: '.1px',
+      textAlign: 'justify',
+    }}>
+      {renderBlockText(block.text)}
+    </p>
+  );
+}
 
 export default function SirahReadingScreen({ chapterId, onBack, onOpenChapter }: Props) {
   const chapter = getChapter(chapterId);
   const next = getNextChapter(chapterId);
   const prev = getPrevChapter(chapterId);
+  const part = chapter ? getPart(chapter.partId) : undefined;
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const [progress, setProgress] = useState(0);
@@ -99,8 +151,20 @@ export default function SirahReadingScreen({ chapterId, onBack, onOpenChapter }:
           }}>سيرة</div>
 
           <div style={{ position: 'relative', zIndex: 1 }}>
-            <BackButton onClick={onBack} variant="light" style={{ marginBottom: 20 }} />
+            <button onClick={onBack} style={{
+              width: 34, height: 34, borderRadius: '50%',
+              background: 'rgba(255,255,255,.12)', border: '1px solid rgba(255,255,255,.2)',
+              color: '#fff', fontSize: 15, cursor: 'pointer', marginBottom: 20,
+            }}>←</button>
 
+            {part && (
+              <div style={{
+                fontSize: 10, color: 'rgba(201,168,76,.7)',
+                letterSpacing: 2, textTransform: 'uppercase', marginBottom: 6,
+              }}>
+                PART {part.number} — {part.title}
+              </div>
+            )}
             <div style={{
               fontSize: 11, color: 'rgba(201,168,76,.85)',
               letterSpacing: 3, textTransform: 'uppercase', marginBottom: 8,
@@ -109,60 +173,47 @@ export default function SirahReadingScreen({ chapterId, onBack, onOpenChapter }:
             </div>
             <h1 style={{
               fontFamily: 'Amiri, serif', fontSize: 28, color: '#fff',
-              lineHeight: 1.3, marginBottom: 10, fontWeight: 700,
+              lineHeight: 1.3, marginBottom: 8, fontWeight: 700,
             }}>
               {chapter.title}
             </h1>
+            {chapter.subtitle && (
+              <div style={{ fontSize: 13, color: 'rgba(255,255,255,.65)', marginBottom: 10, lineHeight: 1.5 }}>
+                {chapter.subtitle}
+              </div>
+            )}
             <div style={{ fontSize: 12, color: 'rgba(255,255,255,.55)' }}>
               আর রাহীকুল মাখতূম
+              {chapter.source && (
+                <span style={{ display: 'block', marginTop: 4, fontSize: 10, opacity: .8 }}>
+                  PDF পৃষ্ঠা {chapter.source.pdfPageStart}–{chapter.source.pdfPageEnd}
+                </span>
+              )}
             </div>
           </div>
         </div>
 
-        <div style={{ maxWidth: 600, margin: '0 auto', padding: '32px 22px 40px' }}>
+        <div style={{ maxWidth: 680, margin: '0 auto', padding: '36px 22px 48px' }}>
           {chapter.sections.map((section, si) => (
-            <div key={section.id}>
+            <article key={section.id}>
               <h2 style={{
                 fontFamily: 'Amiri, serif', fontSize: 21, color: 'var(--accent)',
-                margin: si === 0 ? '0 0 18px' : '42px 0 18px',
+                margin: si === 0 ? '0 0 20px' : '48px 0 20px',
                 paddingBottom: 12, borderBottom: '2px solid rgba(26,95,122,.12)',
-                fontWeight: 700,
+                fontWeight: 700, lineHeight: 1.4,
               }}>
                 {section.title}
               </h2>
 
-              {section.blocks.map((block, bi) => {
-                if (block.type === 'heading') {
-                  return (
-                    <h3 key={bi} style={{
-                      fontSize: 18, fontWeight: 700, color: 'var(--text)',
-                      margin: '30px 0 12px',
-                    }}>{block.text}</h3>
-                  );
-                }
-                if (block.type === 'subheading') {
-                  return (
-                    <h4 key={bi} style={{
-                      fontSize: 16, fontWeight: 700, color: 'var(--text)',
-                      margin: '24px 0 10px',
-                    }}>{block.text}</h4>
-                  );
-                }
-                return (
-                  <p key={bi} style={{
-                    fontSize, lineHeight: 2, color: 'var(--text-dim, #3D4757)',
-                    marginBottom: 20, letterSpacing: '.1px',
-                  }}>
-                    {block.text}
-                  </p>
-                );
-              })}
-            </div>
+              {section.blocks.map((block, bi) => (
+                <BlockView key={bi} block={block} fontSize={fontSize} />
+              ))}
+            </article>
           ))}
 
           <div style={{
             display: 'flex', alignItems: 'center', gap: 12,
-            margin: '44px 0 28px', color: 'var(--text-muted)',
+            margin: '48px 0 32px', color: 'var(--text-muted)',
           }}>
             <div style={{ flex: 1, height: 1, background: 'var(--border)' }} />
             <span style={{ fontFamily: 'Amiri, serif', fontSize: 20, color: '#C9A84C' }}>۝</span>
@@ -170,7 +221,7 @@ export default function SirahReadingScreen({ chapterId, onBack, onOpenChapter }:
           </div>
         </div>
 
-        <div style={{ maxWidth: 600, margin: '0 auto', padding: '0 22px 40px', display: 'flex', flexDirection: 'column', gap: 10 }}>
+        <div style={{ maxWidth: 680, margin: '0 auto', padding: '0 22px 48px', display: 'flex', flexDirection: 'column', gap: 10 }}>
           {next && (
             <div onClick={() => onOpenChapter(next.id)} style={{
               background: 'var(--card)', border: '1.5px solid var(--border)',

@@ -1,12 +1,15 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { sirahChapters } from '../lib/sirah-data';
+import { sirahChapters, sirahParts, getChaptersByPart } from '../lib/sirah-data';
 import { getLastRead, getCompleted, getProgressPercent, type LastRead } from '../lib/sirah-progress';
-import BackButton from './BackButton';
-
 interface Props {
   onBack: () => void;
   onOpenChapter: (chapterId: string) => void;
+}
+
+function hasContent(chapterId: string): boolean {
+  const ch = sirahChapters.find((c) => c.id === chapterId);
+  return Boolean(ch?.source?.pdfPageStart);
 }
 
 export default function SirahJourneyScreen({ onBack, onOpenChapter }: Props) {
@@ -43,7 +46,11 @@ export default function SirahJourneyScreen({ onBack, onOpenChapter }: Props) {
         }}>سيرة</div>
 
         <div style={{ position: 'relative', zIndex: 1 }}>
-          <BackButton onClick={onBack} variant="light" style={{ marginBottom: 16 }} />
+          <button onClick={onBack} style={{
+            width: 32, height: 32, borderRadius: '50%',
+            background: 'rgba(255,255,255,.12)', border: '1px solid rgba(255,255,255,.2)',
+            color: '#fff', fontSize: 14, cursor: 'pointer', marginBottom: 16,
+          }}>←</button>
 
           <div style={{ fontSize: 10, color: 'rgba(201,168,76,.8)', letterSpacing: 3, textTransform: 'uppercase', marginBottom: 6 }}>
             সীরাতুন্নবী ﷺ
@@ -97,76 +104,93 @@ export default function SirahJourneyScreen({ onBack, onOpenChapter }: Props) {
         </div>
       </div>
 
-      <div style={{
-        padding: '20px 20px 10px', fontSize: 10, fontWeight: 700,
-        color: 'var(--text-muted)', letterSpacing: 2, textTransform: 'uppercase',
-      }}>
-        অধ্যায়সমূহ
-      </div>
-
-      <div style={{ padding: '0 20px' }}>
-        {sirahChapters.map((ch, idx) => {
-          const done = completed.includes(ch.id);
-          const isCurrent = ch.id === currentId && !done;
-          const isLast = idx === sirahChapters.length - 1;
-
-          return (
-            <div key={ch.id} onClick={() => onOpenChapter(ch.id)}
-              style={{ display: 'flex', gap: 14, alignItems: 'flex-start', cursor: 'pointer' }}>
-
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: 40, flexShrink: 0 }}>
-                <div style={{
-                  width: 40, height: 40, borderRadius: '50%',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: 13, fontWeight: 700, border: '2px solid transparent',
-                  background: done ? '#1B7A4A' : isCurrent ? '#C9A84C' : 'var(--card)',
-                  color: done ? '#fff' : isCurrent ? '#1A1A2E' : 'var(--text-muted)',
-                  borderColor: done ? '#1B7A4A' : isCurrent ? '#C9A84C' : 'var(--border)',
-                  boxShadow: isCurrent ? '0 0 0 4px rgba(201,168,76,.2)' : 'none',
-                }}>
-                  {done ? '✓' : ch.number}
-                </div>
-                {!isLast && (
-                  <div style={{
-                    width: 2, flex: 1, minHeight: 20, margin: '4px 0',
-                    background: done ? 'rgba(27,122,74,.3)' : 'var(--border)',
-                  }} />
-                )}
-              </div>
-
-              <div style={{ flex: 1, paddingBottom: 18, paddingTop: 8 }}>
-                <div style={{
-                  fontSize: 10, color: 'var(--text-muted)',
-                  letterSpacing: 1, textTransform: 'uppercase', marginBottom: 2,
-                }}>
-                  অধ্যায় {ch.number}{isCurrent ? ' · আপনি এখানে' : ''}
-                </div>
-                <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text)', marginBottom: 4 }}>
-                  {ch.title}
-                </div>
-                {ch.subtitle && (
-                  <div style={{ fontSize: 12, color: 'var(--text-dim, #4A5568)', lineHeight: 1.5, marginBottom: 8 }}>
-                    {ch.subtitle}
-                  </div>
-                )}
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>
-                    {ch.sections.length}টি অংশ
-                  </span>
-                  <span style={{
-                    fontSize: 9, padding: '2px 8px', borderRadius: 20,
-                    fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.5px',
-                    background: done ? 'rgba(27,122,74,.10)' : isCurrent ? 'rgba(201,168,76,.12)' : 'rgba(26,95,122,.08)',
-                    color: done ? '#1B7A4A' : isCurrent ? '#8B6914' : 'var(--accent)',
-                  }}>
-                    {done ? 'সম্পন্ন' : isCurrent ? 'চলমান' : 'পড়ুন'}
-                  </span>
-                </div>
-              </div>
+      {sirahParts.map((part) => {
+        const chapters = getChaptersByPart(part.id);
+        return (
+          <div key={part.id}>
+            <div style={{
+              padding: '20px 20px 8px', fontSize: 10, fontWeight: 700,
+              color: 'var(--text-muted)', letterSpacing: 2, textTransform: 'uppercase',
+            }}>
+              PART {part.number} — {part.title}
             </div>
-          );
-        })}
-      </div>
+
+            <div style={{ padding: '0 20px' }}>
+              {chapters.map((ch, idx) => {
+                const done = completed.includes(ch.id);
+                const isCurrent = ch.id === currentId && !done;
+                const isLast = idx === chapters.length - 1;
+                const integrated = hasContent(ch.id);
+
+                return (
+                  <div key={ch.id} onClick={() => onOpenChapter(ch.id)}
+                    style={{ display: 'flex', gap: 14, alignItems: 'flex-start', cursor: 'pointer' }}>
+
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: 40, flexShrink: 0 }}>
+                      <div style={{
+                        width: 40, height: 40, borderRadius: '50%',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        fontSize: 13, fontWeight: 700, border: '2px solid transparent',
+                        background: done ? '#1B7A4A' : isCurrent ? '#C9A84C' : 'var(--card)',
+                        color: done ? '#fff' : isCurrent ? '#1A1A2E' : 'var(--text-muted)',
+                        borderColor: done ? '#1B7A4A' : isCurrent ? '#C9A84C' : 'var(--border)',
+                        boxShadow: isCurrent ? '0 0 0 4px rgba(201,168,76,.2)' : 'none',
+                      }}>
+                        {done ? '✓' : ch.number}
+                      </div>
+                      {!isLast && (
+                        <div style={{
+                          width: 2, flex: 1, minHeight: 20, margin: '4px 0',
+                          background: done ? 'rgba(27,122,74,.3)' : 'var(--border)',
+                        }} />
+                      )}
+                    </div>
+
+                    <div style={{ flex: 1, paddingBottom: 18, paddingTop: 8 }}>
+                      <div style={{
+                        fontSize: 10, color: 'var(--text-muted)',
+                        letterSpacing: 1, textTransform: 'uppercase', marginBottom: 2,
+                      }}>
+                        অধ্যায় {ch.number}{isCurrent ? ' · আপনি এখানে' : ''}
+                      </div>
+                      <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text)', marginBottom: 4 }}>
+                        {ch.title}
+                      </div>
+                      {ch.subtitle && (
+                        <div style={{ fontSize: 12, color: 'var(--text-dim, #4A5568)', lineHeight: 1.5, marginBottom: 8 }}>
+                          {ch.subtitle}
+                        </div>
+                      )}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                        <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>
+                          {ch.sections.length}টি অংশ
+                        </span>
+                        <span style={{
+                          fontSize: 9, padding: '2px 8px', borderRadius: 20,
+                          fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.5px',
+                          background: done ? 'rgba(27,122,74,.10)' : isCurrent ? 'rgba(201,168,76,.12)' : 'rgba(26,95,122,.08)',
+                          color: done ? '#1B7A4A' : isCurrent ? '#8B6914' : 'var(--accent)',
+                        }}>
+                          {done ? 'সম্পন্ন' : isCurrent ? 'চলমান' : 'পড়ুন'}
+                        </span>
+                        {!integrated && (
+                          <span style={{
+                            fontSize: 9, padding: '2px 8px', borderRadius: 20,
+                            fontWeight: 700, background: 'rgba(0,0,0,.05)',
+                            color: 'var(--text-muted)',
+                          }}>
+                            শীঘ্রই
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 }
