@@ -1,5 +1,6 @@
 'use client';
-import { useState } from 'react';
+
+import { Suspense, useRef } from 'react';
 import HomeScreen from './components/HomeScreen';
 import TafsirScreen from './components/TafsirScreen';
 import NurScreen from './components/NurScreen';
@@ -9,16 +10,19 @@ import SirahJourneyScreen from './components/SirahJourneyScreen';
 import SirahReadingScreen from './components/SirahReadingScreen';
 import ProfileScreen from './components/ProfileScreen';
 import BottomNav from './components/BottomNav';
-import type { Screen } from './types';
+import { useAppNavigation } from './hooks/useAppNavigation';
 
-export default function App() {
-  const [screen, setScreen] = useState<Screen>('home');
-  const [activeChapter, setActiveChapter] = useState<string>('ch-01');
-
-  const openChapter = (chapterId: string) => {
-    setActiveChapter(chapterId);
-    setScreen('sirah-read');
-  };
+function AppShell() {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const {
+    screen,
+    surahNumber,
+    chapterId,
+    navigateScreen,
+    back,
+    openSurah,
+    openChapter,
+  } = useAppNavigation(scrollRef);
 
   const isReading = screen === 'sirah-read';
 
@@ -35,32 +39,49 @@ export default function App() {
       position: 'relative',
       overflow: 'hidden',
     }}>
-      <div style={{
-        flex: 1,
-        minHeight: 0,
-        overflowY: isReading ? 'hidden' : 'auto',
-        overflowX: 'hidden',
-        WebkitOverflowScrolling: 'touch',
-      }}>
-        {screen === 'home' && <HomeScreen onNavigate={setScreen} />}
-        {screen === 'tafsir' && <TafsirScreen />}
+      <div
+        ref={scrollRef}
+        style={{
+          flex: 1,
+          minHeight: 0,
+          overflowY: isReading ? 'hidden' : 'auto',
+          overflowX: 'hidden',
+          WebkitOverflowScrolling: 'touch',
+        }}
+      >
+        {screen === 'home' && <HomeScreen onNavigate={navigateScreen} />}
+        {screen === 'tafsir' && (
+          <TafsirScreen
+            surahNumber={surahNumber}
+            onOpenSurah={openSurah}
+            onBack={back}
+          />
+        )}
         {screen === 'nur' && <NurScreen />}
-        {screen === 'knowledge' && <KnowledgeScreen onNavigate={setScreen} />}
-        {screen === 'research' && <ResearchScreen />}
+        {screen === 'knowledge' && <KnowledgeScreen onNavigate={navigateScreen} />}
+        {screen === 'research' && <ResearchScreen onBack={back} />}
         {screen === 'sirah' && (
-          <SirahJourneyScreen onNavigate={setScreen} onOpenChapter={openChapter} />
+          <SirahJourneyScreen onBack={back} onOpenChapter={openChapter} />
         )}
         {screen === 'sirah-read' && (
           <SirahReadingScreen
-            chapterId={activeChapter}
-            onBack={() => setScreen('sirah')}
+            chapterId={chapterId}
+            onBack={back}
             onOpenChapter={openChapter}
           />
         )}
         {screen === 'profile' && <ProfileScreen />}
       </div>
 
-      {!isReading && <BottomNav current={screen} onNavigate={setScreen} />}
+      {!isReading && <BottomNav current={screen} onNavigate={navigateScreen} />}
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <Suspense fallback={null}>
+      <AppShell />
+    </Suspense>
   );
 }

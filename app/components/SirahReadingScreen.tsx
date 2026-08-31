@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { getChapter, getNextChapter, getPrevChapter } from '../lib/sirah-data';
 import { saveLastRead, markCompleted, saveScroll, getScroll } from '../lib/sirah-progress';
+import BackButton from './BackButton';
 
 interface Props {
   chapterId: string;
@@ -98,11 +99,7 @@ export default function SirahReadingScreen({ chapterId, onBack, onOpenChapter }:
           }}>سيرة</div>
 
           <div style={{ position: 'relative', zIndex: 1 }}>
-            <button onClick={onBack} style={{
-              width: 34, height: 34, borderRadius: '50%',
-              background: 'rgba(255,255,255,.12)', border: '1px solid rgba(255,255,255,.2)',
-              color: '#fff', fontSize: 15, cursor: 'pointer', marginBottom: 20,
-            }}>←</button>
+            <BackButton onClick={onBack} variant="light" style={{ marginBottom: 20 }} />
 
             <div style={{
               fontSize: 11, color: 'rgba(201,168,76,.85)',

@@ -2,14 +2,14 @@
 import { useState, useEffect } from 'react';
 import { sirahChapters } from '../lib/sirah-data';
 import { getLastRead, getCompleted, getProgressPercent, type LastRead } from '../lib/sirah-progress';
-import type { Screen } from '../types';
+import BackButton from './BackButton';
 
 interface Props {
-  onNavigate: (s: Screen) => void;
+  onBack: () => void;
   onOpenChapter: (chapterId: string) => void;
 }
 
-export default function SirahJourneyScreen({ onNavigate, onOpenChapter }: Props) {
+export default function SirahJourneyScreen({ onBack, onOpenChapter }: Props) {
   const [completed, setCompleted] = useState<string[]>([]);
   const [lastRead, setLastRead] = useState<LastRead | null>(null);
   const [percent, setPercent] = useState(0);
@@ -43,11 +43,7 @@ export default function SirahJourneyScreen({ onNavigate, onOpenChapter }: Props)
         }}>سيرة</div>
 
         <div style={{ position: 'relative', zIndex: 1 }}>
-          <button onClick={() => onNavigate('knowledge')} style={{
-            width: 32, height: 32, borderRadius: '50%',
-            background: 'rgba(255,255,255,.12)', border: '1px solid rgba(255,255,255,.2)',
-            color: '#fff', fontSize: 14, cursor: 'pointer', marginBottom: 16,
-          }}>←</button>
+          <BackButton onClick={onBack} variant="light" style={{ marginBottom: 16 }} />
 
           <div style={{ fontSize: 10, color: 'rgba(201,168,76,.8)', letterSpacing: 3, textTransform: 'uppercase', marginBottom: 6 }}>
             সীরাতুন্নবী ﷺ

@@ -1,5 +1,6 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import BackButton from './BackButton';
 
 const SURAHS = [
   { n: 1, ar: 'الفاتحة', bn: 'আল-ফাতিহা', ayahs: 7, type: 'মক্কি' },
@@ -25,9 +26,13 @@ const FATIHA_AYAHS = [
   { n: 7, ar: 'صِرَاطَ الَّذِينَ أَنْعَمْتَ عَلَيْهِمْ غَيْرِ الْمَغْضُوبِ عَلَيْهِمْ وَلَا الضَّالِّينَ', bn: 'তাদের পথ, যাদের তুমি নেয়ামত দিয়েছো। তাদের নয় যাদের উপর গজব নাজিল হয়েছে এবং যারা পথভ্রষ্ট।', tafsir: 'নেয়ামতপ্রাপ্তরা হলেন নবী, সিদ্দিক, শহিদ ও সৎ মানুষ। গজবপ্রাপ্তরা জেনেশুনে পথ ছেড়েছে। পথভ্রষ্টরা না জেনে ভুল পথে আছে।' },
 ];
 
-export default function TafsirScreen() {
-  const [level, setLevel] = useState<'list' | 'surah'>('list');
-  const [selected, setSelected] = useState<typeof SURAHS[0] | null>(null);
+interface Props {
+  surahNumber?: number;
+  onOpenSurah: (surah: number) => void;
+  onBack: () => void;
+}
+
+export default function TafsirScreen({ surahNumber, onOpenSurah, onBack }: Props) {
   const [openTafsir, setOpenTafsir] = useState<number | null>(null);
   const [search, setSearch] = useState('');
 
@@ -35,42 +40,23 @@ export default function TafsirScreen() {
     s.bn.includes(search) || s.ar.includes(search) || String(s.n).includes(search)
   );
 
-  if (level === 'surah' && selected) {
+  const selected = surahNumber != null ? SURAHS.find(s => s.n === surahNumber) : null;
+
+  if (selected) {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-        {/* Surah header */}
         <div style={{
           background: 'linear-gradient(135deg, #1A3A4A, #1A5F7A)',
           padding: '52px 20px 20px',
           color: 'white', flexShrink: 0,
         }}>
+          <BackButton onClick={onBack} variant="light" style={{ marginBottom: 16 }} />
           <div style={{ fontSize: 12, opacity: 0.7, marginBottom: 4 }}>সূরা নং {selected.n} • {selected.type}</div>
           <div style={{ fontSize: 20, fontWeight: 700 }}>{selected.bn}</div>
           <div style={{ fontFamily: 'Amiri, serif', fontSize: 28, marginTop: 6, textAlign: 'right', direction: 'rtl', lineHeight: 1.6 }}>{selected.ar}</div>
         </div>
 
-        <div style={{ overflowY: 'auto', flex: 1, paddingBottom: 16 }}>
-          <button onClick={() => setLevel('list')} style={{
-            display: 'flex', alignItems: 'center', gap: 6,
-            fontSize: 13, color: 'var(--accent)', fontWeight: 600,
-            margin: '12px 16px', background: 'none', border: 'none', cursor: 'pointer',
-          }}>← সূরা তালিকায় ফিরে যাও</button>
-
-          {/* Overview */}
-          <div style={{
-            background: 'var(--card)', margin: '0 16px 12px',
-            borderRadius: 14, padding: 14,
-            border: '1px solid var(--border)',
-            boxShadow: '0 2px 8px rgba(26,95,122,0.06)',
-          }}>
-            <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--accent)', marginBottom: 6 }}>📋 সূরার পরিচয়</div>
-            <div style={{ fontSize: 13, color: 'var(--text-muted)', lineHeight: 1.7 }}>
-              {selected.n === 1 && 'এই সূরা কুরআনের উদ্বোধন। প্রতিটি নামাজে সাতবার পড়া ফরজ। এটি দোয়া ও কৃতজ্ঞতার সমন্বয় — বান্দা আল্লাহর কাছে সঠিক পথ চাইছে।'}
-              {selected.n !== 1 && `সূরা ${selected.bn} — ${selected.ayahs}টি আয়াত। ${selected.type === 'মক্কি' ? 'মক্কায় নাজিল — আকিদা ও বিশ্বাস কেন্দ্রিক।' : 'মদিনায় নাজিল — সমাজ ও আইন কেন্দ্রিক।'}`}
-            </div>
-          </div>
-
-          {/* Ayahs */}
+        <div style={{ overflowY: 'auto', flex: 1, minHeight: 0, paddingBottom: 16 }}>
           {(selected.n === 1 ? FATIHA_AYAHS : []).map(ayah => (
             <div key={ayah.n} style={{
               background: 'var(--card)', margin: '0 16px 10px',
@@ -134,7 +120,6 @@ export default function TafsirScreen() {
         <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 2 }}>১১৪টি সূরা — Ibn Kathir অনুসরণে</div>
       </div>
 
-      {/* Search */}
       <div style={{
         margin: '12px 16px',
         background: 'var(--card)', border: '1px solid var(--border)',
@@ -155,10 +140,9 @@ export default function TafsirScreen() {
         />
       </div>
 
-      {/* Surah list */}
       <div style={{ padding: '0 16px 16px' }}>
         {filtered.map(s => (
-          <div key={s.n} onClick={() => { setSelected(s); setLevel('surah'); }} style={{
+          <div key={s.n} onClick={() => onOpenSurah(s.n)} style={{
             background: 'var(--card)', border: '1px solid var(--border)',
             borderRadius: 14, padding: '14px 16px', marginBottom: 8,
             display: 'flex', alignItems: 'center', gap: 14,

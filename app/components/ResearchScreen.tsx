@@ -1,8 +1,13 @@
 'use client';
 import { useState } from 'react';
 import { researchCategories } from '../lib/research-data';
+import BackButton from './BackButton';
 
-export default function ResearchScreen() {
+interface Props {
+  onBack: () => void;
+}
+
+export default function ResearchScreen({ onBack }: Props) {
   const [active, setActive] = useState(researchCategories[0]);
 
   return (
@@ -12,6 +17,7 @@ export default function ResearchScreen() {
         background: 'linear-gradient(135deg, #1A1A2E, #1A3A4A)',
         padding: '52px 20px 20px', color: 'white',
       }}>
+        <BackButton onClick={onBack} variant="light" style={{ marginBottom: 14 }} />
         <div style={{ fontSize: 20, fontWeight: 700, marginBottom: 4 }}>🔬 গবেষণা কেন্দ্র</div>
         <div style={{ fontSize: 12, opacity: 0.7 }}>কুরআন ও হাদিস — বিজ্ঞান, অর্থ, সমাজ, দর্শন</div>
       </div>
