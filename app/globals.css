@@ -17,6 +17,12 @@
 
 * { box-sizing: border-box; }
 
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+}
+
 body {
   font-family: 'Hind Siliguri', sans-serif;
   background: var(--bg);

@@ -25,15 +25,23 @@ export default function App() {
   return (
     <div style={{
       maxWidth: 430,
+      width: '100%',
       margin: '0 auto',
-      minHeight: '100dvh',
+      height: '100dvh',
+      maxHeight: '100dvh',
       background: 'var(--bg)',
       display: 'flex',
       flexDirection: 'column',
       position: 'relative',
       overflow: 'hidden',
     }}>
-      <div style={{ flex: 1, overflowY: isReading ? 'hidden' : 'auto', overflowX: 'hidden' }}>
+      <div style={{
+        flex: 1,
+        minHeight: 0,
+        overflowY: isReading ? 'hidden' : 'auto',
+        overflowX: 'hidden',
+        WebkitOverflowScrolling: 'touch',
+      }}>
         {screen === 'home' && <HomeScreen onNavigate={setScreen} />}
         {screen === 'tafsir' && <TafsirScreen />}
         {screen === 'nur' && <NurScreen />}

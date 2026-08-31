@@ -14,15 +14,19 @@ export default function BottomNav({ current, onNavigate }: Props) {
     current === 'sirah-read';
 
   return (
-    <div style={{
-      background: 'var(--card)',
-      borderTop: '1px solid var(--border)',
-      padding: '8px 0 20px',
-      display: 'flex',
-      justifyContent: 'space-around',
-      alignItems: 'center',
-      flexShrink: 0,
-    }}>
+    <nav
+      aria-label="প্রধান নেভিগেশন"
+      style={{
+        background: 'var(--card)',
+        borderTop: '1px solid var(--border)',
+        padding: '8px 0 max(20px, env(safe-area-inset-bottom))',
+        display: 'flex',
+        justifyContent: 'space-around',
+        alignItems: 'center',
+        flexShrink: 0,
+        zIndex: 100,
+      }}
+    >
       <NavItem icon="🏠" label="হোম" active={current === 'home'} onClick={() => onNavigate('home')} />
       <NavItem icon="📖" label="তাফসির" active={current === 'tafsir'} onClick={() => onNavigate('tafsir')} />
 
@@ -43,7 +47,7 @@ export default function BottomNav({ current, onNavigate }: Props) {
 
       <NavItem icon="🕮" label="জ্ঞান" active={isKnowledgeActive} onClick={() => onNavigate('knowledge')} />
       <NavItem icon="👤" label="প্রোফাইল" active={current === 'profile'} onClick={() => onNavigate('profile')} />
-    </div>
+    </nav>
   );
 }
 
