@@ -34,18 +34,16 @@ export default function KnowledgeScreen({ onNavigate }: Props) {
           borderRadius: 22,
           overflow: 'hidden',
           cursor: 'pointer',
-          minHeight: 132,
+          aspectRatio: '3 / 2',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'flex-end',
           padding: '16px 18px 16px',
-          background: 'linear-gradient(135deg, #1A5F7A 0%, #2A7F9A 55%, #164d63 100%)',
+          backgroundImage: 'linear-gradient(0deg, rgba(6,14,20,0.85), rgba(6,14,20,0.15) 50%, rgba(10,30,42,0.2)), linear-gradient(160deg, rgba(26,95,122,0.5), rgba(22,77,99,0.32)), url(/images/research-quran.jpg)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
           position: 'relative',
         }}>
-          {/* Pattern overlay */}
-          <div style={{
-            position: 'absolute', inset: 0,
-            backgroundImage: `repeating-linear-gradient(45deg, rgba(255,255,255,0.04) 0px, rgba(255,255,255,0.04) 1px, transparent 1px, transparent 16px),
-                               repeating-linear-gradient(-45deg, rgba(255,255,255,0.04) 0px, rgba(255,255,255,0.04) 1px, transparent 1px, transparent 16px)`,
-          }} />
-
           <div style={{ position: 'relative', zIndex: 2 }}>
             <div style={{
               width: 32, height: 32, borderRadius: 10, marginBottom: 8,
@@ -71,9 +69,12 @@ export default function KnowledgeScreen({ onNavigate }: Props) {
           borderRadius: 22,
           overflow: 'hidden',
           cursor: 'pointer',
-          minHeight: 132,
+          aspectRatio: '3 / 2',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'flex-end',
           padding: '16px 18px 16px',
-          backgroundImage: 'linear-gradient(0deg, rgba(12,8,2,0.82), rgba(12,8,2,0.28) 55%, rgba(12,8,2,0.15)), url(/images/sirah-dome.jpg)',
+          backgroundImage: 'linear-gradient(0deg, rgba(12,8,2,0.82), rgba(12,8,2,0.15) 50%, rgba(12,8,2,0.1)), url(/images/sirah-dome.jpg)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           position: 'relative',
