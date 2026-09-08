@@ -5,6 +5,7 @@ export type Screen =
   | 'knowledge'
   | 'research'
   | 'sirah'
+  | 'sirah-part'
   | 'sirah-read'
   | 'profile';
 

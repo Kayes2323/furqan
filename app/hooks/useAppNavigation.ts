@@ -91,15 +91,24 @@ export function useAppNavigation(scrollContainerRef?: RefObject<HTMLElement | nu
     [navigate],
   );
 
+  const openPart = useCallback(
+    (partId: string) => {
+      navigate({ screen: 'sirah-part', part: partId });
+    },
+    [navigate],
+  );
+
   return {
     route,
     screen: route.screen,
     surahNumber: route.surah,
     chapterId: route.chapter ?? 'ch-01',
+    partId: route.part ?? 'part-1',
     navigate,
     navigateScreen,
     back,
     openSurah,
     openChapter,
+    openPart,
   };
 }

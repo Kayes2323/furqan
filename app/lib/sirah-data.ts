@@ -102,3 +102,14 @@ export function getPrevChapter(id: string): SirahChapter | undefined {
 export function getChaptersByPart(partId: string): SirahChapter[] {
   return sirahChapters.filter((c) => c.partId === partId);
 }
+
+/** True when a chapter is still the auto-generated "coming soon" stub, not real content. */
+export function isChapterReady(chapter: SirahChapter): boolean {
+  const blocks = chapter.sections[0]?.blocks;
+  return !(chapter.sections.length === 1 && blocks?.length === 1 && blocks[0].text === PLACEHOLDER);
+}
+
+/** True when at least one chapter in a part has real content. */
+export function isPartReady(partId: string): boolean {
+  return getChaptersByPart(partId).some(isChapterReady);
+}

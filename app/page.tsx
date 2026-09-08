@@ -7,6 +7,7 @@ import NurScreen from './components/NurScreen';
 import KnowledgeScreen from './components/KnowledgeScreen';
 import ResearchScreen from './components/ResearchScreen';
 import SirahJourneyScreen from './components/SirahJourneyScreen';
+import SirahChapterListScreen from './components/SirahChapterListScreen';
 import SirahReadingScreen from './components/SirahReadingScreen';
 import ProfileScreen from './components/ProfileScreen';
 import BottomNav from './components/BottomNav';
@@ -21,10 +22,12 @@ function AppShell() {
     screen,
     surahNumber,
     chapterId,
+    partId,
     navigateScreen,
     back,
     openSurah,
     openChapter,
+    openPart,
   } = useAppNavigation(scrollRef);
 
   const isReading = screen === 'sirah-read';
@@ -64,7 +67,10 @@ function AppShell() {
         {screen === 'knowledge' && <KnowledgeScreen onNavigate={navigateScreen} />}
         {screen === 'research' && <ResearchScreen onBack={back} />}
         {screen === 'sirah' && (
-          <SirahJourneyScreen onBack={back} onOpenChapter={openChapter} />
+          <SirahJourneyScreen onBack={back} onOpenPart={openPart} onOpenChapter={openChapter} />
+        )}
+        {screen === 'sirah-part' && (
+          <SirahChapterListScreen partId={partId} onBack={back} onOpenChapter={openChapter} />
         )}
         {screen === 'sirah-read' && (
           <SirahReadingScreen

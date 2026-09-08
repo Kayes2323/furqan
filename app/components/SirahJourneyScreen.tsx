@@ -1,34 +1,25 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { sirahChapters } from '../lib/sirah-data';
-import { getLastRead, getCompleted, getProgressPercent, getScroll, type LastRead } from '../lib/sirah-progress';
+import { sirahParts } from '../lib/sirah-types';
+import { sirahChapters, getChaptersByPart, isPartReady } from '../lib/sirah-data';
+import { getLastRead, getCompleted, getProgressPercent, type LastRead } from '../lib/sirah-progress';
 
 interface Props {
   onBack: () => void;
+  onOpenPart: (partId: string) => void;
   onOpenChapter: (chapterId: string) => void;
 }
 
-export default function SirahJourneyScreen({ onBack, onOpenChapter }: Props) {
+export default function SirahJourneyScreen({ onBack, onOpenPart, onOpenChapter }: Props) {
   const [completed, setCompleted] = useState<string[]>([]);
   const [lastRead, setLastRead] = useState<LastRead | null>(null);
   const [percent, setPercent] = useState(0);
-  const [scrollMap, setScrollMap] = useState<Record<string, number>>({});
 
   useEffect(() => {
     setCompleted(getCompleted());
     setLastRead(getLastRead());
     setPercent(getProgressPercent(sirahChapters.length));
-    const map: Record<string, number> = {};
-    sirahChapters.forEach(ch => { map[ch.id] = getScroll(ch.id); });
-    setScrollMap(map);
   }, []);
-
-  const currentId = lastRead?.chapterId ?? sirahChapters[0]?.id;
-
-  const parts = [
-    { label: 'Part 1 — প্রেক্ষাপট', ids: ['ch-01', 'ch-02', 'ch-03', 'ch-04'] },
-    { label: 'Part 2 — নবুওয়াত ও মক্কী জীবন', ids: ['ch-05'] },
-  ];
 
   return (
     <div style={{ paddingBottom: 30 }}>
@@ -52,7 +43,7 @@ export default function SirahJourneyScreen({ onBack, onOpenChapter }: Props) {
 
           <div style={{ fontSize: 10, color: 'rgba(201,168,76,.8)', letterSpacing: 3, textTransform: 'uppercase', marginBottom: 6 }}>সীরাতুন্নবী ﷺ</div>
           <div style={{ fontFamily: 'Amiri, serif', fontSize: 28, color: '#fff', marginBottom: 4 }}>আপনার যাত্রা</div>
-          <div style={{ fontSize: 12, color: 'rgba(255,255,255,.6)', marginBottom: 20 }}>আর রাহীকুল মাখতূম অনুসরণে</div>
+          <div style={{ fontSize: 12, color: 'rgba(255,255,255,.6)', marginBottom: 20 }}>আর রাহীকুল মাখতূম অনুসরণে · ৬টি পর্ব</div>
 
           <div style={{ marginBottom: 14 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 8 }}>
@@ -83,59 +74,49 @@ export default function SirahJourneyScreen({ onBack, onOpenChapter }: Props) {
         </div>
       </div>
 
-      {parts.map(part => {
-        const chapters = sirahChapters.filter(ch => part.ids.includes(ch.id));
-        if (chapters.length === 0) return null;
-        return (
-          <div key={part.label}>
-            <div style={{ padding: '20px 20px 10px', fontSize: 10, fontWeight: 700, color: 'var(--text-muted)', letterSpacing: 2, textTransform: 'uppercase' }}>
-              {part.label}
-            </div>
-            <div style={{ padding: '0 16px', display: 'flex', flexDirection: 'column', gap: 10 }}>
-              {chapters.map(ch => {
-                const isCurrent = ch.id === currentId;
-                const scrollY = scrollMap[ch.id] || 0;
-                const readPct = Math.min(Math.round((scrollY / 3000) * 100), 99);
-                const hasStarted = scrollY > 50;
-                return (
-                  <div key={ch.id} onClick={() => onOpenChapter(ch.id)} style={{
-                    background: 'var(--card)',
-                    border: isCurrent ? '1.5px solid rgba(201,168,76,0.5)' : '1.5px solid var(--border)',
-                    borderRadius: 16, overflow: 'hidden', cursor: 'pointer',
-                    boxShadow: isCurrent ? '0 4px 20px rgba(201,168,76,0.12)' : '0 2px 8px rgba(26,95,122,0.05)',
-                  }}>
-                    {hasStarted && (
-                      <div style={{ height: 3, background: 'var(--border)' }}>
-                        <div style={{ height: '100%', width: `${readPct}%`, background: isCurrent ? 'linear-gradient(90deg, #C9A84C, #E8C06A)' : 'var(--accent)', transition: 'width .4s' }} />
-                      </div>
-                    )}
-                    <div style={{ padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 12 }}>
-                      <div style={{
-                        width: 40, height: 40, borderRadius: 11, flexShrink: 0,
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        fontWeight: 700, fontSize: 14,
-                        background: isCurrent ? '#C9A84C' : 'rgba(26,95,122,0.08)',
-                        color: isCurrent ? '#1A1A2E' : 'var(--accent)',
-                      }}>{ch.number}</div>
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text)', marginBottom: 3, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{ch.title}</div>
-                        <div style={{ fontSize: 11.5, color: 'var(--text-muted)', lineHeight: 1.4 }}>{ch.subtitle}</div>
-                      </div>
-                      <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
-                        {hasStarted ? (
-                          <><span style={{ fontSize: 16, color: '#C9A84C' }}>🔖</span><span style={{ fontSize: 10, color: 'var(--text-muted)', fontWeight: 600 }}>{readPct}%</span></>
-                        ) : (
-                          <span style={{ fontSize: 16, color: 'var(--text-muted)' }}>›</span>
-                        )}
-                      </div>
-                    </div>
+      <div style={{ padding: '16px 16px 0', display: 'flex', flexDirection: 'column', gap: 10 }}>
+        {sirahParts.map(part => {
+          const chapters = getChaptersByPart(part.id);
+          const ready = isPartReady(part.id);
+          const doneInPart = chapters.filter(ch => completed.includes(ch.id)).length;
+          const partPct = chapters.length > 0 ? Math.round((doneInPart / chapters.length) * 100) : 0;
+
+          return (
+            <div
+              key={part.id}
+              onClick={ready ? () => onOpenPart(part.id) : undefined}
+              style={{
+                borderRadius: 18, padding: 16, color: '#fff', position: 'relative', overflow: 'hidden',
+                cursor: ready ? 'pointer' : 'default',
+                opacity: ready ? 1 : 0.5,
+                display: 'flex', alignItems: 'center', gap: 14,
+                background: ready
+                  ? 'linear-gradient(150deg, #2A1A0A, #7A5A1A)'
+                  : 'linear-gradient(150deg, #2A1A0A, #5A3A10)',
+              }}
+            >
+              <div style={{
+                width: 40, height: 40, borderRadius: 12, flexShrink: 0,
+                background: 'rgba(255,255,255,.14)', border: '1px solid rgba(255,255,255,.22)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontFamily: 'Amiri, serif', fontSize: 17,
+              }}>{part.number}</div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 2 }}>{part.title}</div>
+                <div style={{ fontSize: 11, opacity: 0.7 }}>{part.subtitle}</div>
+                <div style={{ fontSize: 9.5, opacity: 0.6, marginTop: 4 }}>
+                  {chapters.length}টি অধ্যায় {ready ? `· ${doneInPart}/${chapters.length} পড়া হয়েছে` : '· শীঘ্রই আসছে'}
+                </div>
+                {ready && (
+                  <div style={{ height: 3, background: 'rgba(255,255,255,.15)', borderRadius: 10, marginTop: 8, overflow: 'hidden' }}>
+                    <div style={{ height: '100%', width: `${partPct}%`, background: 'linear-gradient(90deg, #C9A84C, #E8C06A)' }} />
                   </div>
-                );
-              })}
+                )}
+              </div>
             </div>
-          </div>
-        );
-      })}
+          );
+        })}
+      </div>
     </div>
   );
 }

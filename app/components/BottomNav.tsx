@@ -12,6 +12,7 @@ export default function BottomNav({ current, onNavigate }: Props) {
     current === 'knowledge' ||
     current === 'research' ||
     current === 'sirah' ||
+    current === 'sirah-part' ||
     current === 'sirah-read';
 
   return (
