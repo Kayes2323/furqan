@@ -119,9 +119,14 @@ export default function NurScreen() {
             <div style={{
               background: 'var(--card)', border: '1px solid var(--border)',
               borderRadius: 16, borderBottomLeftRadius: 4,
-              padding: '12px 16px', fontSize: 13, color: 'var(--text-muted)',
+              padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 9,
             }}>
-              NUR চিন্তা করছে...
+              <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                <span className="nur-dot arabic" style={{ fontSize: 19, lineHeight: 1, color: 'var(--accent)' }}>ن</span>
+                <span className="nur-dot arabic" style={{ fontSize: 19, lineHeight: 1, color: 'var(--accent)' }}>ن</span>
+                <span className="nur-dot arabic" style={{ fontSize: 19, lineHeight: 1, color: 'var(--accent)' }}>ن</span>
+              </div>
+              <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>NUR চিন্তা করছে...</span>
             </div>
           </div>
         )}
