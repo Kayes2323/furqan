@@ -21,7 +21,7 @@ export default function SplashScreen({ onDone }: { onDone: () => void }) {
   return (
     <div
       style={{
-        position: 'fixed',
+        position: 'absolute',
         inset: 0,
         zIndex: 1000,
         overflow: 'hidden',
