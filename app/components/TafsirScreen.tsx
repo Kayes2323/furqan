@@ -1,5 +1,6 @@
 'use client';
 import { useState } from 'react';
+import { Search, BookOpen } from 'lucide-react';
 import BackButton from './BackButton';
 
 const SURAHS = [
@@ -116,7 +117,9 @@ export default function TafsirScreen({ surahNumber, onOpenSurah, onBack }: Props
         background: 'var(--bg)',
         position: 'sticky', top: 0, zIndex: 10,
       }}>
-        <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--text)' }}>📖 তাফসির</div>
+        <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--text)', display: 'flex', alignItems: 'center', gap: 8 }}>
+          <BookOpen size={18} strokeWidth={1.8} />তাফসির
+        </div>
         <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 2 }}>১১৪টি সূরা — Ibn Kathir অনুসরণে</div>
       </div>
 
@@ -125,9 +128,9 @@ export default function TafsirScreen({ surahNumber, onOpenSurah, onBack }: Props
         background: 'var(--card)', border: '1px solid var(--border)',
         borderRadius: 14, padding: '10px 14px',
         display: 'flex', alignItems: 'center', gap: 8,
-        boxShadow: '0 2px 8px rgba(26,95,122,0.06)',
+        boxShadow: '0 2px 8px rgba(15,42,25,0.06)',
       }}>
-        <span>🔍</span>
+        <Search size={16} color="var(--text-muted)" strokeWidth={1.8} />
         <input
           value={search}
           onChange={e => setSearch(e.target.value)}
@@ -146,12 +149,12 @@ export default function TafsirScreen({ surahNumber, onOpenSurah, onBack }: Props
             background: 'var(--card)', border: '1px solid var(--border)',
             borderRadius: 14, padding: '14px 16px', marginBottom: 8,
             display: 'flex', alignItems: 'center', gap: 14,
-            cursor: 'pointer', boxShadow: '0 2px 8px rgba(26,95,122,0.06)',
+            cursor: 'pointer', boxShadow: '0 2px 8px rgba(15,42,25,0.06)',
             transition: 'all 0.2s',
           }}>
             <div style={{
               width: 36, height: 36, flexShrink: 0,
-              background: 'linear-gradient(135deg, var(--accent), #2A7F9A)',
+              background: 'linear-gradient(135deg, var(--accent), var(--accent-light))',
               color: 'white', borderRadius: 10,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               fontSize: 12, fontWeight: 700,

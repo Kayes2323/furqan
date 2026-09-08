@@ -1,5 +1,6 @@
 'use client';
 import { useState, useRef, useEffect } from 'react';
+import { Send } from 'lucide-react';
 import type { ChatMessage } from '../types';
 
 const SUGGESTIONS = [
@@ -55,7 +56,7 @@ export default function NurScreen() {
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       {/* Header */}
       <div style={{
-        background: 'linear-gradient(135deg, #1B7A4A, #2EA864, #1A5F7A)',
+        background: 'linear-gradient(160deg, #123B27, #2FA06B 55%, #12532F)',
         padding: '48px 20px 20px',
         textAlign: 'center', color: 'white', flexShrink: 0,
       }}>
@@ -149,11 +150,11 @@ export default function NurScreen() {
         />
         <button onClick={() => send(input)} style={{
           width: 40, height: 40,
-          background: 'linear-gradient(135deg, #1B7A4A, #2EA864)',
+          background: 'linear-gradient(135deg, #2FA06B, #12532F)',
           border: 'none', borderRadius: 12, cursor: 'pointer',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontSize: 16, boxShadow: '0 2px 8px rgba(27,122,74,0.3)',
-        }}>➤</button>
+          boxShadow: '0 2px 8px rgba(18,83,47,0.35)',
+        }}><Send size={16} color="#fff" strokeWidth={1.8} /></button>
       </div>
     </div>
   );

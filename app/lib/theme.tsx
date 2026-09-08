@@ -17,23 +17,31 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const root = document.documentElement;
     if (theme === 'dark') {
-      root.style.setProperty('--bg', '#0F1117');
-      root.style.setProperty('--card', '#1A1D27');
-      root.style.setProperty('--text', '#E8E6E0');
-      root.style.setProperty('--text-muted', '#9CA3AF');
-      root.style.setProperty('--text-light', '#6B7280');
-      root.style.setProperty('--border', '#2A2D3A');
-      root.style.setProperty('--accent', '#2A9FBF');
-      root.style.setProperty('--accent-light', '#3ABFDF');
+      root.style.setProperty('--bg', '#0E1C14');
+      root.style.setProperty('--card', '#173327');
+      root.style.setProperty('--text', '#E7EEDF');
+      root.style.setProperty('--text-muted', '#8FA88F');
+      root.style.setProperty('--text-light', '#5F7A64');
+      root.style.setProperty('--border', '#2A4A38');
+      root.style.setProperty('--accent', '#4CC48B');
+      root.style.setProperty('--accent-light', '#5BD79A');
+      root.style.setProperty('--gold', '#D2A85A');
+      root.style.setProperty('--gold-light', '#F0D896');
+      root.style.setProperty('--green', '#4CC48B');
+      root.style.setProperty('--green-light', '#5BD79A');
     } else {
-      root.style.setProperty('--bg', '#FAF7F0');
-      root.style.setProperty('--card', '#FFFFFF');
-      root.style.setProperty('--text', '#1A1A2E');
-      root.style.setProperty('--text-muted', '#6B7280');
-      root.style.setProperty('--text-light', '#9CA3AF');
-      root.style.setProperty('--border', '#E8E0D0');
-      root.style.setProperty('--accent', '#1A5F7A');
-      root.style.setProperty('--accent-light', '#2A7F9A');
+      root.style.setProperty('--bg', '#F4F1E1');
+      root.style.setProperty('--card', '#FFFEF8');
+      root.style.setProperty('--text', '#16241B');
+      root.style.setProperty('--text-muted', '#5B7360');
+      root.style.setProperty('--text-light', '#8FA088');
+      root.style.setProperty('--border', '#D9D6B8');
+      root.style.setProperty('--accent', '#1F7A4C');
+      root.style.setProperty('--accent-light', '#2FA06B');
+      root.style.setProperty('--gold', '#96702A');
+      root.style.setProperty('--gold-light', '#E4C878');
+      root.style.setProperty('--green', '#1F7A4C');
+      root.style.setProperty('--green-light', '#2FA06B');
     }
     localStorage.setItem('furqan-theme', theme);
   }, [theme]);

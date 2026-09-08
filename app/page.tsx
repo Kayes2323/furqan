@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useRef } from 'react';
+import { Suspense, useRef, useState } from 'react';
 import HomeScreen from './components/HomeScreen';
 import TafsirScreen from './components/TafsirScreen';
 import NurScreen from './components/NurScreen';
@@ -10,10 +10,13 @@ import SirahJourneyScreen from './components/SirahJourneyScreen';
 import SirahReadingScreen from './components/SirahReadingScreen';
 import ProfileScreen from './components/ProfileScreen';
 import BottomNav from './components/BottomNav';
+import SplashScreen from './components/SplashScreen';
+import { ThemeProvider } from './lib/theme';
 import { useAppNavigation } from './hooks/useAppNavigation';
 
 function AppShell() {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [showSplash, setShowSplash] = useState(true);
   const {
     screen,
     surahNumber,
@@ -74,14 +77,18 @@ function AppShell() {
       </div>
 
       {!isReading && <BottomNav current={screen} onNavigate={navigateScreen} />}
+
+      {showSplash && <SplashScreen onDone={() => setShowSplash(false)} />}
     </div>
   );
 }
 
 export default function App() {
   return (
-    <Suspense fallback={null}>
-      <AppShell />
-    </Suspense>
+    <ThemeProvider>
+      <Suspense fallback={null}>
+        <AppShell />
+      </Suspense>
+    </ThemeProvider>
   );
 }

@@ -1,4 +1,5 @@
 'use client';
+import { Home, BookOpen, LayoutGrid, User } from 'lucide-react';
 import type { Screen } from '../types';
 
 interface Props {
@@ -27,40 +28,41 @@ export default function BottomNav({ current, onNavigate }: Props) {
         zIndex: 100,
       }}
     >
-      <NavItem icon="🏠" label="হোম" active={current === 'home'} onClick={() => onNavigate('home')} />
-      <NavItem icon="📖" label="তাফসির" active={current === 'tafsir'} onClick={() => onNavigate('tafsir')} />
+      <NavItem icon={Home} label="হোম" active={current === 'home'} onClick={() => onNavigate('home')} />
+      <NavItem icon={BookOpen} label="তাফসির" active={current === 'tafsir'} onClick={() => onNavigate('tafsir')} />
 
       <button onClick={() => onNavigate('nur')} style={{
-        width: 60, height: 60, borderRadius: 20,
-        background: 'linear-gradient(135deg, #1B7A4A, #2EA864, #1A5F7A)',
+        width: 58, height: 58, borderRadius: 19,
+        background: 'linear-gradient(135deg, var(--green), var(--accent-light))',
         border: 'none', cursor: 'pointer',
         display: 'flex', flexDirection: 'column',
         alignItems: 'center', justifyContent: 'center',
         marginTop: -20,
         boxShadow: current === 'nur'
-          ? '0 0 0 3px rgba(27,122,74,0.3), 0 4px 20px rgba(27,122,74,0.5)'
-          : '0 4px 20px rgba(27,122,74,0.4)',
+          ? '0 0 0 3px rgba(31,122,76,0.3), 0 4px 20px rgba(31,122,76,0.5)'
+          : '0 4px 20px rgba(31,122,76,0.4)',
       }}>
-        <span style={{ fontFamily: 'Amiri, serif', fontSize: 22, color: 'white', lineHeight: 1 }}>ن</span>
-        <span style={{ fontSize: 8, color: 'rgba(255,255,255,0.85)', fontWeight: 700, letterSpacing: 0.5 }}>NUR</span>
+        <span style={{ fontFamily: 'Amiri, serif', fontSize: 20, color: 'white', lineHeight: 1 }}>ن</span>
+        <span style={{ fontSize: 8, color: 'rgba(255,255,255,0.85)', fontWeight: 700, letterSpacing: 0.5, marginTop: 2 }}>NUR</span>
       </button>
 
-      <NavItem icon="🕮" label="জ্ঞান" active={isKnowledgeActive} onClick={() => onNavigate('knowledge')} />
-      <NavItem icon="👤" label="প্রোফাইল" active={current === 'profile'} onClick={() => onNavigate('profile')} />
+      <NavItem icon={LayoutGrid} label="জ্ঞান" active={isKnowledgeActive} onClick={() => onNavigate('knowledge')} />
+      <NavItem icon={User} label="প্রোফাইল" active={current === 'profile'} onClick={() => onNavigate('profile')} />
     </nav>
   );
 }
 
-function NavItem({ icon, label, active, onClick }: {
-  icon: string; label: string; active: boolean; onClick: () => void;
+function NavItem({ icon: Icon, label, active, onClick }: {
+  icon: React.ElementType; label: string; active: boolean; onClick: () => void;
 }) {
   return (
     <button onClick={onClick} style={{
       display: 'flex', flexDirection: 'column', alignItems: 'center',
       gap: 3, cursor: 'pointer', padding: '4px 12px',
       borderRadius: 12, border: 'none', background: 'none',
+      color: active ? 'var(--accent)' : 'var(--text-muted)',
     }}>
-      <span style={{ fontSize: 20 }}>{icon}</span>
+      <Icon size={20} strokeWidth={1.8} />
       <span style={{
         fontSize: 10, fontFamily: 'Hind Siliguri, sans-serif', fontWeight: 600,
         color: active ? 'var(--accent)' : 'var(--text-muted)',
