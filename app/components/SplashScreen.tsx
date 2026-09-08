@@ -53,7 +53,7 @@ export default function SplashScreen({ onDone }: { onDone: () => void }) {
           FURQAN
         </div>
         <div style={{ fontFamily: 'Hind Siliguri, sans-serif', fontSize: 13.5, fontWeight: 500, color: '#E4C878', marginTop: 10, textShadow: '0 1px 10px rgba(0,0,0,0.5)' }}>
-          কুরআন ও জীবনের আলো
+          সত্য মিথ্যার পার্থক্যকারী
         </div>
       </div>
       <div style={{ position: 'absolute', left: 0, right: 0, bottom: 36, zIndex: 2, textAlign: 'center' }}>

@@ -13,8 +13,8 @@ export default function KnowledgeScreen({ onNavigate }: Props) {
     <div style={{ paddingBottom: 20 }}>
 
       <div style={{ padding: '52px 20px 4px' }}>
-        <div style={{ fontFamily: 'Amiri, serif', fontSize: 25, color: 'var(--accent)' }}>জ্ঞান</div>
-        <div style={{ fontSize: 10, color: 'var(--text-muted)', letterSpacing: 2, textTransform: 'uppercase', marginTop: 2 }}>
+        <div style={{ fontFamily: 'Amiri, serif', fontSize: 25, lineHeight: 1.2, color: 'var(--accent)' }}>জ্ঞান</div>
+        <div style={{ fontSize: 10, lineHeight: 1.3, color: 'var(--text-muted)', letterSpacing: 2, textTransform: 'uppercase', marginTop: 2 }}>
           Knowledge Hub
         </div>
       </div>
@@ -34,8 +34,8 @@ export default function KnowledgeScreen({ onNavigate }: Props) {
           borderRadius: 22,
           overflow: 'hidden',
           cursor: 'pointer',
-          minHeight: 150,
-          padding: '18px 20px 20px',
+          minHeight: 132,
+          padding: '16px 18px 16px',
           background: 'linear-gradient(135deg, #1A5F7A 0%, #2A7F9A 55%, #164d63 100%)',
           position: 'relative',
         }}>
@@ -48,20 +48,20 @@ export default function KnowledgeScreen({ onNavigate }: Props) {
 
           <div style={{ position: 'relative', zIndex: 2 }}>
             <div style={{
-              width: 38, height: 38, borderRadius: 11, marginBottom: 10,
+              width: 32, height: 32, borderRadius: 10, marginBottom: 8,
               background: 'rgba(255,255,255,0.16)', border: '1px solid rgba(255,255,255,0.28)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-            }}><FlaskConical size={19} color="#fff" strokeWidth={1.8} /></div>
-            <div style={{ fontSize: 19, fontWeight: 700, color: '#fff', marginBottom: 4 }}>গবেষণা</div>
-            <div style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.78)', marginBottom: 12, maxWidth: 230, lineHeight: 1.5 }}>
+            }}><FlaskConical size={16} color="#fff" strokeWidth={1.8} /></div>
+            <div style={{ fontSize: 17, lineHeight: 1.25, fontWeight: 700, color: '#fff', marginBottom: 3 }}>গবেষণা</div>
+            <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.78)', marginBottom: 10, maxWidth: 230, lineHeight: 1.4 }}>
               কুরআন থেকে গবেষণা করুন
             </div>
             <div style={{
               display: 'inline-flex', alignItems: 'center', gap: 6,
               background: 'rgba(255,255,255,0.16)',
               border: '1px solid rgba(255,255,255,0.28)',
-              borderRadius: 100, padding: '6px 13px',
-              fontSize: 11.5, fontWeight: 600, color: '#fff',
+              borderRadius: 100, padding: '5px 12px',
+              fontSize: 11, lineHeight: 1.3, fontWeight: 600, color: '#fff',
             }}>অন্বেষণ করুন →</div>
           </div>
         </div>
@@ -71,8 +71,8 @@ export default function KnowledgeScreen({ onNavigate }: Props) {
           borderRadius: 22,
           overflow: 'hidden',
           cursor: 'pointer',
-          minHeight: 150,
-          padding: '18px 20px 20px',
+          minHeight: 132,
+          padding: '16px 18px 16px',
           backgroundImage: 'linear-gradient(0deg, rgba(12,8,2,0.82), rgba(12,8,2,0.28) 55%, rgba(12,8,2,0.15)), url(/images/sirah-dome.jpg)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
@@ -80,20 +80,20 @@ export default function KnowledgeScreen({ onNavigate }: Props) {
         }}>
           <div style={{ position: 'relative', zIndex: 2 }}>
             <div style={{
-              width: 38, height: 38, borderRadius: 11, marginBottom: 10,
+              width: 32, height: 32, borderRadius: 10, marginBottom: 8,
               background: 'rgba(255,255,255,0.16)', border: '1px solid rgba(255,255,255,0.28)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-            }}><BookOpen size={19} color="#fff" strokeWidth={1.8} /></div>
-            <div style={{ fontSize: 19, fontWeight: 700, color: '#fff', marginBottom: 4 }}>সীরাত</div>
-            <div style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.78)', marginBottom: 12, maxWidth: 230, lineHeight: 1.5 }}>
+            }}><BookOpen size={16} color="#fff" strokeWidth={1.8} /></div>
+            <div style={{ fontSize: 17, lineHeight: 1.25, fontWeight: 700, color: '#fff', marginBottom: 3 }}>সীরাত</div>
+            <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.78)', marginBottom: 10, maxWidth: 230, lineHeight: 1.4 }}>
               রাসূলুল্লাহ ﷺ-এর জীবনকে ইতিহাস ও ঘটনাপ্রবাহের মাধ্যমে জানুন
             </div>
             <div style={{
               display: 'inline-flex', alignItems: 'center', gap: 6,
               background: 'rgba(255,255,255,0.16)',
               border: '1px solid rgba(255,255,255,0.28)',
-              borderRadius: 100, padding: '6px 13px',
-              fontSize: 11.5, fontWeight: 600, color: '#fff',
+              borderRadius: 100, padding: '5px 12px',
+              fontSize: 11, lineHeight: 1.3, fontWeight: 600, color: '#fff',
             }}>জীবনী শুরু করুন →</div>
           </div>
         </div>
@@ -119,8 +119,8 @@ export default function KnowledgeScreen({ onNavigate }: Props) {
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}><mod.icon size={19} strokeWidth={1.8} /></div>
             <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text)', marginBottom: 2 }}>{mod.name}</div>
-              <div style={{ fontSize: 10.5, color: 'var(--text-muted)', lineHeight: 1.4 }}>{mod.desc}</div>
+              <div style={{ fontSize: 13, lineHeight: 1.3, fontWeight: 700, color: 'var(--text)', marginBottom: 2 }}>{mod.name}</div>
+              <div style={{ fontSize: 10.5, color: 'var(--text-muted)', lineHeight: 1.35 }}>{mod.desc}</div>
             </div>
             <span style={{
               fontSize: 9, fontWeight: 700, letterSpacing: 0.5, textTransform: 'uppercase',
