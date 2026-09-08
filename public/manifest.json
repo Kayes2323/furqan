@@ -4,8 +4,8 @@
   "description": "কুরআন পড়ো না, বোঝো",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#FAF7F0",
-  "theme_color": "#1A5F7A",
+  "background_color": "#F4F1E1",
+  "theme_color": "#1F7A4C",
   "orientation": "portrait",
   "lang": "bn",
   "icons": [
