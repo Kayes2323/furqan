@@ -1,33 +1,39 @@
 import { NextRequest, NextResponse } from 'next/server';
-import Anthropic from '@anthropic-ai/sdk';
+import { GoogleGenAI, ThinkingLevel } from '@google/genai';
 import { NUR_SYSTEM_PROMPT } from './prompt';
 
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+const client = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 export async function POST(req: NextRequest) {
   try {
     const { message, history } = await req.json();
 
-    const messages = [
+    const contents = [
       ...history
         .filter((m: { role: string }) => m.role !== 'nur' || history.indexOf(m) !== 0)
         .map((m: { role: string; content: string }) => ({
-          role: m.role === 'user' ? 'user' : 'assistant',
-          content: m.role === 'nur'
-            ? JSON.stringify({ reply: m.content, refs: [] })
-            : m.content,
+          role: m.role === 'user' ? 'user' : 'model',
+          parts: [{
+            text: m.role === 'nur'
+              ? JSON.stringify({ reply: m.content, refs: [] })
+              : m.content,
+          }],
         })),
-      { role: 'user' as const, content: message },
+      { role: 'user' as const, parts: [{ text: message }] },
     ];
 
-    const response = await client.messages.create({
-      model: 'claude-sonnet-4-6',
-      max_tokens: 1000,
-      system: NUR_SYSTEM_PROMPT,
-      messages,
+    const response = await client.models.generateContent({
+      model: 'gemini-3.6-flash',
+      config: {
+        systemInstruction: NUR_SYSTEM_PROMPT,
+        maxOutputTokens: 2048,
+        responseMimeType: 'application/json',
+        thinkingConfig: { thinkingLevel: ThinkingLevel.MINIMAL },
+      },
+      contents,
     });
 
-    const raw = response.content[0].type === 'text' ? response.content[0].text : '';
+    const raw = response.text ?? '';
 
     let parsed;
     try {
