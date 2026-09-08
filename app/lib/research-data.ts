@@ -56,7 +56,7 @@ export const researchCategories = [
   {
     id: 'politics',
     icon: '⚖️',
-    name: 'রাজনীতি',
+    name: 'রাষ্ট্রবিজ্ঞান',
     featuredAyah: {
       arabic: 'وَأَمْرُهُمْ شُورَىٰ بَيْنَهُمْ',
       bangla: 'তাদের কার্যাবলী পরস্পর পরামর্শের মাধ্যমে পরিচালিত হয়।',
