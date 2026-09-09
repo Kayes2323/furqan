@@ -13,6 +13,9 @@ import { ch11Chapter } from './sirah-content/part3/ch-11';
 import { ch12Chapter } from './sirah-content/part3/ch-12';
 import { ch13Chapter } from './sirah-content/part3/ch-13';
 import { ch14Chapter } from './sirah-content/part3/ch-14';
+import { ch16Chapter } from './sirah-content/part3/ch-16';
+import { ch17Chapter } from './sirah-content/part3/ch-17';
+import { ch18Chapter } from './sirah-content/part3/ch-18';
 
 export type { BlockType, ContentBlock, SirahSection, SirahChapter, SirahPart } from './sirah-types';
 export { sirahParts, getPart } from './sirah-types';
@@ -58,21 +61,20 @@ const part2Chapters: SirahChapter[] = [
   ch10Chapter,
 ];
 
-/** PART 3 — integrated from Ar-Raheeq Al-Makhtum PDF pp. 82–121 (Hira cave through the conversions of Hamza and Umar) */
+/** PART 3 — integrated from Ar-Raheeq Al-Makhtum PDF pp. 82–166 (Hira cave through the Second Pledge of Aqaba and the start of the Hijrah); ch-15 (social boycott, pp. 122–129) is not yet written */
 const part3Chapters: SirahChapter[] = [
   ch11Chapter,
   ch12Chapter,
   ch13Chapter,
   ch14Chapter,
+  placeholderChapter('ch-15', 15, 'সামাজিক বয়কট', 'বয়কট ও শিবে আবি তালিব', 'part-3'),
+  ch16Chapter,
+  ch17Chapter,
+  ch18Chapter,
 ];
 
-/** PART 3 (remaining)–6 — structure ready, content pending */
+/** PART 4–6 — structure ready, content pending */
 const upcomingChapters: SirahChapter[] = [
-  // PART 3
-  placeholderChapter('ch-15', 15, 'সামাজিক বয়কট', 'বয়কট ও শিবে আবি তালিব', 'part-3'),
-  placeholderChapter('ch-16', 16, 'দুঃখের বছর', 'শোকের বছর', 'part-3'),
-  placeholderChapter('ch-17', 17, 'ইসরা ও মিরাজ', 'ইসরা ও মি\'রাজ', 'part-3'),
-  placeholderChapter('ch-18', 18, 'আকাবার প্রথম ও দ্বিতীয় শপথ', 'আকাবার বাইয়াত', 'part-3'),
   // PART 4
   placeholderChapter('ch-19', 19, 'হিজরত', 'আল্লাহর রসূলের হিজরত', 'part-4'),
   placeholderChapter('ch-20', 20, 'মদিনায় নতুন সমাজ', 'নতুন সমাজ ব্যবস্থার রূপায়ন', 'part-4'),
