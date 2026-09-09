@@ -9,6 +9,10 @@ import { ch07Chapter } from './sirah-content/part2/ch-07';
 import { ch08Chapter } from './sirah-content/part2/ch-08';
 import { ch09Chapter } from './sirah-content/part2/ch-09';
 import { ch10Chapter } from './sirah-content/part2/ch-10';
+import { ch11Chapter } from './sirah-content/part3/ch-11';
+import { ch12Chapter } from './sirah-content/part3/ch-12';
+import { ch13Chapter } from './sirah-content/part3/ch-13';
+import { ch14Chapter } from './sirah-content/part3/ch-14';
 
 export type { BlockType, ContentBlock, SirahSection, SirahChapter, SirahPart } from './sirah-types';
 export { sirahParts, getPart } from './sirah-types';
@@ -54,13 +58,17 @@ const part2Chapters: SirahChapter[] = [
   ch10Chapter,
 ];
 
-/** PART 3–6 — structure ready, content pending */
+/** PART 3 — integrated from Ar-Raheeq Al-Makhtum PDF pp. 82–121 (Hira cave through the conversions of Hamza and Umar) */
+const part3Chapters: SirahChapter[] = [
+  ch11Chapter,
+  ch12Chapter,
+  ch13Chapter,
+  ch14Chapter,
+];
+
+/** PART 3 (remaining)–6 — structure ready, content pending */
 const upcomingChapters: SirahChapter[] = [
   // PART 3
-  placeholderChapter('ch-11', 11, 'হেরা গুহা ও প্রথম ওহী', 'রেসালাতের ছায়ায় হেরা গুহা', 'part-3'),
-  placeholderChapter('ch-12', 12, 'গোপন দাওয়াহ', 'গোপনীয় দাওয়াতের তিন বছর', 'part-3'),
-  placeholderChapter('ch-13', 13, 'প্রকাশ্য দাওয়াহ ও নির্যাতন', 'দ্বিতীয় পর্যায়: প্রকাশ্য তাবলীগ', 'part-3'),
-  placeholderChapter('ch-14', 14, 'আবিসিনিয়ায় হিজরত', 'হাবশায় হিজরত', 'part-3'),
   placeholderChapter('ch-15', 15, 'সামাজিক বয়কট', 'বয়কট ও শিবে আবি তালিব', 'part-3'),
   placeholderChapter('ch-16', 16, 'দুঃখের বছর', 'শোকের বছর', 'part-3'),
   placeholderChapter('ch-17', 17, 'ইসরা ও মিরাজ', 'ইসরা ও মি\'রাজ', 'part-3'),
@@ -87,7 +95,7 @@ const upcomingChapters: SirahChapter[] = [
   placeholderChapter('ch-35', 35, 'ইন্তেকাল', 'ইন্তেকাল ও কবর', 'part-6'),
 ];
 
-export const sirahChapters: SirahChapter[] = [...part1Chapters, ...part2Chapters, ...upcomingChapters];
+export const sirahChapters: SirahChapter[] = [...part1Chapters, ...part2Chapters, ...part3Chapters, ...upcomingChapters];
 
 export function getChapter(id: string): SirahChapter | undefined {
   return sirahChapters.find((c) => c.id === id);

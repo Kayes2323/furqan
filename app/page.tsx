@@ -77,6 +77,7 @@ function AppShell() {
             chapterId={chapterId}
             onBack={back}
             onOpenChapter={openChapter}
+            onOpenPart={openPart}
           />
         )}
         {screen === 'profile' && <ProfileScreen />}

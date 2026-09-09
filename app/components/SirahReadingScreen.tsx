@@ -8,6 +8,7 @@ interface Props {
   chapterId: string;
   onBack: () => void;
   onOpenChapter: (chapterId: string) => void;
+  onOpenPart: (partId: string) => void;
 }
 
 const FONT_SIZES = [15, 16.5, 18, 20];
@@ -32,6 +33,29 @@ function renderBlockText(text: string) {
 }
 
 function BlockView({ block, fontSize }: { block: ContentBlock; fontSize: number }) {
+  if (block.type === 'image') {
+    return (
+      <figure style={{ margin: '28px 0' }}>
+        <img
+          src={block.src}
+          alt={block.alt || block.text}
+          loading="lazy"
+          style={{
+            width: '100%', display: 'block', borderRadius: 14,
+            border: '1px solid var(--border)',
+          }}
+        />
+        {block.text && (
+          <figcaption style={{
+            fontSize: 12, color: 'var(--text-muted)', textAlign: 'center',
+            marginTop: 8, lineHeight: 1.5,
+          }}>
+            {block.text}
+          </figcaption>
+        )}
+      </figure>
+    );
+  }
   if (block.type === 'heading') {
     return (
       <h3 style={{
@@ -63,7 +87,7 @@ function BlockView({ block, fontSize }: { block: ContentBlock; fontSize: number 
   );
 }
 
-export default function SirahReadingScreen({ chapterId, onBack, onOpenChapter }: Props) {
+export default function SirahReadingScreen({ chapterId, onBack, onOpenChapter, onOpenPart }: Props) {
   const chapter = getChapter(chapterId);
   const next = getNextChapter(chapterId);
   const prev = getPrevChapter(chapterId);
@@ -151,11 +175,23 @@ export default function SirahReadingScreen({ chapterId, onBack, onOpenChapter }:
           }}>سيرة</div>
 
           <div style={{ position: 'relative', zIndex: 1 }}>
-            <button onClick={onBack} style={{
-              width: 34, height: 34, borderRadius: '50%',
-              background: 'rgba(255,255,255,.12)', border: '1px solid rgba(255,255,255,.2)',
-              color: '#fff', fontSize: 15, cursor: 'pointer', marginBottom: 20,
-            }}>←</button>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 20 }}>
+              <button onClick={onBack} style={{
+                width: 34, height: 34, borderRadius: '50%',
+                background: 'rgba(255,255,255,.12)', border: '1px solid rgba(255,255,255,.2)',
+                color: '#fff', fontSize: 15, cursor: 'pointer',
+              }}>←</button>
+              <button
+                onClick={() => onOpenPart(chapter.partId)}
+                title="যেকোনো অধ্যায়ে যান"
+                style={{
+                  width: 34, height: 34, borderRadius: '50%',
+                  background: 'rgba(255,255,255,.12)', border: '1px solid rgba(255,255,255,.2)',
+                  color: '#fff', fontSize: 15, cursor: 'pointer',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}
+              >☰</button>
+            </div>
 
             {part && (
               <div style={{

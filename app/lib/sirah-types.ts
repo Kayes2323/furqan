@@ -1,10 +1,15 @@
-export type BlockType = 'para' | 'heading' | 'subheading';
+export type BlockType = 'para' | 'heading' | 'subheading' | 'image';
 
 export interface ContentBlock {
   type: BlockType;
+  /** Body text for para/heading/subheading; caption text for image */
   text: string;
   /** Internal traceability — PDF page number in Ar-Raheeq Al-Makhtum Bangla edition */
   sourcePdfPage?: number;
+  /** image blocks only — path under /public, e.g. '/images/sirah/genealogy-ismail-adnan-muhammad.jpg' */
+  src?: string;
+  /** image blocks only — accessible alt text, distinct from the visible caption */
+  alt?: string;
 }
 
 export interface SirahSection {
