@@ -18,6 +18,7 @@ import { ch17Chapter } from './sirah-content/part3/ch-17';
 import { ch18Chapter } from './sirah-content/part3/ch-18';
 import { ch19Chapter } from './sirah-content/part4/ch-19';
 import { ch20Chapter } from './sirah-content/part4/ch-20';
+import { ch21Chapter } from './sirah-content/part4/ch-21';
 
 export type { BlockType, ContentBlock, SirahSection, SirahChapter, SirahPart } from './sirah-types';
 export { sirahParts, getPart } from './sirah-types';
@@ -75,16 +76,16 @@ const part3Chapters: SirahChapter[] = [
   ch18Chapter,
 ];
 
-/** PART 4 — integrated from Ar-Raheeq Al-Makhtum PDF pp. 167–195 (Dar al-Nadwa plot through the Constitution of Medina) */
+/** PART 4 — integrated from Ar-Raheeq Al-Makhtum PDF pp. 167–230 (Dar al-Nadwa plot through the Battle of Badr) */
 const part4Chapters: SirahChapter[] = [
   ch19Chapter,
   ch20Chapter,
+  ch21Chapter,
 ];
 
 /** PART 4 (remaining)–6 — structure ready, content pending */
 const upcomingChapters: SirahChapter[] = [
   // PART 4
-  placeholderChapter('ch-21', 21, 'বদরের যুদ্ধ', 'বদরের যুদ্ধ', 'part-4'),
   placeholderChapter('ch-22', 22, 'উহুদের যুদ্ধ', 'উহুদের যুদ্ধ', 'part-4'),
   placeholderChapter('ch-23', 23, 'বনু নাযির', 'বনু নাযীরের যুদ্ধ', 'part-4'),
   placeholderChapter('ch-24', 24, 'খন্দকের যুদ্ধ', 'খন্দকের যুদ্ধ', 'part-4'),
