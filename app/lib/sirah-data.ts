@@ -4,6 +4,11 @@ import { ch02Chapter } from './sirah-content/part1/ch-02';
 import { ch03Chapter } from './sirah-content/part1/ch-03';
 import { ch04Chapter } from './sirah-content/part1/ch-04';
 import { ch05Chapter } from './sirah-content/part1/ch-05';
+import { ch06Chapter } from './sirah-content/part2/ch-06';
+import { ch07Chapter } from './sirah-content/part2/ch-07';
+import { ch08Chapter } from './sirah-content/part2/ch-08';
+import { ch09Chapter } from './sirah-content/part2/ch-09';
+import { ch10Chapter } from './sirah-content/part2/ch-10';
 
 export type { BlockType, ContentBlock, SirahSection, SirahChapter, SirahPart } from './sirah-types';
 export { sirahParts, getPart } from './sirah-types';
@@ -31,7 +36,7 @@ function placeholderChapter(
   };
 }
 
-/** PART 1 — integrated from Ar-Raheeq Al-Makhtum PDF pp. 32–64 */
+/** PART 1 — integrated from Ar-Raheeq Al-Makhtum PDF pp. 32–70 (chapter 5 now extends through Abdullah's death, p. 70) */
 const part1Chapters: SirahChapter[] = [
   ch01Chapter,
   ch02Chapter,
@@ -40,14 +45,17 @@ const part1Chapters: SirahChapter[] = [
   ch05Chapter,
 ];
 
-/** PART 2–6 — structure ready, content pending */
+/** PART 2 — integrated from Ar-Raheeq Al-Makhtum PDF pp. 71–80 (birth through the eve of prophethood) */
+const part2Chapters: SirahChapter[] = [
+  ch06Chapter,
+  ch07Chapter,
+  ch08Chapter,
+  ch09Chapter,
+  ch10Chapter,
+];
+
+/** PART 3–6 — structure ready, content pending */
 const upcomingChapters: SirahChapter[] = [
-  // PART 2
-  placeholderChapter('ch-06', 6, 'জন্ম ও শৈশব', 'আল্লাহর রসূলের আবির্ভাব', 'part-2'),
-  placeholderChapter('ch-07', 7, 'হালিমার কাছে লালন', 'বনি সা\'দ গোত্রে অবস্থান', 'part-2'),
-  placeholderChapter('ch-08', 8, 'বুহাইরা পাদ্রীর ঘটনা', 'পাদ্রী বুহাইরা ও ফিজ্জারের যুদ্ধ', 'part-2'),
-  placeholderChapter('ch-09', 9, 'ফুজ্জারের যুদ্ধ ও হিলফুল ফুজুল', 'হেলফুল ফুযুল ও সংগ্রামী জীবন', 'part-2'),
-  placeholderChapter('ch-10', 10, 'খাদিজা (রা.)-এর সাথে বিবাহ', 'বিবি খাদিজার সাথে বিয়ে', 'part-2'),
   // PART 3
   placeholderChapter('ch-11', 11, 'হেরা গুহা ও প্রথম ওহী', 'রেসালাতের ছায়ায় হেরা গুহা', 'part-3'),
   placeholderChapter('ch-12', 12, 'গোপন দাওয়াহ', 'গোপনীয় দাওয়াতের তিন বছর', 'part-3'),
@@ -79,7 +87,7 @@ const upcomingChapters: SirahChapter[] = [
   placeholderChapter('ch-35', 35, 'ইন্তেকাল', 'ইন্তেকাল ও কবর', 'part-6'),
 ];
 
-export const sirahChapters: SirahChapter[] = [...part1Chapters, ...upcomingChapters];
+export const sirahChapters: SirahChapter[] = [...part1Chapters, ...part2Chapters, ...upcomingChapters];
 
 export function getChapter(id: string): SirahChapter | undefined {
   return sirahChapters.find((c) => c.id === id);
