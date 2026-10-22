@@ -9,6 +9,7 @@ import ResearchScreen from './components/ResearchScreen';
 import SirahJourneyScreen from './components/SirahJourneyScreen';
 import SirahChapterListScreen from './components/SirahChapterListScreen';
 import SirahReadingScreen from './components/SirahReadingScreen';
+import QiblaScreen from './components/QiblaScreen';
 import ProfileScreen from './components/ProfileScreen';
 import BottomNav from './components/BottomNav';
 import SplashScreen from './components/SplashScreen';
@@ -80,6 +81,7 @@ function AppShell() {
             onOpenPart={openPart}
           />
         )}
+        {screen === 'qibla' && <QiblaScreen onBack={back} />}
         {screen === 'profile' && <ProfileScreen />}
       </div>
 

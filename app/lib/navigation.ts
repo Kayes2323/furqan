@@ -8,7 +8,7 @@ export interface AppRoute {
 }
 
 const VALID_SCREENS: Screen[] = [
-  'home', 'tafsir', 'nur', 'knowledge', 'research', 'sirah', 'sirah-part', 'sirah-read', 'profile',
+  'home', 'tafsir', 'nur', 'knowledge', 'research', 'sirah', 'sirah-part', 'sirah-read', 'qibla', 'profile',
 ];
 
 export function isValidScreen(value: string | null): value is Screen {

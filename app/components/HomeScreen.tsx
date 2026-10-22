@@ -1,5 +1,5 @@
 'use client';
-import { BookOpen, FlaskConical, Sparkles, Bookmark } from 'lucide-react';
+import { BookOpen, FlaskConical, Sparkles, Bookmark, Compass } from 'lucide-react';
 import type { Screen } from '../types';
 
 interface Props {
@@ -16,6 +16,7 @@ const QUICK = [
   { icon: BookOpen, title: 'তাফসির', sub: '১১৪টি সূরা', screen: 'tafsir' as Screen },
   { icon: FlaskConical, title: 'গবেষণা', sub: 'বিজ্ঞান থেকে রাজনীতি', screen: 'research' as Screen },
   { icon: Sparkles, title: 'NUR কে জিজ্ঞেস করো', sub: 'যেকোনো প্রশ্ন', screen: 'nur' as Screen },
+  { icon: Compass, title: 'কিবলা', sub: 'দিক নির্ণয় করুন', screen: 'qibla' as Screen },
   { icon: Bookmark, title: 'বুকমার্ক', sub: 'শীঘ্রই আসছে', screen: 'profile' as Screen },
 ];
 
@@ -91,12 +92,13 @@ export default function HomeScreen({ onNavigate }: Props) {
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, padding: '0 16px 16px' }}>
         {QUICK.map((q, i) => {
-          const tint = [
+          const tints = [
             { bg: 'rgba(31,122,76,0.12)', fg: 'var(--accent)' },
             { bg: 'rgba(150,112,42,0.16)', fg: 'var(--gold)' },
             { bg: 'rgba(47,160,107,0.14)', fg: 'var(--green-light)' },
             { bg: 'rgba(31,122,76,0.12)', fg: 'var(--accent)' },
-          ][i];
+          ];
+          const tint = tints[i % tints.length];
           return (
             <div key={q.title} onClick={() => onNavigate(q.screen)} style={{
               background: 'var(--card)',

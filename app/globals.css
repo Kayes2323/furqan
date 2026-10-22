@@ -57,3 +57,17 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .nur-dot { animation-duration: 3.2s; }
 }
+
+@keyframes qiblaSpin {
+  to { transform: rotate(360deg); }
+}
+.qibla-spin { animation: qiblaSpin 1s linear infinite; }
+
+.qibla-needle {
+  transition: transform 0.25s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .qibla-spin { animation-duration: 2.4s; }
+  .qibla-needle { transition: none; }
+}
