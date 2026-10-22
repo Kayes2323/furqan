@@ -7,6 +7,8 @@ import assert from 'node:assert/strict';
 import { readFileSync, existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { createHash } from 'node:crypto';
+import { BISMILLAH, BISMILLAH_SHADDA_VARIANT, splitOpeningBismillah } from './bismillah.ts';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const QURAN_DIR = join(__dirname, '..', '..', 'public', 'quran');
@@ -122,6 +124,99 @@ test('dataset: spot-check well-known verses against expected text', () => {
 
   const naas = readSurah(114);
   assert.equal(naas.ayahs[naas.ayahs.length - 1].text, NAAS_6);
+});
+
+test('dataset integrity: SHA-256 of the verbatim surah|ayah|text stream matches the checksum recorded in SOURCE.md', () => {
+  // Reconstructs the exact "surah|ayah|text" stream as originally
+  // received from Tanzil (before reformatting into per-surah JSON) and
+  // recomputes its checksum, comparing against the value recorded at
+  // import time in public/quran/SOURCE.md. This is a permanent,
+  // network-independent regression guard: any future change to the
+  // bundled dataset — intentional or not — that alters a single
+  // character of canonical text will change this hash and fail this
+  // test, without requiring a live re-fetch from Tanzil.
+  const RECORDED_SHA256 = '9017fffbd70a592438733b748f9704b30b26f091deb6e4828c2c71d82c4c5b3a';
+  const meta = readMeta();
+  const lines: string[] = [];
+  for (const m of meta) {
+    const doc = readSurah(m.number);
+    for (const a of doc.ayahs) lines.push(`${m.number}|${a.number}|${a.text}`);
+  }
+  const stream = lines.join('\n');
+  const computed = createHash('sha256').update(stream, 'utf-8').digest('hex');
+  assert.equal(computed, RECORDED_SHA256);
+});
+
+test('Bismillah display split: every one of the 114 surahs\' ayah 1 is classified correctly, with no surah assumed', () => {
+  // Exhaustive, not spot-checked: every surah's actual ayah-1 text (not
+  // a hardcoded expectation) decides which of the three cases applies,
+  // and every surah is asserted into exactly one of them. This is the
+  // audit backing app/lib/bismillah.ts's splitOpeningBismillah, run
+  // against the real, verified dataset rather than synthetic strings.
+  const meta = readMeta();
+  assert.equal(meta.length, 114);
+
+  const fatihaLike: number[] = []; // ayah 1 IS exactly the Bismillah
+  const noBismillah: number[] = []; // ayah 1 has no Bismillah prefix
+  const canonicalPrefix: number[] = []; // ayah 1 starts with the plain Bismillah
+  const shaddaVariantPrefix: number[] = []; // ayah 1 starts with the shadda variant
+
+  for (const m of meta) {
+    const ayah1 = readSurah(m.number).ayahs[0].text;
+    const split = splitOpeningBismillah(1, ayah1);
+
+    if (ayah1 === BISMILLAH) {
+      fatihaLike.push(m.number);
+      assert.equal(split, null, `surah ${m.number}: Al-Fatiha-shaped ayah 1 must not get a duplicate header`);
+    } else if (ayah1.startsWith(BISMILLAH_SHADDA_VARIANT)) {
+      shaddaVariantPrefix.push(m.number);
+      assert.ok(split, `surah ${m.number}: expected a Bismillah split (shadda variant)`);
+      assert.equal(split!.bismillah, BISMILLAH_SHADDA_VARIANT);
+      assert.ok(split!.body.length > 0);
+      assert.ok(ayah1.startsWith(split!.bismillah) && ayah1.endsWith(split!.body));
+    } else if (ayah1.startsWith(BISMILLAH)) {
+      canonicalPrefix.push(m.number);
+      assert.ok(split, `surah ${m.number}: expected a Bismillah split (canonical)`);
+      assert.equal(split!.bismillah, BISMILLAH);
+      assert.ok(split!.body.length > 0);
+      assert.ok(ayah1.startsWith(split!.bismillah) && ayah1.endsWith(split!.body));
+    } else {
+      noBismillah.push(m.number);
+      assert.equal(split, null, `surah ${m.number}: must never have a Bismillah header invented`);
+    }
+  }
+
+  // Every surah accounted for exactly once, across all four buckets.
+  assert.equal(
+    fatihaLike.length + noBismillah.length + canonicalPrefix.length + shaddaVariantPrefix.length,
+    114,
+  );
+
+  // The specific, empirically-confirmed classification (never assumed):
+  assert.deepEqual(fatihaLike, [1]);
+  assert.deepEqual(noBismillah, [9]);
+  assert.deepEqual(shaddaVariantPrefix, [95, 97]);
+  assert.equal(canonicalPrefix.length, 110);
+});
+
+test('Bismillah display split: An-Naml 27:30\'s mid-ayah Bismillah (Prophet Sulaiman\'s letter) is never touched', () => {
+  const naml = readSurah(27);
+  const ayah30 = naml.ayahs.find((a) => a.number === 30)!;
+  // Genuine Quranic narrative content, not a header: the ayah does not
+  // start with the Bismillah, it contains one mid-sentence.
+  assert.ok(ayah30.text.includes(BISMILLAH));
+  assert.ok(!ayah30.text.startsWith(BISMILLAH));
+  // splitOpeningBismillah only ever inspects ayah number 1, so calling
+  // it with this ayah's real number is a structural guarantee (not a
+  // special case) that this text is never split or altered.
+  assert.equal(splitOpeningBismillah(30, ayah30.text), null);
+
+  // Surah 27's own ayah 1 (the actual opening Bismillah + muqatta'at
+  // "طسٓ") is unaffected by, and textually distinct from, ayah 30.
+  const ayah1 = naml.ayahs[0];
+  const split = splitOpeningBismillah(1, ayah1.text);
+  assert.ok(split);
+  assert.equal(split!.bismillah, BISMILLAH);
 });
 
 test('dataset: the required Tanzil attribution/license file is present and unmodified', () => {
