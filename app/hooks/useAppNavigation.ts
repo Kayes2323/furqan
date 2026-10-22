@@ -131,6 +131,14 @@ export function useAppNavigation(scrollContainerRef?: RefObject<HTMLElement | nu
     navigate({ screen: 'reader-bookmarks' });
   }, [navigate]);
 
+  const openKhatm = useCallback(() => {
+    navigate({ screen: 'khatm' });
+  }, [navigate]);
+
+  const openKhatmSetup = useCallback(() => {
+    navigate({ screen: 'khatm-setup' });
+  }, [navigate]);
+
   return {
     route,
     screen: route.screen,
@@ -153,5 +161,7 @@ export function useAppNavigation(scrollContainerRef?: RefObject<HTMLElement | nu
     openReaderSurah,
     openReaderSearch,
     openReaderBookmarks,
+    openKhatm,
+    openKhatmSetup,
   };
 }

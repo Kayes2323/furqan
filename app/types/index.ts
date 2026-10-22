@@ -15,6 +15,8 @@ export type Screen =
   | 'reader-surah'
   | 'reader-search'
   | 'reader-bookmarks'
+  | 'khatm'
+  | 'khatm-setup'
   | 'profile';
 
 export interface Surah {

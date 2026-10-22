@@ -1,6 +1,6 @@
 'use client';
 import {
-  FlaskConical, BookOpen, BookMarked, Scale, Users, Landmark, Compass, Heart, ArrowLeftRight, Library, ShieldCheck,
+  FlaskConical, BookOpen, BookMarked, Scale, Users, Landmark, Compass, Heart, ArrowLeftRight, Library, ShieldCheck, Target,
 } from 'lucide-react';
 import type { Screen } from '../types';
 
@@ -66,6 +66,42 @@ export default function KnowledgeScreen({ onNavigate }: Props) {
               borderRadius: 100, padding: '5px 12px',
               fontSize: 11, lineHeight: 1.3, fontWeight: 600, color: '#fff',
             }}>পড়া শুরু করুন →</div>
+          </div>
+        </div>
+
+        {/* ── খতম পরিকল্পনা Card ── */}
+        <div onClick={() => onNavigate('khatm')} style={{
+          borderRadius: 22,
+          overflow: 'hidden',
+          cursor: 'pointer',
+          aspectRatio: '3 / 2',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'flex-end',
+          padding: '16px 18px 16px',
+          backgroundImage: 'linear-gradient(155deg, #0A2233 0%, #164A66 55%, #1D6E8A 130%)',
+          position: 'relative',
+        }}>
+          <div style={{
+            position: 'absolute', right: -14, bottom: -24, pointerEvents: 'none', opacity: 0.1,
+          }}><Target size={150} color="#fff" strokeWidth={1} /></div>
+          <div style={{ position: 'relative', zIndex: 2 }}>
+            <div style={{
+              width: 32, height: 32, borderRadius: 10, marginBottom: 8,
+              background: 'rgba(255,255,255,0.16)', border: '1px solid rgba(255,255,255,0.28)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}><Target size={16} color="#fff" strokeWidth={1.8} /></div>
+            <div style={{ fontSize: 17, lineHeight: 1.25, fontWeight: 700, color: '#fff', marginBottom: 3 }}>খতম পরিকল্পনা</div>
+            <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.78)', marginBottom: 10, maxWidth: 230, lineHeight: 1.4 }}>
+              লক্ষ্য তারিখ অনুযায়ী সম্পূর্ণ কুরআন পড়া সম্পন্ন করুন
+            </div>
+            <div style={{
+              display: 'inline-flex', alignItems: 'center', gap: 6,
+              background: 'rgba(255,255,255,0.16)',
+              border: '1px solid rgba(255,255,255,0.28)',
+              borderRadius: 100, padding: '5px 12px',
+              fontSize: 11, lineHeight: 1.3, fontWeight: 600, color: '#fff',
+            }}>পরিকল্পনা শুরু করুন →</div>
           </div>
         </div>
 

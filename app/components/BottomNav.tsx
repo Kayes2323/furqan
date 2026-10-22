@@ -21,7 +21,9 @@ export default function BottomNav({ current, onNavigate }: Props) {
     current === 'reader' ||
     current === 'reader-surah' ||
     current === 'reader-search' ||
-    current === 'reader-bookmarks';
+    current === 'reader-bookmarks' ||
+    current === 'khatm' ||
+    current === 'khatm-setup';
 
   return (
     <nav

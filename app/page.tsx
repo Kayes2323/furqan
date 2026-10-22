@@ -17,6 +17,8 @@ import ReaderScreen from './components/ReaderScreen';
 import ReaderSurahScreen from './components/ReaderSurahScreen';
 import ReaderSearchScreen from './components/ReaderSearchScreen';
 import ReaderBookmarksScreen from './components/ReaderBookmarksScreen';
+import KhatmScreen from './components/KhatmScreen';
+import KhatmSetupScreen from './components/KhatmSetupScreen';
 import ProfileScreen from './components/ProfileScreen';
 import BottomNav from './components/BottomNav';
 import SplashScreen from './components/SplashScreen';
@@ -45,6 +47,8 @@ function AppShell() {
     openReaderSurah,
     openReaderSearch,
     openReaderBookmarks,
+    openKhatm,
+    openKhatmSetup,
   } = useAppNavigation(scrollRef);
 
   const isReading = screen === 'sirah-read' || screen === 'zikr-read' || screen === 'reader-surah';
@@ -126,6 +130,12 @@ function AppShell() {
         )}
         {screen === 'reader-bookmarks' && (
           <ReaderBookmarksScreen onBack={back} onOpenSurah={openReaderSurah} />
+        )}
+        {screen === 'khatm' && (
+          <KhatmScreen onBack={back} onOpenSetup={openKhatmSetup} onOpenReaderSurah={openReaderSurah} />
+        )}
+        {screen === 'khatm-setup' && (
+          <KhatmSetupScreen onBack={openKhatm} onDone={openKhatm} />
         )}
         {screen === 'profile' && <ProfileScreen />}
       </div>
