@@ -19,6 +19,7 @@ export type Screen =
   | 'khatm-setup'
   | 'nazera'
   | 'nazera-setup'
+  | 'recite'
   | 'profile';
 
 export interface Surah {

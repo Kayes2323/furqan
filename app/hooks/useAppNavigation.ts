@@ -147,6 +147,10 @@ export function useAppNavigation(scrollContainerRef?: RefObject<HTMLElement | nu
     navigate({ screen: 'nazera-setup' });
   }, [navigate]);
 
+  const openRecite = useCallback(() => {
+    navigate({ screen: 'recite' });
+  }, [navigate]);
+
   return {
     route,
     screen: route.screen,
@@ -173,5 +177,6 @@ export function useAppNavigation(scrollContainerRef?: RefObject<HTMLElement | nu
     openKhatmSetup,
     openNazera,
     openNazeraSetup,
+    openRecite,
   };
 }
