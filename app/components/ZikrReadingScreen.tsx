@@ -1,9 +1,11 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { X, RotateCcw, ChevronLeft, ChevronRight, Check, PartyPopper, ExternalLink, Info } from 'lucide-react';
+import { X, RotateCcw, ChevronLeft, ChevronRight, Check, PartyPopper, ExternalLink, Info, AlertTriangle } from 'lucide-react';
 import { getZikrSection } from '../lib/zikr-data';
-import { recitationSequence } from '../lib/zikr-types';
+import { recitationSequence, type QuranRef } from '../lib/zikr-types';
+import { loadSurahMeta, loadSurah } from '../lib/reader-data';
+import type { SurahMeta } from '../lib/reader-types';
 import {
   loadSectionProgress,
   saveSectionProgress,
@@ -22,7 +24,12 @@ interface Props {
   sectionId: string;
   itemId?: string;
   onBack: () => void;
-  onOpenSurah: (surah: number) => void;
+  onOpenSurah: (surah: number, ayah?: number) => void;
+}
+
+interface LoadedQuranRef extends QuranRef {
+  text: string; // verbatim, joined from the canonical dataset — never hand-typed
+  surahName: string;
 }
 
 const ADVANCE_DELAY_MS = 1300;
@@ -37,9 +44,48 @@ export default function ZikrReadingScreen({ sectionId, itemId, onBack, onOpenSur
   const [autoAdvance, setAutoAdvance] = useState(true);
   const [confirmingReset, setConfirmingReset] = useState(false);
   const [allDone, setAllDone] = useState(false);
+  const [quranTexts, setQuranTexts] = useState<LoadedQuranRef[]>([]);
+  const [quranLoadState, setQuranLoadState] = useState<'idle' | 'loading' | 'error' | 'ready'>('idle');
 
   const advanceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const transitioning = useRef(false);
+
+  const currentItemId = sequence[viewIndex]?.id;
+
+  useEffect(() => {
+    const item = sequence.find((i) => i.id === currentItemId);
+    const refs = item?.quranRefs;
+    if (!refs || refs.length === 0) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- clearing stale Quran text when switching to an item with no quranRefs (matches the data-fetch pattern used elsewhere in this project)
+      setQuranTexts([]);
+      setQuranLoadState('idle');
+      return;
+    }
+    let cancelled = false;
+    setQuranLoadState('loading');
+    Promise.all([loadSurahMeta(), Promise.all(refs.map((r) => loadSurah(r.surah)))])
+      .then(([metaList, docs]) => {
+        if (cancelled) return;
+        const loaded: LoadedQuranRef[] = refs.map((ref, i) => {
+          const doc = docs[i];
+          const meta: SurahMeta | undefined = metaList.find((m) => m.number === ref.surah);
+          const text = doc.ayahs
+            .filter((a) => a.number >= ref.ayahStart && a.number <= ref.ayahEnd)
+            .map((a) => a.text)
+            .join(' ');
+          return { ...ref, text, surahName: meta?.banglaName ?? `সূরা ${ref.surah}` };
+        });
+        setQuranTexts(loaded);
+        setQuranLoadState('ready');
+      })
+      .catch(() => {
+        if (!cancelled) setQuranLoadState('error');
+      });
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentItemId]);
 
   useEffect(() => {
     if (!section || sequence.length === 0) return;
@@ -184,28 +230,68 @@ export default function ZikrReadingScreen({ sectionId, itemId, onBack, onOpenSur
           {current.title}
         </div>
 
-        {current.needsReview && (
+        {current.reviewNote && (
           <div style={{
             background: 'rgba(150,112,42,0.1)', border: '1px solid rgba(150,112,42,0.22)',
             borderRadius: 12, padding: '10px 12px', fontSize: 11.5, color: 'var(--text-muted)',
             lineHeight: 1.6, marginBottom: 12, display: 'flex', gap: 8,
           }}>
             <Info size={14} color="var(--gold)" style={{ flexShrink: 0, marginTop: 1 }} />
-            <div>
-              {current.reviewNote}
-              {current.linkedSurahs && current.linkedSurahs.length > 0 && (
-                <button
-                  onClick={() => onOpenSurah(current.linkedSurahs![0])}
-                  style={{
-                    display: 'inline-flex', alignItems: 'center', gap: 4, marginTop: 6,
-                    background: 'none', border: 'none', color: 'var(--accent)', fontWeight: 700,
-                    fontSize: 11.5, cursor: 'pointer', padding: 0,
-                  }}
-                >কুরআনে পড়ুন <ExternalLink size={11} /></button>
-              )}
-            </div>
+            <div>{current.reviewNote}</div>
           </div>
         )}
+
+        {current.quranCaveatBn && (
+          <div style={{
+            background: 'rgba(200,90,76,0.08)', border: '1px solid rgba(200,90,76,0.25)',
+            borderRadius: 12, padding: '10px 12px', fontSize: 11.5, color: 'var(--text)',
+            lineHeight: 1.65, marginBottom: 12, display: 'flex', gap: 8,
+          }}>
+            <AlertTriangle size={14} color="#C85A4C" style={{ flexShrink: 0, marginTop: 1 }} />
+            <div>{current.quranCaveatBn}</div>
+          </div>
+        )}
+
+        {quranLoadState === 'loading' && (
+          <div style={{ textAlign: 'center', color: 'var(--text-muted)', fontSize: 12, padding: '10px 0' }}>
+            কুরআনের আয়াত লোড হচ্ছে...
+          </div>
+        )}
+
+        {quranLoadState === 'error' && (
+          <div style={{ textAlign: 'center', color: 'var(--text-muted)', fontSize: 12, padding: '10px 0' }}>
+            আয়াত লোড করা যায়নি। ইন্টারনেট সংযোগ পরীক্ষা করুন।
+          </div>
+        )}
+
+        {quranLoadState === 'ready' && quranTexts.map((ref, i) => {
+          const refLabel = ref.ayahStart === ref.ayahEnd
+            ? `${ref.surah}:${ref.ayahStart}`
+            : `${ref.surah}:${ref.ayahStart}-${ref.ayahEnd}`;
+          return (
+            <div key={i} style={{
+              background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 16,
+              padding: 16, marginBottom: 10,
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-muted)' }}>
+                  সূরা {ref.surahName} ({refLabel})
+                </div>
+                <button
+                  onClick={() => onOpenSurah(ref.surah, ref.ayahStart)}
+                  style={{
+                    display: 'inline-flex', alignItems: 'center', gap: 4,
+                    background: 'none', border: 'none', color: 'var(--accent)', fontWeight: 700,
+                    fontSize: 11, cursor: 'pointer', padding: 0,
+                  }}
+                >রিডারে দেখুন <ExternalLink size={11} /></button>
+              </div>
+              <div className="arabic" dir="rtl" style={{ fontFamily: 'Amiri, serif', fontSize: 22, lineHeight: 2, textAlign: 'right' }}>
+                {ref.text}
+              </div>
+            </div>
+          );
+        })}
 
         {current.arabic && (
           <div style={{

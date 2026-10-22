@@ -5,16 +5,24 @@
 // Fidelity rules followed here:
 //  - Every targetCount below is copied verbatim from a "- N বার" in the
 //    source; none are estimated or rounded.
-//  - Arabic/phonetic text is reproduced only where the source actually
-//    gives it. Ayatul Kursi, the closing two ayahs of Al-Baqarah, and
-//    Sayyidul Istighfar are reproduced here with their standard Mushaf/
-//    hadith Arabic (matching what the source itself shows) rather than an
-//    external API call, since the PDF is the designated source of truth
-//    and this avoids a runtime dependency on a third-party API for content
-//    the source already fully provides.
+//  - Phonetic transliteration is reproduced only where the source
+//    actually gives it.
+//  - Arabic SCRIPT is hand-typed in this file only for items that are
+//    NOT Quranic ayahs (e.g. Sayyidul Istighfar, a hadith dua). An item
+//    whose recitation genuinely is Quran text (Ayatul Kursi, the
+//    closing two ayahs of Al-Baqarah, তিন কুল, etc.) instead carries a
+//    `quranRefs` pointer and the screen loads the canonical Arabic
+//    live from public/quran/ via reader-data.ts — never re-typed here.
+//    This was fixed in the Phase 8.2 audit: the Arabic previously
+//    hand-typed here for Ayatul Kursi / Baqarah 285-286 did not use
+//    the Tanzil Uthmani orthography (e.g. plain alef "الله" instead of
+//    alef-wasla "ٱللَّهُ") and so did not exactly match the app's own
+//    canonical dataset — see Phase 8.2's final report for the full
+//    audit of every item.
 //  - Where the source only *names* a recitation without giving its text
-//    (তিন কুল, দুআ ইউনুছ), `needsReview` is set and no Arabic/phonetic is
-//    invented — see the "needs review" list in the Phase 3 report.
+//    (তিন কুল, দুআ ইউনুছ), the Phase 8.2 audit verified which of those
+//    are genuine Quranic ayahs (both are) and added `quranRefs`
+//    accordingly; nothing is invented for items that aren't.
 // ═══════════════════════════════════════════
 
 import type { ZikrCollection, RecitationItem, PracticeItem } from './zikr-types';
@@ -22,27 +30,25 @@ import type { ZikrCollection, RecitationItem, PracticeItem } from './zikr-types'
 interface ReferenceRecitation {
   id: string;
   title: string;
-  arabic: string;
+  /** Hand-typed Arabic, present only for non-Quranic (hadith-based)
+   *  reference recitations — see the fidelity note above. */
+  arabic?: string;
   phonetic: string;
   note?: string;
 }
 
 /** Full recitations the source gives once (page 2) and refers back to by
- *  name elsewhere — kept here once to avoid repeating long Arabic text. */
+ *  name elsewhere — kept here once to avoid repeating long phonetic text. */
 export const REFERENCE_RECITATIONS: Record<string, ReferenceRecitation> = {
   'ref-ayatul-kursi': {
     id: 'ref-ayatul-kursi',
     title: 'আয়াতুল কুরসি',
-    arabic:
-      'اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ ۚ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ ۚ لَهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ ۗ مَنْ ذَا الَّذِي يَشْفَعُ عِنْدَهُ إِلَّا بِإِذْنِهِ ۚ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ ۖ وَلَا يُحِيطُونَ بِشَيْءٍ مِنْ عِلْمِهِ إِلَّا بِمَا شَاءَ ۚ وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالْأَرْضَ ۖ وَلَا يَئُودُهُ حِفْظُهُمَا ۚ وَهُوَ الْعَلِيُّ الْعَظِيمُ',
     phonetic:
       'আল্লা-হু লা ইলা-হা ইল্লা হুওয়াল হাইয়ুল ক্বাইয়্যুম। লা তা\'খুযুহু সিনাতুঁও ওয়ালা নাউম। লাহু মা ফিস সামা-ওয়াতি ওয়ামা ফিল আরদ্বি। মান যাল্লাযী ইয়াশফাউ\' ইনদাহু ইল্লা বিইজনিহি। ইয়া\'লামু মা বাইনা আইদিহিম ওয়ামা খালফাহুম, ওয়ালা ইউহিতূনা বিশাইয়িম মিন \'ইলমিহি ইল্লা বিমা শা-আ\'। ওয়াসিআ\' কুরসিইয়্যুহুস সামা-ওয়া-তি ওয়াল আরদ্বি, ওয়ালা ইয়াউদুহু হিফযুহুমা। ওয়া হুওয়াল \'আলিইয়্যুল \'আজিম।',
   },
   'ref-baqarah-285-286': {
     id: 'ref-baqarah-285-286',
     title: 'সূরা বাক্বারার শেষ দুই আয়াত (২৮৫-২৮৬)',
-    arabic:
-      'آمَنَ الرَّسُولُ بِمَا أُنزِلَ إِلَيْهِ مِن رَّبِّهِ وَالْمُؤْمِنُونَ ۚ كُلٌّ آمَنَ بِاللَّهِ وَمَلَائِكَتِهِ وَكُتُبِهِ وَرُسُلِهِ لَا نُفَرِّقُ بَيْنَ أَحَدٍ مِّن رُّسُلِهِ ۚ وَقَالُوا سَمِعْنَا وَأَطَعْنَا ۖ غُفْرَانَكَ رَبَّنَا وَإِلَيْكَ الْمَصِيرُ‏ * لَا يُكَلِّفُ اللَّهُ نَفْسًا إِلَّا وُسْعَهَا ۚ لَهَا مَا كَسَبَتْ وَعَلَيْهَا مَا اكْتَسَبَتْ ۗ رَبَّنَا لَا تُؤَاخِذْنَا إِن نَّسِينَا أَوْ أَخْطَأْنَا ۚ رَبَّنَا وَلَا تَحْمِلْ عَلَيْنَا إِصْرًا كَمَا حَمَلْتَهُ عَلَى الَّذِينَ مِن قَبْلِنَا ۚ رَبَّنَا وَلَا تُحَمِّلْنَا مَا لَا طَاقَةَ لَنَا بِهِ ۖ وَاعْفُ عَنَّا وَاغْفِرْ لَنَا وَارْحَمْنَا ۚ أَنتَ مَوْلَانَا فَانصُرْنَا عَلَى الْقَوْمِ الْكَافِرِينَ',
     phonetic:
       '২৮৫. আমানার রাসূলু বিমা উনযিলা ইলাইহি মির রাব্বিহি ওয়াল মু\'মিনূন। কুল্লুন আমানা বিল্লাহি ওয়া মালা-ইকাতিহি ওয়া কুতুবিহি ওয়া রুসুলিহি, লা নুফার্‌রিকু বাইনা আহাদিম মির রুসুলিহি। ওয়া ক্বালূ সামি\'না ওয়া আতা\'না, গুফরা-নাকা রাব্বানা ওয়া ইলাইকাল মাসির। ২৮৬. লা ইউকাল্লিফুল্লাহু নাফসান ইল্লা উসআ\'হা। লাহা মা কাসাবাত ওয়া আ\'লাইহা মাকতাসাবাত। রাব্বানা লা তুআখিযনা ইন নাসীনা আও আখতা\'না। রাব্বানা ওয়ালা তাহমিল আ\'লাইনা ইসরান কামা হামালতাহু আ\'লাল্লাযীনা মিন ক্বাবলিনা। রাব্বানা ওয়ালা তুহাম্মিলনা মা লা তা-ক্বাতা লানা বিহ্। ওয়া\'ফু আ\'ন্না, ওয়াগফিরলানা, ওয়ারহামনা। আংতা মাওলানা, ফানসুরনা আ\'লাল ক্বাওমিল কা-ফিরীন। (আমীন)।',
   },
@@ -78,10 +84,10 @@ const morningEvening: ZikrCollection['sections'][number] = {
       id: 'me-1a',
       order: 1,
       title: 'আয়াতুল কুরসি',
-      arabic: REFERENCE_RECITATIONS['ref-ayatul-kursi'].arabic,
       phonetic: REFERENCE_RECITATIONS['ref-ayatul-kursi'].phonetic,
       targetCount: 1,
       sourceRef: 'সকাল-সন্ধ্যার আমল #১',
+      quranRefs: [{ surah: 2, ayahStart: 255, ayahEnd: 255 }],
     }),
     recitation({
       id: 'me-1b',
@@ -89,9 +95,11 @@ const morningEvening: ZikrCollection['sections'][number] = {
       title: 'তিন কুল (সূরা ইখলাস, সূরা ফালাক্ব, সূরা নাস)',
       targetCount: 3,
       sourceRef: 'সকাল-সন্ধ্যার আমল #১',
-      needsReview: true,
-      reviewNote: 'উৎস PDF শুধু নাম উল্লেখ করেছে, আরবি/উচ্চারণ দেয়নি — নিচের লিংক থেকে কুরআনে পড়ুন।',
-      linkedSurahs: [112, 113, 114],
+      quranRefs: [
+        { surah: 112, ayahStart: 1, ayahEnd: 4 },
+        { surah: 113, ayahStart: 1, ayahEnd: 5 },
+        { surah: 114, ayahStart: 1, ayahEnd: 6 },
+      ],
     }),
     recitation({
       id: 'me-2',
@@ -101,6 +109,9 @@ const morningEvening: ZikrCollection['sections'][number] = {
         'হাসবিয়াল্লাহ লা-ইলাহা ইল্লা হুওয়া আলাইহি তাওয়াক্কালতু ওয়া হুওয়া রাব্বুল আরশিল আযিম।',
       targetCount: 7,
       sourceRef: 'সকাল-সন্ধ্যার আমল #২',
+      quranRefs: [{ surah: 9, ayahStart: 129, ayahEnd: 129 }],
+      quranCaveatBn:
+        'এই দোয়ার বাক্যটি কুরআনের আয়াত (সূরা আত-তাওবা ৯:১২৯) থেকে নেওয়া — তা নিশ্চিত। তবে এটি সকাল-সন্ধ্যা ৭ বার পাঠের আমল হিসেবে যে বর্ণনায় এসেছে (আবু দাউদ), সেই বর্ণনার সনদ নিয়ে মুহাদ্দিসদের মধ্যে মতভেদ আছে — কেউ কেউ তা সহীহ মাওকূফ (সাহাবীর কথা) বলেছেন, আবার আলবানীর মতে এটি মাওযূ (জাল) বলে চিহ্নিত হয়েছে। তাই আয়াতের পাঠ্য নিশ্চিত হলেও "৭ বার" আমলের সনদ অনিশ্চিত — এ বিষয়ে আরও যাচাই প্রয়োজন।',
     }),
     recitation({
       id: 'me-3',
@@ -188,6 +199,9 @@ const otherPractices: ZikrCollection['sections'][number] = {
       id: 'op-10', order: 10, title: 'দৈনিক ১ ঘণ্টা কুরআন তিলাওয়াত',
       instruction: 'প্রতিদিন সর্বনিম্ন ১ ঘণ্টা কুরআন তিলাওয়াত করা/শোনা, বিশেষত সূরা বাক্বারাহ, আয়াতুল কুরসি, সূরা বাক্বারার শেষ দুই আয়াত, সূরা গাফিরের প্রথম অংশ, সূরা ইয়াসিন, সূরা আস-সাফফাত, সূরা আদ-দুখান, সূরা জিন।',
       sourceRef: 'অন্যান্য পালনীয় আমল #১০',
+      // Named surahs, surah-level only — Ayatul Kursi and Baqarah's last
+      // two ayahs are within Al-Baqarah (2) itself, not separate links.
+      quranSurahLinks: [2, 40, 36, 37, 44, 72],
     }),
     practice({ id: 'op-11', order: 11, title: 'দৈনিক ১ ঘণ্টা ইসলামিক জ্ঞান চর্চা', instruction: 'দিনে ১ ঘণ্টা ইসলামিক জ্ঞান চর্চা করা।', sourceRef: 'অন্যান্য পালনীয় আমল #১১' }),
     recitation({
@@ -196,8 +210,9 @@ const otherPractices: ZikrCollection['sections'][number] = {
       title: 'দুআ ইউনুছ',
       targetCount: 100,
       sourceRef: 'অন্যান্য পালনীয় আমল #১২',
-      needsReview: true,
-      reviewNote: 'উৎস PDF শুধু নাম ও সংখ্যা দিয়েছে, আরবি/উচ্চারণ দেয়নি — ম্যানুয়াল সংযোজন প্রয়োজন।',
+      quranRefs: [{ surah: 21, ayahStart: 87, ayahEnd: 87 }],
+      quranCaveatBn:
+        'এই দোয়াটি (লা ইলাহা ইল্লা আনতা সুবহানাকা...) সরাসরি কুরআনের আয়াত — সূরা আল-আম্বিয়া ২১:৮৭, ইউনুস (আ.)-এর দোয়া হিসেবে পরিচিত। এই দোয়া পাঠের ফযীলত সম্পর্কিত হাদিসের সঠিক উৎস (তিরমিযী না আবু দাউদ) নিয়ে বিভিন্ন সূত্রে কিছুটা অসংগতি পাওয়া গেছে — মূল হাদিস সংকলনে যাচাই করে নেওয়ার পরামর্শ দেওয়া হচ্ছে।',
     }),
     recitation({
       id: 'op-12b',
@@ -242,19 +257,19 @@ const beforeSleep: ZikrCollection['sections'][number] = {
       id: 'bs-2a',
       order: 2,
       title: 'আয়াতুল কুরসি',
-      arabic: REFERENCE_RECITATIONS['ref-ayatul-kursi'].arabic,
       phonetic: REFERENCE_RECITATIONS['ref-ayatul-kursi'].phonetic,
       targetCount: 1,
       sourceRef: 'রাতে ঘুমানোর পূর্বের আমল #২',
+      quranRefs: [{ surah: 2, ayahStart: 255, ayahEnd: 255 }],
     }),
     recitation({
       id: 'bs-2b',
       order: 3,
       title: 'সূরা বাক্বারার শেষ দুই আয়াত',
-      arabic: REFERENCE_RECITATIONS['ref-baqarah-285-286'].arabic,
       phonetic: REFERENCE_RECITATIONS['ref-baqarah-285-286'].phonetic,
       targetCount: 1,
       sourceRef: 'রাতে ঘুমানোর পূর্বের আমল #২',
+      quranRefs: [{ surah: 2, ayahStart: 285, ayahEnd: 286 }],
     }),
     recitation({
       id: 'bs-3',
@@ -262,9 +277,12 @@ const beforeSleep: ZikrCollection['sections'][number] = {
       title: 'তিন কুল (ফুঁ দিয়ে শরীর মাসেহ)',
       targetCount: 3,
       sourceRef: 'রাতে ঘুমানোর পূর্বের আমল #৩',
-      needsReview: true,
-      reviewNote: 'উৎস PDF শুধু নাম উল্লেখ করেছে, আরবি/উচ্চারণ দেয়নি — নিচের লিংক থেকে কুরআনে পড়ুন। পাঠের পর দু\'হাতে ফুঁ দিয়ে সমস্ত শরীর মাসেহ করুন (৩ বার)।',
-      linkedSurahs: [112, 113, 114],
+      reviewNote: 'পাঠের পর দু\'হাতে ফুঁ দিয়ে সমস্ত শরীর মাসেহ করুন (৩ বার) — উৎস PDF অনুযায়ী।',
+      quranRefs: [
+        { surah: 112, ayahStart: 1, ayahEnd: 4 },
+        { surah: 113, ayahStart: 1, ayahEnd: 5 },
+        { surah: 114, ayahStart: 1, ayahEnd: 6 },
+      ],
     }),
     recitation({
       id: 'bs-4',
