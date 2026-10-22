@@ -25,7 +25,8 @@ export default function BottomNav({ current, onNavigate }: Props) {
     current === 'khatm' ||
     current === 'khatm-setup' ||
     current === 'nazera' ||
-    current === 'nazera-setup';
+    current === 'nazera-setup' ||
+    current === 'recite';
 
   return (
     <nav

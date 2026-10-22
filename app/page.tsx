@@ -21,6 +21,7 @@ import KhatmScreen from './components/KhatmScreen';
 import KhatmSetupScreen from './components/KhatmSetupScreen';
 import NazeraScreen from './components/NazeraScreen';
 import NazeraSetupScreen from './components/NazeraSetupScreen';
+import ReciteScreen from './components/ReciteScreen';
 import ProfileScreen from './components/ProfileScreen';
 import BottomNav from './components/BottomNav';
 import SplashScreen from './components/SplashScreen';
@@ -147,6 +148,7 @@ function AppShell() {
         {screen === 'nazera-setup' && (
           <NazeraSetupScreen onBack={openNazera} onDone={openNazera} />
         )}
+        {screen === 'recite' && <ReciteScreen onBack={back} />}
         {screen === 'profile' && <ProfileScreen />}
       </div>
 
