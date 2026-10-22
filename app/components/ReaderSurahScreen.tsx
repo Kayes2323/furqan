@@ -11,6 +11,7 @@ import {
   saveBookmarks,
   isBookmarked,
 } from '../lib/reader-progress';
+import { splitOpeningBismillah } from '../lib/bismillah';
 import type { SurahMeta, SurahDoc, ReaderBookmark } from '../lib/reader-types';
 
 interface Props {
@@ -170,49 +171,69 @@ export default function ReaderSurahScreen({ surahNumber, targetAyah, onBack, onO
 
         {loadState === 'ready' && doc && doc.ayahs.map((a) => {
           const bookmarked = isBookmarked(bookmarks, surahNumber, a.number);
+          // Display-only: the opening Bismillah embedded in ayah 1's
+          // text (Tanzil's own source convention) is shown as its own
+          // header, separate from the ayah card. The canonical ayah
+          // text/number below is never altered — only `bodyText` (what
+          // the ayah card renders) changes, and only for ayah 1.
+          const bismillahSplit = splitOpeningBismillah(a.number, a.text);
+          const bodyText = bismillahSplit ? bismillahSplit.body : a.text;
           return (
-            <div
-              key={a.number}
-              data-ayah={a.number}
-              ref={(el) => {
-                if (el) ayahRefs.current.set(a.number, el);
-                else ayahRefs.current.delete(a.number);
-              }}
-              style={{
-                background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 16,
-                padding: '16px 16px 12px', marginBottom: 10,
-              }}
-            >
-              <div
-                className="arabic"
-                style={{
-                  fontFamily: 'Amiri, serif', fontSize: 23, lineHeight: 2.1,
-                  textAlign: 'right', color: 'var(--text)',
-                }}
-              >
-                {a.text}
-              </div>
-              <div style={{
-                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                marginTop: 10, paddingTop: 8, borderTop: '1px solid var(--border)',
-              }}>
-                <div style={{
-                  fontSize: 10.5, fontWeight: 700, color: 'var(--text-muted)',
-                  background: 'var(--bg)', borderRadius: 100, padding: '3px 10px',
-                }}>
-                  {surahNumber}:{a.number}
-                </div>
-                <button
-                  onClick={() => handleToggleBookmark(a.number)}
-                  aria-label={bookmarked ? 'বুকমার্ক সরান' : 'বুকমার্ক করুন'}
+            <div key={a.number}>
+              {bismillahSplit && (
+                <div
+                  className="arabic"
                   style={{
-                    background: 'none', border: 'none', cursor: 'pointer', padding: 4,
-                    color: bookmarked ? 'var(--gold)' : 'var(--text-light)',
-                    display: 'flex', alignItems: 'center',
+                    fontFamily: 'Amiri, serif', fontSize: 21, lineHeight: 1.9,
+                    textAlign: 'center', color: 'var(--accent)',
+                    padding: '10px 16px', marginBottom: 10,
                   }}
                 >
-                  {bookmarked ? <BookmarkCheck size={17} /> : <Bookmark size={17} />}
-                </button>
+                  {bismillahSplit.bismillah}
+                </div>
+              )}
+              <div
+                data-ayah={a.number}
+                ref={(el) => {
+                  if (el) ayahRefs.current.set(a.number, el);
+                  else ayahRefs.current.delete(a.number);
+                }}
+                style={{
+                  background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 16,
+                  padding: '16px 16px 12px', marginBottom: 10,
+                }}
+              >
+                <div
+                  className="arabic"
+                  style={{
+                    fontFamily: 'Amiri, serif', fontSize: 23, lineHeight: 2.1,
+                    textAlign: 'right', color: 'var(--text)',
+                  }}
+                >
+                  {bodyText}
+                </div>
+                <div style={{
+                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                  marginTop: 10, paddingTop: 8, borderTop: '1px solid var(--border)',
+                }}>
+                  <div style={{
+                    fontSize: 10.5, fontWeight: 700, color: 'var(--text-muted)',
+                    background: 'var(--bg)', borderRadius: 100, padding: '3px 10px',
+                  }}>
+                    {surahNumber}:{a.number}
+                  </div>
+                  <button
+                    onClick={() => handleToggleBookmark(a.number)}
+                    aria-label={bookmarked ? 'বুকমার্ক সরান' : 'বুকমার্ক করুন'}
+                    style={{
+                      background: 'none', border: 'none', cursor: 'pointer', padding: 4,
+                      color: bookmarked ? 'var(--gold)' : 'var(--text-light)',
+                      display: 'flex', alignItems: 'center',
+                    }}
+                  >
+                    {bookmarked ? <BookmarkCheck size={17} /> : <Bookmark size={17} />}
+                  </button>
+                </div>
               </div>
             </div>
           );
