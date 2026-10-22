@@ -9,6 +9,14 @@ import ResearchScreen from './components/ResearchScreen';
 import SirahJourneyScreen from './components/SirahJourneyScreen';
 import SirahChapterListScreen from './components/SirahChapterListScreen';
 import SirahReadingScreen from './components/SirahReadingScreen';
+import QiblaScreen from './components/QiblaScreen';
+import ZikrScreen from './components/ZikrScreen';
+import ZikrSectionScreen from './components/ZikrSectionScreen';
+import ZikrReadingScreen from './components/ZikrReadingScreen';
+import ReaderScreen from './components/ReaderScreen';
+import ReaderSurahScreen from './components/ReaderSurahScreen';
+import ReaderSearchScreen from './components/ReaderSearchScreen';
+import ReaderBookmarksScreen from './components/ReaderBookmarksScreen';
 import ProfileScreen from './components/ProfileScreen';
 import BottomNav from './components/BottomNav';
 import SplashScreen from './components/SplashScreen';
@@ -23,14 +31,23 @@ function AppShell() {
     surahNumber,
     chapterId,
     partId,
+    zikrSectionId,
+    zikrItemId,
+    readerSurahNumber,
+    readerAyahNumber,
     navigateScreen,
     back,
     openSurah,
     openChapter,
     openPart,
+    openZikrSection,
+    openZikrReading,
+    openReaderSurah,
+    openReaderSearch,
+    openReaderBookmarks,
   } = useAppNavigation(scrollRef);
 
-  const isReading = screen === 'sirah-read';
+  const isReading = screen === 'sirah-read' || screen === 'zikr-read' || screen === 'reader-surah';
 
   return (
     <div style={{
@@ -79,6 +96,36 @@ function AppShell() {
             onOpenChapter={openChapter}
             onOpenPart={openPart}
           />
+        )}
+        {screen === 'qibla' && <QiblaScreen onBack={back} />}
+        {screen === 'zikr' && <ZikrScreen onOpenSection={openZikrSection} />}
+        {screen === 'zikr-section' && (
+          <ZikrSectionScreen sectionId={zikrSectionId} onBack={back} onOpenReading={openZikrReading} />
+        )}
+        {screen === 'zikr-read' && (
+          <ZikrReadingScreen sectionId={zikrSectionId} itemId={zikrItemId} onBack={back} onOpenSurah={openReaderSurah} />
+        )}
+        {screen === 'reader' && (
+          <ReaderScreen
+            onBack={back}
+            onOpenSurah={openReaderSurah}
+            onOpenSearch={openReaderSearch}
+            onOpenBookmarks={openReaderBookmarks}
+          />
+        )}
+        {screen === 'reader-surah' && (
+          <ReaderSurahScreen
+            surahNumber={readerSurahNumber}
+            targetAyah={readerAyahNumber}
+            onBack={back}
+            onOpenSurah={openReaderSurah}
+          />
+        )}
+        {screen === 'reader-search' && (
+          <ReaderSearchScreen onBack={back} onOpenSurah={openReaderSurah} />
+        )}
+        {screen === 'reader-bookmarks' && (
+          <ReaderBookmarksScreen onBack={back} onOpenSurah={openReaderSurah} />
         )}
         {screen === 'profile' && <ProfileScreen />}
       </div>

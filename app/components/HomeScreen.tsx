@@ -1,5 +1,5 @@
 'use client';
-import { BookOpen, FlaskConical, Sparkles, Bookmark } from 'lucide-react';
+import { BookOpen, BookMarked, FlaskConical, Sparkles, Bookmark, Compass, ShieldCheck } from 'lucide-react';
 import type { Screen } from '../types';
 
 interface Props {
@@ -13,10 +13,13 @@ const DAILY_AYAH = {
 };
 
 const QUICK = [
+  { icon: BookMarked, title: 'কুরআন', sub: 'সম্পূর্ণ কুরআন পড়ুন', screen: 'reader' as Screen },
   { icon: BookOpen, title: 'তাফসির', sub: '১১৪টি সূরা', screen: 'tafsir' as Screen },
   { icon: FlaskConical, title: 'গবেষণা', sub: 'বিজ্ঞান থেকে রাজনীতি', screen: 'research' as Screen },
   { icon: Sparkles, title: 'NUR কে জিজ্ঞেস করো', sub: 'যেকোনো প্রশ্ন', screen: 'nur' as Screen },
-  { icon: Bookmark, title: 'বুকমার্ক', sub: 'শীঘ্রই আসছে', screen: 'profile' as Screen },
+  { icon: Compass, title: 'কিবলা', sub: 'দিক নির্ণয় করুন', screen: 'qibla' as Screen },
+  { icon: ShieldCheck, title: 'আমল', sub: 'তাসবিহ ও আত্মরক্ষার আমল', screen: 'zikr' as Screen },
+  { icon: Bookmark, title: 'বুকমার্ক', sub: 'সংরক্ষিত আয়াত', screen: 'reader-bookmarks' as Screen },
 ];
 
 const CHIPS = ['🔬 বিজ্ঞান', '💰 অর্থনীতি', '🧠 মনোবিজ্ঞান', '⚖️ রাজনীতি', '👥 সমাজ', '🌌 দর্শন'];
@@ -91,12 +94,13 @@ export default function HomeScreen({ onNavigate }: Props) {
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, padding: '0 16px 16px' }}>
         {QUICK.map((q, i) => {
-          const tint = [
+          const tints = [
             { bg: 'rgba(31,122,76,0.12)', fg: 'var(--accent)' },
             { bg: 'rgba(150,112,42,0.16)', fg: 'var(--gold)' },
             { bg: 'rgba(47,160,107,0.14)', fg: 'var(--green-light)' },
             { bg: 'rgba(31,122,76,0.12)', fg: 'var(--accent)' },
-          ][i];
+          ];
+          const tint = tints[i % tints.length];
           return (
             <div key={q.title} onClick={() => onNavigate(q.screen)} style={{
               background: 'var(--card)',

@@ -13,7 +13,15 @@ export default function BottomNav({ current, onNavigate }: Props) {
     current === 'research' ||
     current === 'sirah' ||
     current === 'sirah-part' ||
-    current === 'sirah-read';
+    current === 'sirah-read' ||
+    current === 'qibla' ||
+    current === 'zikr' ||
+    current === 'zikr-section' ||
+    current === 'zikr-read' ||
+    current === 'reader' ||
+    current === 'reader-surah' ||
+    current === 'reader-search' ||
+    current === 'reader-bookmarks';
 
   return (
     <nav
