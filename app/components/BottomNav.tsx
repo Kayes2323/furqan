@@ -23,7 +23,9 @@ export default function BottomNav({ current, onNavigate }: Props) {
     current === 'reader-search' ||
     current === 'reader-bookmarks' ||
     current === 'khatm' ||
-    current === 'khatm-setup';
+    current === 'khatm-setup' ||
+    current === 'nazera' ||
+    current === 'nazera-setup';
 
   return (
     <nav

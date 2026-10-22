@@ -6,31 +6,13 @@
 // — no second Quran dataset, no invented Mushaf page numbers. Every
 // reading portion this module produces is an ayah range, derived from
 // the real per-surah ayah counts.
+//
+// QuranIndex/SurahAyahRef/AyahRange now live in app/lib/quran-index.ts,
+// shared with the Nazera module — re-exported here so existing imports
+// of these three names from './khatm-types' keep working unchanged.
 // ═══════════════════════════════════════════
 
-/** Precomputed lookup between a 1-based global ayah index (1..totalAyahs,
- *  in actual Quran reading order) and its (surah, ayah) reference. Built
- *  once from the real SurahMeta[] — never hardcoded. */
-export interface QuranIndex {
-  totalAyahs: number;
-  /** cumulativeBefore[i] = ayahs in surahs 1..i (1-based array, index 0 unused) */
-  cumulativeBefore: number[];
-  surahCount: number;
-}
-
-export interface SurahAyahRef {
-  surah: number;
-  ayah: number;
-}
-
-/** A contiguous ayah range, inclusive on both ends, in reading order. */
-export interface AyahRange {
-  startGlobal: number;
-  endGlobal: number; // inclusive
-  start: SurahAyahRef;
-  end: SurahAyahRef;
-  count: number;
-}
+export type { QuranIndex, SurahAyahRef, AyahRange } from './quran-index';
 
 export type PlanMode = 'targetDate' | 'duration';
 export type ScheduleStyle = 'fivePrayers' | 'single';

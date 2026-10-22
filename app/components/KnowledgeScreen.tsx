@@ -1,6 +1,6 @@
 'use client';
 import {
-  FlaskConical, BookOpen, BookMarked, Scale, Users, Landmark, Compass, Heart, ArrowLeftRight, Library, ShieldCheck, Target,
+  FlaskConical, BookOpen, BookMarked, BookOpenCheck, Scale, Users, Landmark, Compass, Heart, ArrowLeftRight, Library, ShieldCheck, Target,
 } from 'lucide-react';
 import type { Screen } from '../types';
 
@@ -102,6 +102,42 @@ export default function KnowledgeScreen({ onNavigate }: Props) {
               borderRadius: 100, padding: '5px 12px',
               fontSize: 11, lineHeight: 1.3, fontWeight: 600, color: '#fff',
             }}>পরিকল্পনা শুরু করুন →</div>
+          </div>
+        </div>
+
+        {/* ── নাযেরা Card ── */}
+        <div onClick={() => onNavigate('nazera')} style={{
+          borderRadius: 22,
+          overflow: 'hidden',
+          cursor: 'pointer',
+          aspectRatio: '3 / 2',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'flex-end',
+          padding: '16px 18px 16px',
+          backgroundImage: 'linear-gradient(155deg, #2A1A3A 0%, #4A2E66 55%, #6E3D8A 130%)',
+          position: 'relative',
+        }}>
+          <div style={{
+            position: 'absolute', right: -14, bottom: -24, pointerEvents: 'none', opacity: 0.1,
+          }}><BookOpenCheck size={150} color="#fff" strokeWidth={1} /></div>
+          <div style={{ position: 'relative', zIndex: 2 }}>
+            <div style={{
+              width: 32, height: 32, borderRadius: 10, marginBottom: 8,
+              background: 'rgba(255,255,255,0.16)', border: '1px solid rgba(255,255,255,0.28)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}><BookOpenCheck size={16} color="#fff" strokeWidth={1.8} /></div>
+            <div style={{ fontSize: 17, lineHeight: 1.25, fontWeight: 700, color: '#fff', marginBottom: 3 }}>নাযেরা</div>
+            <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.78)', marginBottom: 10, maxWidth: 230, lineHeight: 1.4 }}>
+              মুসহাফ দেখে নিয়মিত তিলাওয়াতের অভ্যাস গড়ুন
+            </div>
+            <div style={{
+              display: 'inline-flex', alignItems: 'center', gap: 6,
+              background: 'rgba(255,255,255,0.16)',
+              border: '1px solid rgba(255,255,255,0.28)',
+              borderRadius: 100, padding: '5px 12px',
+              fontSize: 11, lineHeight: 1.3, fontWeight: 600, color: '#fff',
+            }}>অভ্যাস গড়ুন →</div>
           </div>
         </div>
 
