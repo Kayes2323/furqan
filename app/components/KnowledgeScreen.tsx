@@ -1,6 +1,6 @@
 'use client';
 import {
-  FlaskConical, BookOpen, Scale, Users, Landmark, Compass, Heart, ArrowLeftRight, Library, ShieldCheck,
+  FlaskConical, BookOpen, BookMarked, Scale, Users, Landmark, Compass, Heart, ArrowLeftRight, Library, ShieldCheck,
 } from 'lucide-react';
 import type { Screen } from '../types';
 
@@ -28,6 +28,46 @@ export default function KnowledgeScreen({ onNavigate }: Props) {
       </div>
 
       <div style={{ padding: '0 20px', display: 'flex', flexDirection: 'column', gap: 14, marginBottom: 28 }}>
+
+        {/* ── কুরআন Card ── */}
+        <div onClick={() => onNavigate('reader')} style={{
+          borderRadius: 22,
+          overflow: 'hidden',
+          cursor: 'pointer',
+          aspectRatio: '3 / 2',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'flex-end',
+          padding: '16px 18px 16px',
+          backgroundImage: 'linear-gradient(155deg, #0E2A19 0%, #12532F 55%, #1F7A4C 130%)',
+          position: 'relative',
+        }}>
+          <div
+            className="arabic"
+            style={{
+              position: 'absolute', right: 2, bottom: -18, fontSize: 108,
+              fontFamily: 'Amiri, serif', opacity: 0.1, lineHeight: 1, pointerEvents: 'none',
+            }}
+          >ق</div>
+          <div style={{ position: 'relative', zIndex: 2 }}>
+            <div style={{
+              width: 32, height: 32, borderRadius: 10, marginBottom: 8,
+              background: 'rgba(255,255,255,0.16)', border: '1px solid rgba(255,255,255,0.28)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}><BookMarked size={16} color="#fff" strokeWidth={1.8} /></div>
+            <div style={{ fontSize: 17, lineHeight: 1.25, fontWeight: 700, color: '#fff', marginBottom: 3 }}>কুরআন</div>
+            <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.78)', marginBottom: 10, maxWidth: 230, lineHeight: 1.4 }}>
+              ১১৪টি সূরা — সম্পূর্ণ আরবি মুসহাফ, বুকমার্ক ও পঠন অগ্রগতিসহ
+            </div>
+            <div style={{
+              display: 'inline-flex', alignItems: 'center', gap: 6,
+              background: 'rgba(255,255,255,0.16)',
+              border: '1px solid rgba(255,255,255,0.28)',
+              borderRadius: 100, padding: '5px 12px',
+              fontSize: 11, lineHeight: 1.3, fontWeight: 600, color: '#fff',
+            }}>পড়া শুরু করুন →</div>
+          </div>
+        </div>
 
         {/* ── গবেষণা Card ── */}
         <div onClick={() => onNavigate('research')} style={{

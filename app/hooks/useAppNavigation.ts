@@ -112,6 +112,25 @@ export function useAppNavigation(scrollContainerRef?: RefObject<HTMLElement | nu
     [navigate],
   );
 
+  const openReader = useCallback(() => {
+    navigate({ screen: 'reader' });
+  }, [navigate]);
+
+  const openReaderSurah = useCallback(
+    (surah: number, ayah?: number) => {
+      navigate({ screen: 'reader-surah', readerSurah: surah, readerAyah: ayah });
+    },
+    [navigate],
+  );
+
+  const openReaderSearch = useCallback(() => {
+    navigate({ screen: 'reader-search' });
+  }, [navigate]);
+
+  const openReaderBookmarks = useCallback(() => {
+    navigate({ screen: 'reader-bookmarks' });
+  }, [navigate]);
+
   return {
     route,
     screen: route.screen,
@@ -120,6 +139,8 @@ export function useAppNavigation(scrollContainerRef?: RefObject<HTMLElement | nu
     partId: route.part ?? 'part-1',
     zikrSectionId: route.zikrSection ?? 'morning-evening',
     zikrItemId: route.zikrItem,
+    readerSurahNumber: route.readerSurah ?? 1,
+    readerAyahNumber: route.readerAyah,
     navigate,
     navigateScreen,
     back,
@@ -128,5 +149,9 @@ export function useAppNavigation(scrollContainerRef?: RefObject<HTMLElement | nu
     openPart,
     openZikrSection,
     openZikrReading,
+    openReader,
+    openReaderSurah,
+    openReaderSearch,
+    openReaderBookmarks,
   };
 }

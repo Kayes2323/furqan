@@ -7,11 +7,14 @@ export interface AppRoute {
   part?: string;
   zikrSection?: string;
   zikrItem?: string;
+  readerSurah?: number;
+  readerAyah?: number;
 }
 
 const VALID_SCREENS: Screen[] = [
   'home', 'tafsir', 'nur', 'knowledge', 'research', 'sirah', 'sirah-part', 'sirah-read', 'qibla',
-  'zikr', 'zikr-section', 'zikr-read', 'profile',
+  'zikr', 'zikr-section', 'zikr-read', 'reader', 'reader-surah', 'reader-search', 'reader-bookmarks',
+  'profile',
 ];
 
 export function isValidScreen(value: string | null): value is Screen {
@@ -26,6 +29,8 @@ export function routeToParams(route: AppRoute): URLSearchParams {
   if (route.part) params.set('part', route.part);
   if (route.zikrSection) params.set('zsec', route.zikrSection);
   if (route.zikrItem) params.set('zitem', route.zikrItem);
+  if (route.readerSurah != null) params.set('rsurah', String(route.readerSurah));
+  if (route.readerAyah != null) params.set('rayah', String(route.readerAyah));
   return params;
 }
 
@@ -42,6 +47,14 @@ export function paramsToRoute(params: URLSearchParams): AppRoute {
   const part = params.get('part') ?? undefined;
   const zikrSection = params.get('zsec') ?? undefined;
   const zikrItem = params.get('zitem') ?? undefined;
+  const readerSurahRaw = params.get('rsurah');
+  const readerSurah = readerSurahRaw ? Number(readerSurahRaw) : undefined;
+  const readerAyahRaw = params.get('rayah');
+  const readerAyah = readerAyahRaw ? Number(readerAyahRaw) : undefined;
+
+  if (screen === 'reader-surah') {
+    return { screen, readerSurah: readerSurah && !Number.isNaN(readerSurah) ? readerSurah : 1, readerAyah };
+  }
 
   if (screen === 'sirah-read') {
     return { screen, chapter: chapter ?? 'ch-01' };
@@ -69,6 +82,8 @@ export function routesEqual(a: AppRoute, b: AppRoute): boolean {
     a.chapter === b.chapter &&
     a.part === b.part &&
     a.zikrSection === b.zikrSection &&
-    a.zikrItem === b.zikrItem
+    a.zikrItem === b.zikrItem &&
+    a.readerSurah === b.readerSurah &&
+    a.readerAyah === b.readerAyah
   );
 }
