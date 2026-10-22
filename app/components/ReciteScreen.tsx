@@ -232,7 +232,7 @@ export default function ReciteScreen({ onBack }: Props) {
       }}>
         <BackButton onClick={onBack} variant="dark" />
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 14.5, fontWeight: 700, color: 'var(--text)' }}>তিলাওয়াত যাচাই (প্রোটোটাইপ)</div>
+          <div style={{ fontSize: 14.5, fontWeight: 700, color: 'var(--text)' }}>তিলাওয়াত যাচাই (পরীক্ষামূলক)</div>
           <div style={{ fontSize: 10.5, color: 'var(--text-muted)', marginTop: 1 }}>
             {meta ? `সূরা ${meta.banglaName}` : 'লোড হচ্ছে...'}
           </div>
@@ -247,7 +247,7 @@ export default function ReciteScreen({ onBack }: Props) {
         }}>
           <ShieldAlert size={16} color="var(--gold)" style={{ flexShrink: 0, marginTop: 1 }} />
           <div style={{ fontSize: 11.5, color: 'var(--text)', lineHeight: 1.6 }}>
-            এটি একটি পরীক্ষামূলক প্রোটোটাইপ। রিকগনিশন আপনার ব্রাউজারের নিজস্ব ভয়েস সার্ভিস ব্যবহার করে (Furqan-এর সার্ভারে অডিও পাঠানো বা সংরক্ষণ করা হয় না)। এটি কুরআন তিলাওয়াতের জন্য প্রশিক্ষিত নয়—সাধারণ আরবি শনাক্তকরণ ব্যবহার করে, তাই ফলাফল আনুমানিক। তাজবিদ, মাখরাজ বা উচ্চারণ যাচাই করা হয় না।
+এটি একটি পরীক্ষামূলক প্রোটোটাইপ এবং এখনও নির্ভরযোগ্যভাবে তিলাওয়াত শনাক্ত করতে পারে না — এটি Tarteel-এর মতো কোনো নির্ভরযোগ্য বিকল্প নয়, শুধু একটি পরীক্ষা। রিকগনিশন আপনার ব্রাউজারের নিজস্ব ভয়েস সার্ভিস ব্যবহার করে (Furqan-এর সার্ভারে অডিও পাঠানো বা সংরক্ষণ করা হয় না)। এটি কুরআন তিলাওয়াতের জন্য প্রশিক্ষিত নয়—সাধারণ আরবি শনাক্তকরণ ব্যবহার করে, তাই ফলাফল প্রায়ই ভুল হতে পারে। তাজবিদ, মাখরাজ বা উচ্চারণ যাচাই করা হয় না — শুধু শব্দ মেলানোর একটি আনুমানিক চেষ্টা।
           </div>
         </div>
 

@@ -151,6 +151,28 @@ export function useAppNavigation(scrollContainerRef?: RefObject<HTMLElement | nu
     navigate({ screen: 'recite' });
   }, [navigate]);
 
+  const openQuranHub = useCallback(() => {
+    navigate({ screen: 'quran-hub' });
+  }, [navigate]);
+
+  const openQuranTopics = useCallback(() => {
+    navigate({ screen: 'quran-topics' });
+  }, [navigate]);
+
+  const openTopicDetail = useCallback(
+    (topicId: string) => {
+      navigate({ screen: 'topic-detail', topicId });
+    },
+    [navigate],
+  );
+
+  const openImportantDetail = useCallback(
+    (importantId: string) => {
+      navigate({ screen: 'important-detail', importantId });
+    },
+    [navigate],
+  );
+
   return {
     route,
     screen: route.screen,
@@ -161,6 +183,8 @@ export function useAppNavigation(scrollContainerRef?: RefObject<HTMLElement | nu
     zikrItemId: route.zikrItem,
     readerSurahNumber: route.readerSurah ?? 1,
     readerAyahNumber: route.readerAyah,
+    topicId: route.topicId ?? 'sabr',
+    importantId: route.importantId ?? 'al-mulk',
     navigate,
     navigateScreen,
     back,
@@ -178,5 +202,9 @@ export function useAppNavigation(scrollContainerRef?: RefObject<HTMLElement | nu
     openNazera,
     openNazeraSetup,
     openRecite,
+    openQuranHub,
+    openQuranTopics,
+    openTopicDetail,
+    openImportantDetail,
   };
 }
