@@ -14,7 +14,7 @@ export interface AppRoute {
 const VALID_SCREENS: Screen[] = [
   'home', 'tafsir', 'nur', 'knowledge', 'research', 'sirah', 'sirah-part', 'sirah-read', 'qibla',
   'zikr', 'zikr-section', 'zikr-read', 'reader', 'reader-surah', 'reader-search', 'reader-bookmarks',
-  'khatm', 'khatm-setup', 'profile',
+  'khatm', 'khatm-setup', 'nazera', 'nazera-setup', 'profile',
 ];
 
 export function isValidScreen(value: string | null): value is Screen {

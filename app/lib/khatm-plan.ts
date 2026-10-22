@@ -9,10 +9,8 @@
 // app/lib/reader-data.ts), never hardcoded or invented.
 // ═══════════════════════════════════════════
 
-import type { SurahMeta } from './reader-types';
 import type {
   QuranIndex,
-  SurahAyahRef,
   AyahRange,
   KhatmPlan,
   CreatePlanParams,
@@ -22,84 +20,15 @@ import type {
   RescheduleReason,
 } from './khatm-types';
 import { PRAYER_SLOTS } from './khatm-types.ts';
+import { todayKey, daysBetween, addDays } from './date-utils.ts';
+import { buildQuranIndex, globalToRef, refToGlobal, rangeFromGlobal } from './quran-index.ts';
 
-// ── date helpers (date-only, timezone-safe) ──────────────────────────
-
-export function todayKey(): string {
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-}
-
-function parseDateKey(key: string): { y: number; m: number; d: number } {
-  const [y, m, d] = key.split('-').map(Number);
-  return { y, m, d };
-}
-
-function toUtcMs(key: string): number {
-  const { y, m, d } = parseDateKey(key);
-  return Date.UTC(y, m - 1, d);
-}
-
-/** b - a, in whole calendar days. Can be negative. Timezone-safe: both
- *  sides are parsed as plain calendar dates, not instants. */
-export function daysBetween(a: string, b: string): number {
-  return Math.round((toUtcMs(b) - toUtcMs(a)) / 86400000);
-}
-
-export function addDays(key: string, days: number): string {
-  const { y, m, d } = parseDateKey(key);
-  const ms = Date.UTC(y, m - 1, d + days);
-  const dt = new Date(ms);
-  return `${dt.getUTCFullYear()}-${String(dt.getUTCMonth() + 1).padStart(2, '0')}-${String(dt.getUTCDate()).padStart(2, '0')}`;
-}
-
-// ── Quran index (global ayah position <-> surah:ayah) ────────────────
-
-export function buildQuranIndex(meta: SurahMeta[]): QuranIndex {
-  const sorted = [...meta].sort((a, b) => a.number - b.number);
-  const cumulativeBefore: number[] = [0]; // index 0 unused; cumulativeBefore[s] = ayahs in surahs 1..s-1
-  let running = 0;
-  for (const s of sorted) {
-    cumulativeBefore[s.number] = running;
-    running += s.ayahCount;
-  }
-  return { totalAyahs: running, cumulativeBefore, surahCount: sorted.length };
-}
-
-/** Converts a 1-based global ayah position (1..totalAyahs) to its
- *  surah:ayah reference. Throws on an out-of-range index rather than
- *  silently clamping, so a bug surfaces immediately instead of pointing
- *  at the wrong verse. */
-export function globalToRef(index: QuranIndex, global: number): SurahAyahRef {
-  if (global < 1 || global > index.totalAyahs) {
-    throw new RangeError(`global ayah index ${global} out of range 1..${index.totalAyahs}`);
-  }
-  // cumulativeBefore is sorted ascending; find the surah whose range contains `global`.
-  for (let surah = 1; surah <= index.surahCount; surah++) {
-    const before = index.cumulativeBefore[surah];
-    const nextBefore = surah < index.surahCount ? index.cumulativeBefore[surah + 1] : index.totalAyahs;
-    if (global <= nextBefore && global > before) {
-      return { surah, ayah: global - before };
-    }
-  }
-  throw new RangeError(`global ayah index ${global} did not resolve to any surah`);
-}
-
-export function refToGlobal(index: QuranIndex, ref: SurahAyahRef): number {
-  const before = index.cumulativeBefore[ref.surah];
-  if (before == null) throw new RangeError(`unknown surah ${ref.surah}`);
-  return before + ref.ayah;
-}
-
-export function rangeFromGlobal(index: QuranIndex, startGlobal: number, endGlobal: number): AyahRange {
-  return {
-    startGlobal,
-    endGlobal,
-    start: globalToRef(index, startGlobal),
-    end: globalToRef(index, endGlobal),
-    count: endGlobal - startGlobal + 1,
-  };
-}
+// Re-exported for backward compatibility: existing imports of these
+// names from './khatm-plan' (this file's own tests, KhatmScreen,
+// KhatmSetupScreen) keep working unchanged now that the actual
+// implementations live in the shared app/lib/date-utils.ts and
+// app/lib/quran-index.ts (also used by the Nazera module).
+export { todayKey, daysBetween, addDays, buildQuranIndex, globalToRef, refToGlobal, rangeFromGlobal };
 
 // ── plan creation / validation ────────────────────────────────────────
 

@@ -19,6 +19,8 @@ import ReaderSearchScreen from './components/ReaderSearchScreen';
 import ReaderBookmarksScreen from './components/ReaderBookmarksScreen';
 import KhatmScreen from './components/KhatmScreen';
 import KhatmSetupScreen from './components/KhatmSetupScreen';
+import NazeraScreen from './components/NazeraScreen';
+import NazeraSetupScreen from './components/NazeraSetupScreen';
 import ProfileScreen from './components/ProfileScreen';
 import BottomNav from './components/BottomNav';
 import SplashScreen from './components/SplashScreen';
@@ -49,6 +51,8 @@ function AppShell() {
     openReaderBookmarks,
     openKhatm,
     openKhatmSetup,
+    openNazera,
+    openNazeraSetup,
   } = useAppNavigation(scrollRef);
 
   const isReading = screen === 'sirah-read' || screen === 'zikr-read' || screen === 'reader-surah';
@@ -136,6 +140,12 @@ function AppShell() {
         )}
         {screen === 'khatm-setup' && (
           <KhatmSetupScreen onBack={openKhatm} onDone={openKhatm} />
+        )}
+        {screen === 'nazera' && (
+          <NazeraScreen onBack={back} onOpenSetup={openNazeraSetup} onOpenReaderSurah={openReaderSurah} />
+        )}
+        {screen === 'nazera-setup' && (
+          <NazeraSetupScreen onBack={openNazera} onDone={openNazera} />
         )}
         {screen === 'profile' && <ProfileScreen />}
       </div>

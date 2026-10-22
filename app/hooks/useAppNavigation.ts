@@ -139,6 +139,14 @@ export function useAppNavigation(scrollContainerRef?: RefObject<HTMLElement | nu
     navigate({ screen: 'khatm-setup' });
   }, [navigate]);
 
+  const openNazera = useCallback(() => {
+    navigate({ screen: 'nazera' });
+  }, [navigate]);
+
+  const openNazeraSetup = useCallback(() => {
+    navigate({ screen: 'nazera-setup' });
+  }, [navigate]);
+
   return {
     route,
     screen: route.screen,
@@ -163,5 +171,7 @@ export function useAppNavigation(scrollContainerRef?: RefObject<HTMLElement | nu
     openReaderBookmarks,
     openKhatm,
     openKhatmSetup,
+    openNazera,
+    openNazeraSetup,
   };
 }

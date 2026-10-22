@@ -17,6 +17,8 @@ export type Screen =
   | 'reader-bookmarks'
   | 'khatm'
   | 'khatm-setup'
+  | 'nazera'
+  | 'nazera-setup'
   | 'profile';
 
 export interface Surah {

@@ -1,5 +1,5 @@
 'use client';
-import { BookOpen, BookMarked, FlaskConical, Sparkles, Bookmark, Compass, ShieldCheck, Target } from 'lucide-react';
+import { BookOpen, BookMarked, BookOpenCheck, FlaskConical, Sparkles, Bookmark, Compass, ShieldCheck, Target } from 'lucide-react';
 import type { Screen } from '../types';
 
 interface Props {
@@ -15,6 +15,7 @@ const DAILY_AYAH = {
 const QUICK = [
   { icon: BookMarked, title: 'কুরআন', sub: 'সম্পূর্ণ কুরআন পড়ুন', screen: 'reader' as Screen },
   { icon: Target, title: 'খতম পরিকল্পনা', sub: 'কুরআন সম্পন্ন করুন', screen: 'khatm' as Screen },
+  { icon: BookOpenCheck, title: 'নাযেরা', sub: 'নিয়মিত তিলাওয়াতের অভ্যাস', screen: 'nazera' as Screen },
   { icon: BookOpen, title: 'তাফসির', sub: '১১৪টি সূরা', screen: 'tafsir' as Screen },
   { icon: FlaskConical, title: 'গবেষণা', sub: 'বিজ্ঞান থেকে রাজনীতি', screen: 'research' as Screen },
   { icon: Sparkles, title: 'NUR কে জিজ্ঞেস করো', sub: 'যেকোনো প্রশ্ন', screen: 'nur' as Screen },
