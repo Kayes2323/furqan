@@ -1,6 +1,6 @@
 'use client';
 import {
-  FlaskConical, BookOpen, BookMarked, BookOpenCheck, Scale, Users, Landmark, Compass, Heart, ArrowLeftRight, Library, ShieldCheck, Target,
+  FlaskConical, BookOpen, Scale, Users, Landmark, Compass, Heart, ArrowLeftRight, Library, ShieldCheck, Mic,
 } from 'lucide-react';
 import type { Screen } from '../types';
 
@@ -15,62 +15,22 @@ export default function KnowledgeScreen({ onNavigate }: Props) {
       <div style={{ padding: '52px 20px 4px' }}>
         <div style={{ fontFamily: 'Amiri, serif', fontSize: 25, lineHeight: 1.2, color: 'var(--accent)' }}>জ্ঞান</div>
         <div style={{ fontSize: 10, lineHeight: 1.3, color: 'var(--text-muted)', letterSpacing: 2, textTransform: 'uppercase', marginTop: 2 }}>
-          Knowledge Hub
+          Practice & Learn
         </div>
       </div>
 
       <p style={{ padding: '12px 20px 20px', fontSize: 13, color: 'var(--text-muted)', lineHeight: 1.7 }}>
-        কুরআন, সীরাত ও ইসলামী জ্ঞানের জগতে প্রবেশ করুন — প্রতিটি মডিউলের নিজস্ব পরিচয়, নিজস্ব রং।
+        ইবাদত, সীরাত ও ইসলামী জ্ঞানের জগতে প্রবেশ করুন। কুরআন রিডার, বিষয়ভিত্তিক কুরআন, তাফসির, নাযেরা ও খতম পরিকল্পনা এখন নিচের &ldquo;কুরআন&rdquo; ট্যাবে পাবেন।
       </p>
 
       <div style={{ padding: '0 20px 10px', fontSize: 11, color: 'var(--text-muted)', letterSpacing: 2, textTransform: 'uppercase', fontWeight: 700 }}>
-        এখনই অন্বেষণ করুন
+        ইবাদত ও চর্চা
       </div>
 
       <div style={{ padding: '0 20px', display: 'flex', flexDirection: 'column', gap: 14, marginBottom: 28 }}>
 
-        {/* ── কুরআন Card ── */}
-        <div onClick={() => onNavigate('reader')} style={{
-          borderRadius: 22,
-          overflow: 'hidden',
-          cursor: 'pointer',
-          aspectRatio: '3 / 2',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'flex-end',
-          padding: '16px 18px 16px',
-          backgroundImage: 'linear-gradient(155deg, #0E2A19 0%, #12532F 55%, #1F7A4C 130%)',
-          position: 'relative',
-        }}>
-          <div
-            className="arabic"
-            style={{
-              position: 'absolute', right: 2, bottom: -18, fontSize: 108,
-              fontFamily: 'Amiri, serif', opacity: 0.1, lineHeight: 1, pointerEvents: 'none',
-            }}
-          >ق</div>
-          <div style={{ position: 'relative', zIndex: 2 }}>
-            <div style={{
-              width: 32, height: 32, borderRadius: 10, marginBottom: 8,
-              background: 'rgba(255,255,255,0.16)', border: '1px solid rgba(255,255,255,0.28)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-            }}><BookMarked size={16} color="#fff" strokeWidth={1.8} /></div>
-            <div style={{ fontSize: 17, lineHeight: 1.25, fontWeight: 700, color: '#fff', marginBottom: 3 }}>কুরআন</div>
-            <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.78)', marginBottom: 10, maxWidth: 230, lineHeight: 1.4 }}>
-              ১১৪টি সূরা — সম্পূর্ণ আরবি মুসহাফ, বুকমার্ক ও পঠন অগ্রগতিসহ
-            </div>
-            <div style={{
-              display: 'inline-flex', alignItems: 'center', gap: 6,
-              background: 'rgba(255,255,255,0.16)',
-              border: '1px solid rgba(255,255,255,0.28)',
-              borderRadius: 100, padding: '5px 12px',
-              fontSize: 11, lineHeight: 1.3, fontWeight: 600, color: '#fff',
-            }}>পড়া শুরু করুন →</div>
-          </div>
-        </div>
-
-        {/* ── খতম পরিকল্পনা Card ── */}
-        <div onClick={() => onNavigate('khatm')} style={{
+        {/* ── কিবলা Card ── */}
+        <div onClick={() => onNavigate('qibla')} style={{
           borderRadius: 22,
           overflow: 'hidden',
           cursor: 'pointer',
@@ -84,16 +44,16 @@ export default function KnowledgeScreen({ onNavigate }: Props) {
         }}>
           <div style={{
             position: 'absolute', right: -14, bottom: -24, pointerEvents: 'none', opacity: 0.1,
-          }}><Target size={150} color="#fff" strokeWidth={1} /></div>
+          }}><Compass size={150} color="#fff" strokeWidth={1} /></div>
           <div style={{ position: 'relative', zIndex: 2 }}>
             <div style={{
               width: 32, height: 32, borderRadius: 10, marginBottom: 8,
               background: 'rgba(255,255,255,0.16)', border: '1px solid rgba(255,255,255,0.28)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-            }}><Target size={16} color="#fff" strokeWidth={1.8} /></div>
-            <div style={{ fontSize: 17, lineHeight: 1.25, fontWeight: 700, color: '#fff', marginBottom: 3 }}>খতম পরিকল্পনা</div>
+            }}><Compass size={16} color="#fff" strokeWidth={1.8} /></div>
+            <div style={{ fontSize: 17, lineHeight: 1.25, fontWeight: 700, color: '#fff', marginBottom: 3 }}>কিবলা</div>
             <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.78)', marginBottom: 10, maxWidth: 230, lineHeight: 1.4 }}>
-              লক্ষ্য তারিখ অনুযায়ী সম্পূর্ণ কুরআন পড়া সম্পন্ন করুন
+              আপনার অবস্থান থেকে কাবার দিক নির্ণয় করুন
             </div>
             <div style={{
               display: 'inline-flex', alignItems: 'center', gap: 6,
@@ -101,12 +61,12 @@ export default function KnowledgeScreen({ onNavigate }: Props) {
               border: '1px solid rgba(255,255,255,0.28)',
               borderRadius: 100, padding: '5px 12px',
               fontSize: 11, lineHeight: 1.3, fontWeight: 600, color: '#fff',
-            }}>পরিকল্পনা শুরু করুন →</div>
+            }}>দিক নির্ণয় করুন →</div>
           </div>
         </div>
 
-        {/* ── নাযেরা Card ── */}
-        <div onClick={() => onNavigate('nazera')} style={{
+        {/* ── আমল (যিকির) Card ── */}
+        <div onClick={() => onNavigate('zikr')} style={{
           borderRadius: 22,
           overflow: 'hidden',
           cursor: 'pointer',
@@ -115,21 +75,22 @@ export default function KnowledgeScreen({ onNavigate }: Props) {
           flexDirection: 'column',
           justifyContent: 'flex-end',
           padding: '16px 18px 16px',
-          backgroundImage: 'linear-gradient(155deg, #2A1A3A 0%, #4A2E66 55%, #6E3D8A 130%)',
+          backgroundImage: 'linear-gradient(155deg, #2A1A0A 0%, #5A3A10 45%, #96702A 130%)',
           position: 'relative',
         }}>
           <div style={{
-            position: 'absolute', right: -14, bottom: -24, pointerEvents: 'none', opacity: 0.1,
-          }}><BookOpenCheck size={150} color="#fff" strokeWidth={1} /></div>
+            position: 'absolute', right: -16, bottom: -24, fontSize: 140,
+            opacity: 0.08, lineHeight: 1, pointerEvents: 'none',
+          }}>🕋</div>
           <div style={{ position: 'relative', zIndex: 2 }}>
             <div style={{
               width: 32, height: 32, borderRadius: 10, marginBottom: 8,
               background: 'rgba(255,255,255,0.16)', border: '1px solid rgba(255,255,255,0.28)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-            }}><BookOpenCheck size={16} color="#fff" strokeWidth={1.8} /></div>
-            <div style={{ fontSize: 17, lineHeight: 1.25, fontWeight: 700, color: '#fff', marginBottom: 3 }}>নাযেরা</div>
+            }}><ShieldCheck size={16} color="#fff" strokeWidth={1.8} /></div>
+            <div style={{ fontSize: 17, lineHeight: 1.25, fontWeight: 700, color: '#fff', marginBottom: 3 }}>আমল</div>
             <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.78)', marginBottom: 10, maxWidth: 230, lineHeight: 1.4 }}>
-              মুসহাফ দেখে নিয়মিত তিলাওয়াতের অভ্যাস গড়ুন
+              সকাল-সন্ধ্যা ও রাতের তাসবিহ, আত্মরক্ষার আমল
             </div>
             <div style={{
               display: 'inline-flex', alignItems: 'center', gap: 6,
@@ -137,9 +98,17 @@ export default function KnowledgeScreen({ onNavigate }: Props) {
               border: '1px solid rgba(255,255,255,0.28)',
               borderRadius: 100, padding: '5px 12px',
               fontSize: 11, lineHeight: 1.3, fontWeight: 600, color: '#fff',
-            }}>অভ্যাস গড়ুন →</div>
+            }}>আমল শুরু করুন →</div>
           </div>
         </div>
+
+      </div>
+
+      <div style={{ padding: '0 20px 10px', fontSize: 11, color: 'var(--text-muted)', letterSpacing: 2, textTransform: 'uppercase', fontWeight: 700 }}>
+        শিক্ষা
+      </div>
+
+      <div style={{ padding: '0 20px', display: 'flex', flexDirection: 'column', gap: 14, marginBottom: 28 }}>
 
         {/* ── গবেষণা Card ── */}
         <div onClick={() => onNavigate('research')} style={{
@@ -211,43 +180,38 @@ export default function KnowledgeScreen({ onNavigate }: Props) {
           </div>
         </div>
 
-        {/* ── আমল (যিকির) Card ── */}
-        <div onClick={() => onNavigate('zikr')} style={{
-          borderRadius: 22,
-          overflow: 'hidden',
-          cursor: 'pointer',
-          aspectRatio: '3 / 2',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'flex-end',
-          padding: '16px 18px 16px',
-          backgroundImage: 'linear-gradient(155deg, #2A1A0A 0%, #5A3A10 45%, #96702A 130%)',
-          position: 'relative',
-        }}>
-          <div style={{
-            position: 'absolute', right: -16, bottom: -24, fontSize: 140,
-            opacity: 0.08, lineHeight: 1, pointerEvents: 'none',
-          }}>🕋</div>
-          <div style={{ position: 'relative', zIndex: 2 }}>
-            <div style={{
-              width: 32, height: 32, borderRadius: 10, marginBottom: 8,
-              background: 'rgba(255,255,255,0.16)', border: '1px solid rgba(255,255,255,0.28)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-            }}><ShieldCheck size={16} color="#fff" strokeWidth={1.8} /></div>
-            <div style={{ fontSize: 17, lineHeight: 1.25, fontWeight: 700, color: '#fff', marginBottom: 3 }}>আমল</div>
-            <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.78)', marginBottom: 10, maxWidth: 230, lineHeight: 1.4 }}>
-              সকাল-সন্ধ্যা ও রাতের তাসবিহ, আত্মরক্ষার আমল
-            </div>
-            <div style={{
-              display: 'inline-flex', alignItems: 'center', gap: 6,
-              background: 'rgba(255,255,255,0.16)',
-              border: '1px solid rgba(255,255,255,0.28)',
-              borderRadius: 100, padding: '5px 12px',
-              fontSize: 11, lineHeight: 1.3, fontWeight: 600, color: '#fff',
-            }}>আমল শুরু করুন →</div>
-          </div>
-        </div>
+      </div>
 
+      <div style={{ padding: '0 20px 10px', fontSize: 11, color: 'var(--text-muted)', letterSpacing: 2, textTransform: 'uppercase', fontWeight: 700 }}>
+        পরীক্ষামূলক ফিচার
+      </div>
+
+      <div style={{ padding: '0 20px', display: 'flex', flexDirection: 'column', gap: 9, marginBottom: 28 }}>
+        <div
+          onClick={() => onNavigate('recite')}
+          style={{
+            background: 'var(--card)', border: '1px solid var(--border)', borderLeft: '3px solid #C85A4C',
+            borderRadius: 14, padding: '13px 15px', cursor: 'pointer',
+            display: 'flex', alignItems: 'center', gap: 13,
+          }}
+        >
+          <div style={{
+            width: 42, height: 42, borderRadius: 11, flexShrink: 0,
+            background: 'rgba(200,90,76,0.12)', color: '#C85A4C',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}><Mic size={19} strokeWidth={1.8} /></div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontSize: 13, lineHeight: 1.3, fontWeight: 700, color: 'var(--text)', marginBottom: 2 }}>তিলাওয়াত যাচাই</div>
+            <div style={{ fontSize: 10.5, color: 'var(--text-muted)', lineHeight: 1.35 }}>
+              সূরা আল-কাউসার প্রোটোটাইপ — নির্ভরযোগ্যভাবে তিলাওয়াত শনাক্ত করে না, শুধু পরীক্ষার জন্য
+            </div>
+          </div>
+          <span style={{
+            fontSize: 9, fontWeight: 700, letterSpacing: 0.5, textTransform: 'uppercase',
+            padding: '3px 9px', borderRadius: 20, flexShrink: 0,
+            background: 'rgba(200,90,76,0.15)', color: '#C85A4C',
+          }}>পরীক্ষামূলক</span>
+        </div>
       </div>
 
       <div style={{ padding: '0 20px 10px', fontSize: 11, color: 'var(--text-muted)', letterSpacing: 2, textTransform: 'uppercase', fontWeight: 700 }}>

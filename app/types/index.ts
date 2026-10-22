@@ -20,6 +20,10 @@ export type Screen =
   | 'nazera'
   | 'nazera-setup'
   | 'recite'
+  | 'quran-hub'
+  | 'quran-topics'
+  | 'topic-detail'
+  | 'important-detail'
   | 'profile';
 
 export interface Surah {

@@ -9,12 +9,15 @@ export interface AppRoute {
   zikrItem?: string;
   readerSurah?: number;
   readerAyah?: number;
+  topicId?: string;
+  importantId?: string;
 }
 
 const VALID_SCREENS: Screen[] = [
   'home', 'tafsir', 'nur', 'knowledge', 'research', 'sirah', 'sirah-part', 'sirah-read', 'qibla',
   'zikr', 'zikr-section', 'zikr-read', 'reader', 'reader-surah', 'reader-search', 'reader-bookmarks',
-  'khatm', 'khatm-setup', 'nazera', 'nazera-setup', 'recite', 'profile',
+  'khatm', 'khatm-setup', 'nazera', 'nazera-setup', 'recite',
+  'quran-hub', 'quran-topics', 'topic-detail', 'important-detail', 'profile',
 ];
 
 export function isValidScreen(value: string | null): value is Screen {
@@ -31,6 +34,8 @@ export function routeToParams(route: AppRoute): URLSearchParams {
   if (route.zikrItem) params.set('zitem', route.zikrItem);
   if (route.readerSurah != null) params.set('rsurah', String(route.readerSurah));
   if (route.readerAyah != null) params.set('rayah', String(route.readerAyah));
+  if (route.topicId) params.set('topic', route.topicId);
+  if (route.importantId) params.set('imp', route.importantId);
   return params;
 }
 
@@ -51,6 +56,16 @@ export function paramsToRoute(params: URLSearchParams): AppRoute {
   const readerSurah = readerSurahRaw ? Number(readerSurahRaw) : undefined;
   const readerAyahRaw = params.get('rayah');
   const readerAyah = readerAyahRaw ? Number(readerAyahRaw) : undefined;
+  const topicId = params.get('topic') ?? undefined;
+  const importantId = params.get('imp') ?? undefined;
+
+  if (screen === 'topic-detail') {
+    return { screen, topicId: topicId ?? 'sabr' };
+  }
+
+  if (screen === 'important-detail') {
+    return { screen, importantId: importantId ?? 'al-mulk' };
+  }
 
   if (screen === 'reader-surah') {
     return { screen, readerSurah: readerSurah && !Number.isNaN(readerSurah) ? readerSurah : 1, readerAyah };
@@ -84,6 +99,8 @@ export function routesEqual(a: AppRoute, b: AppRoute): boolean {
     a.zikrSection === b.zikrSection &&
     a.zikrItem === b.zikrItem &&
     a.readerSurah === b.readerSurah &&
-    a.readerAyah === b.readerAyah
+    a.readerAyah === b.readerAyah &&
+    a.topicId === b.topicId &&
+    a.importantId === b.importantId
   );
 }

@@ -1,5 +1,5 @@
 'use client';
-import { Home, BookOpen, LayoutGrid, User } from 'lucide-react';
+import { Home, BookMarked, LayoutGrid, User } from 'lucide-react';
 import type { Screen } from '../types';
 
 interface Props {
@@ -8,6 +8,21 @@ interface Props {
 }
 
 export default function BottomNav({ current, onNavigate }: Props) {
+  const isQuranActive =
+    current === 'quran-hub' ||
+    current === 'quran-topics' ||
+    current === 'topic-detail' ||
+    current === 'important-detail' ||
+    current === 'tafsir' ||
+    current === 'reader' ||
+    current === 'reader-surah' ||
+    current === 'reader-search' ||
+    current === 'reader-bookmarks' ||
+    current === 'khatm' ||
+    current === 'khatm-setup' ||
+    current === 'nazera' ||
+    current === 'nazera-setup';
+
   const isKnowledgeActive =
     current === 'knowledge' ||
     current === 'research' ||
@@ -18,14 +33,6 @@ export default function BottomNav({ current, onNavigate }: Props) {
     current === 'zikr' ||
     current === 'zikr-section' ||
     current === 'zikr-read' ||
-    current === 'reader' ||
-    current === 'reader-surah' ||
-    current === 'reader-search' ||
-    current === 'reader-bookmarks' ||
-    current === 'khatm' ||
-    current === 'khatm-setup' ||
-    current === 'nazera' ||
-    current === 'nazera-setup' ||
     current === 'recite';
 
   return (
@@ -43,7 +50,7 @@ export default function BottomNav({ current, onNavigate }: Props) {
       }}
     >
       <NavItem icon={Home} label="হোম" active={current === 'home'} onClick={() => onNavigate('home')} />
-      <NavItem icon={BookOpen} label="তাফসির" active={current === 'tafsir'} onClick={() => onNavigate('tafsir')} />
+      <NavItem icon={BookMarked} label="কুরআন" active={isQuranActive} onClick={() => onNavigate('quran-hub')} />
 
       <button onClick={() => onNavigate('nur')} style={{
         width: 58, height: 58, borderRadius: 19,

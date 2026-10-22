@@ -22,6 +22,10 @@ import KhatmSetupScreen from './components/KhatmSetupScreen';
 import NazeraScreen from './components/NazeraScreen';
 import NazeraSetupScreen from './components/NazeraSetupScreen';
 import ReciteScreen from './components/ReciteScreen';
+import QuranHubScreen from './components/QuranHubScreen';
+import QuranTopicsScreen from './components/QuranTopicsScreen';
+import TopicDetailScreen from './components/TopicDetailScreen';
+import ImportantSurahDetailScreen from './components/ImportantSurahDetailScreen';
 import ProfileScreen from './components/ProfileScreen';
 import BottomNav from './components/BottomNav';
 import SplashScreen from './components/SplashScreen';
@@ -40,6 +44,8 @@ function AppShell() {
     zikrItemId,
     readerSurahNumber,
     readerAyahNumber,
+    topicId,
+    importantId,
     navigateScreen,
     back,
     openSurah,
@@ -54,6 +60,8 @@ function AppShell() {
     openKhatmSetup,
     openNazera,
     openNazeraSetup,
+    openTopicDetail,
+    openImportantDetail,
   } = useAppNavigation(scrollRef);
 
   const isReading = screen === 'sirah-read' || screen === 'zikr-read' || screen === 'reader-surah';
@@ -149,6 +157,16 @@ function AppShell() {
           <NazeraSetupScreen onBack={openNazera} onDone={openNazera} />
         )}
         {screen === 'recite' && <ReciteScreen onBack={back} />}
+        {screen === 'quran-hub' && <QuranHubScreen onNavigate={navigateScreen} onBack={back} />}
+        {screen === 'quran-topics' && (
+          <QuranTopicsScreen onBack={back} onOpenTopic={openTopicDetail} onOpenImportant={openImportantDetail} />
+        )}
+        {screen === 'topic-detail' && (
+          <TopicDetailScreen topicId={topicId} onBack={back} onOpenReaderSurah={openReaderSurah} />
+        )}
+        {screen === 'important-detail' && (
+          <ImportantSurahDetailScreen importantId={importantId} onBack={back} onOpenReaderSurah={openReaderSurah} />
+        )}
         {screen === 'profile' && <ProfileScreen />}
       </div>
 
