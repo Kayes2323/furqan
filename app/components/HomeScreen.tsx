@@ -1,5 +1,5 @@
 'use client';
-import { BookOpen, FlaskConical, Sparkles, Bookmark, Compass } from 'lucide-react';
+import { BookOpen, FlaskConical, Sparkles, Bookmark, Compass, ShieldCheck } from 'lucide-react';
 import type { Screen } from '../types';
 
 interface Props {
@@ -17,6 +17,7 @@ const QUICK = [
   { icon: FlaskConical, title: 'গবেষণা', sub: 'বিজ্ঞান থেকে রাজনীতি', screen: 'research' as Screen },
   { icon: Sparkles, title: 'NUR কে জিজ্ঞেস করো', sub: 'যেকোনো প্রশ্ন', screen: 'nur' as Screen },
   { icon: Compass, title: 'কিবলা', sub: 'দিক নির্ণয় করুন', screen: 'qibla' as Screen },
+  { icon: ShieldCheck, title: 'আমল', sub: 'তাসবিহ ও আত্মরক্ষার আমল', screen: 'zikr' as Screen },
   { icon: Bookmark, title: 'বুকমার্ক', sub: 'শীঘ্রই আসছে', screen: 'profile' as Screen },
 ];
 

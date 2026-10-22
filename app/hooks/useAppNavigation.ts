@@ -98,17 +98,35 @@ export function useAppNavigation(scrollContainerRef?: RefObject<HTMLElement | nu
     [navigate],
   );
 
+  const openZikrSection = useCallback(
+    (sectionId: string) => {
+      navigate({ screen: 'zikr-section', zikrSection: sectionId });
+    },
+    [navigate],
+  );
+
+  const openZikrReading = useCallback(
+    (sectionId: string, itemId?: string) => {
+      navigate({ screen: 'zikr-read', zikrSection: sectionId, zikrItem: itemId });
+    },
+    [navigate],
+  );
+
   return {
     route,
     screen: route.screen,
     surahNumber: route.surah,
     chapterId: route.chapter ?? 'ch-01',
     partId: route.part ?? 'part-1',
+    zikrSectionId: route.zikrSection ?? 'morning-evening',
+    zikrItemId: route.zikrItem,
     navigate,
     navigateScreen,
     back,
     openSurah,
     openChapter,
     openPart,
+    openZikrSection,
+    openZikrReading,
   };
 }

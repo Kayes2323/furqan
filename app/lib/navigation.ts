@@ -5,10 +5,13 @@ export interface AppRoute {
   surah?: number;
   chapter?: string;
   part?: string;
+  zikrSection?: string;
+  zikrItem?: string;
 }
 
 const VALID_SCREENS: Screen[] = [
-  'home', 'tafsir', 'nur', 'knowledge', 'research', 'sirah', 'sirah-part', 'sirah-read', 'qibla', 'profile',
+  'home', 'tafsir', 'nur', 'knowledge', 'research', 'sirah', 'sirah-part', 'sirah-read', 'qibla',
+  'zikr', 'zikr-section', 'zikr-read', 'profile',
 ];
 
 export function isValidScreen(value: string | null): value is Screen {
@@ -21,6 +24,8 @@ export function routeToParams(route: AppRoute): URLSearchParams {
   if (route.surah != null) params.set('surah', String(route.surah));
   if (route.chapter) params.set('chapter', route.chapter);
   if (route.part) params.set('part', route.part);
+  if (route.zikrSection) params.set('zsec', route.zikrSection);
+  if (route.zikrItem) params.set('zitem', route.zikrItem);
   return params;
 }
 
@@ -35,6 +40,8 @@ export function paramsToRoute(params: URLSearchParams): AppRoute {
   const surah = surahRaw ? Number(surahRaw) : undefined;
   const chapter = params.get('chapter') ?? undefined;
   const part = params.get('part') ?? undefined;
+  const zikrSection = params.get('zsec') ?? undefined;
+  const zikrItem = params.get('zitem') ?? undefined;
 
   if (screen === 'sirah-read') {
     return { screen, chapter: chapter ?? 'ch-01' };
@@ -42,6 +49,10 @@ export function paramsToRoute(params: URLSearchParams): AppRoute {
 
   if (screen === 'sirah-part') {
     return { screen, part: part ?? 'part-1' };
+  }
+
+  if (screen === 'zikr-section' || screen === 'zikr-read') {
+    return { screen, zikrSection: zikrSection ?? 'morning-evening', zikrItem };
   }
 
   if (screen === 'tafsir' && surah != null && !Number.isNaN(surah)) {
@@ -52,5 +63,12 @@ export function paramsToRoute(params: URLSearchParams): AppRoute {
 }
 
 export function routesEqual(a: AppRoute, b: AppRoute): boolean {
-  return a.screen === b.screen && a.surah === b.surah && a.chapter === b.chapter && a.part === b.part;
+  return (
+    a.screen === b.screen &&
+    a.surah === b.surah &&
+    a.chapter === b.chapter &&
+    a.part === b.part &&
+    a.zikrSection === b.zikrSection &&
+    a.zikrItem === b.zikrItem
+  );
 }

@@ -10,6 +10,9 @@ import SirahJourneyScreen from './components/SirahJourneyScreen';
 import SirahChapterListScreen from './components/SirahChapterListScreen';
 import SirahReadingScreen from './components/SirahReadingScreen';
 import QiblaScreen from './components/QiblaScreen';
+import ZikrScreen from './components/ZikrScreen';
+import ZikrSectionScreen from './components/ZikrSectionScreen';
+import ZikrReadingScreen from './components/ZikrReadingScreen';
 import ProfileScreen from './components/ProfileScreen';
 import BottomNav from './components/BottomNav';
 import SplashScreen from './components/SplashScreen';
@@ -24,14 +27,18 @@ function AppShell() {
     surahNumber,
     chapterId,
     partId,
+    zikrSectionId,
+    zikrItemId,
     navigateScreen,
     back,
     openSurah,
     openChapter,
     openPart,
+    openZikrSection,
+    openZikrReading,
   } = useAppNavigation(scrollRef);
 
-  const isReading = screen === 'sirah-read';
+  const isReading = screen === 'sirah-read' || screen === 'zikr-read';
 
   return (
     <div style={{
@@ -82,6 +89,13 @@ function AppShell() {
           />
         )}
         {screen === 'qibla' && <QiblaScreen onBack={back} />}
+        {screen === 'zikr' && <ZikrScreen onOpenSection={openZikrSection} />}
+        {screen === 'zikr-section' && (
+          <ZikrSectionScreen sectionId={zikrSectionId} onBack={back} onOpenReading={openZikrReading} />
+        )}
+        {screen === 'zikr-read' && (
+          <ZikrReadingScreen sectionId={zikrSectionId} itemId={zikrItemId} onBack={back} onOpenSurah={openSurah} />
+        )}
         {screen === 'profile' && <ProfileScreen />}
       </div>
 

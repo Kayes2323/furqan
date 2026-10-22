@@ -8,6 +8,9 @@ export type Screen =
   | 'sirah-part'
   | 'sirah-read'
   | 'qibla'
+  | 'zikr'
+  | 'zikr-section'
+  | 'zikr-read'
   | 'profile';
 
 export interface Surah {

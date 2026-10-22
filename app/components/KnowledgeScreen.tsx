@@ -1,6 +1,6 @@
 'use client';
 import {
-  FlaskConical, BookOpen, Scale, Users, Landmark, Compass, Heart, ArrowLeftRight, Library,
+  FlaskConical, BookOpen, Scale, Users, Landmark, Compass, Heart, ArrowLeftRight, Library, ShieldCheck,
 } from 'lucide-react';
 import type { Screen } from '../types';
 
@@ -96,6 +96,43 @@ export default function KnowledgeScreen({ onNavigate }: Props) {
               borderRadius: 100, padding: '5px 12px',
               fontSize: 11, lineHeight: 1.3, fontWeight: 600, color: '#fff',
             }}>জীবনী শুরু করুন →</div>
+          </div>
+        </div>
+
+        {/* ── আমল (যিকির) Card ── */}
+        <div onClick={() => onNavigate('zikr')} style={{
+          borderRadius: 22,
+          overflow: 'hidden',
+          cursor: 'pointer',
+          aspectRatio: '3 / 2',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'flex-end',
+          padding: '16px 18px 16px',
+          backgroundImage: 'linear-gradient(155deg, #2A1A0A 0%, #5A3A10 45%, #96702A 130%)',
+          position: 'relative',
+        }}>
+          <div style={{
+            position: 'absolute', right: -16, bottom: -24, fontSize: 140,
+            opacity: 0.08, lineHeight: 1, pointerEvents: 'none',
+          }}>🕋</div>
+          <div style={{ position: 'relative', zIndex: 2 }}>
+            <div style={{
+              width: 32, height: 32, borderRadius: 10, marginBottom: 8,
+              background: 'rgba(255,255,255,0.16)', border: '1px solid rgba(255,255,255,0.28)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}><ShieldCheck size={16} color="#fff" strokeWidth={1.8} /></div>
+            <div style={{ fontSize: 17, lineHeight: 1.25, fontWeight: 700, color: '#fff', marginBottom: 3 }}>আমল</div>
+            <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.78)', marginBottom: 10, maxWidth: 230, lineHeight: 1.4 }}>
+              সকাল-সন্ধ্যা ও রাতের তাসবিহ, আত্মরক্ষার আমল
+            </div>
+            <div style={{
+              display: 'inline-flex', alignItems: 'center', gap: 6,
+              background: 'rgba(255,255,255,0.16)',
+              border: '1px solid rgba(255,255,255,0.28)',
+              borderRadius: 100, padding: '5px 12px',
+              fontSize: 11, lineHeight: 1.3, fontWeight: 600, color: '#fff',
+            }}>আমল শুরু করুন →</div>
           </div>
         </div>
 
