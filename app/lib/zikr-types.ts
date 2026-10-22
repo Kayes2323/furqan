@@ -9,13 +9,28 @@
 // notes in zikr-data.ts for the full accounting.
 // ═══════════════════════════════════════════
 
+/** A precise reference into the canonical Tanzil dataset (surah + an
+ *  inclusive ayah range). Never carries Arabic text itself — every
+ *  screen that uses this loads the actual text live from
+ *  app/lib/reader-data.ts's loadSurah, so the canonical dataset is
+ *  never duplicated or re-typed for this feature. */
+export interface QuranRef {
+  surah: number;
+  ayahStart: number;
+  ayahEnd: number; // inclusive
+}
+
 /** A countable recitation: has an explicit source-given repetition target. */
 export interface RecitationItem {
   kind: 'recitation';
   id: string;
   order: number;
   title: string;
-  /** Arabic script, only when the source PDF actually provides it. */
+  /** Arabic script, only when the source PDF actually provides it AND
+   *  the text is not a Quranic ayah (e.g. a hadith-based dua like
+   *  Sayyidul Istighfar). An item whose recitation genuinely is Quran
+   *  text uses `quranRefs` instead, never this field — see
+   *  Phase 8.2's audit notes in zikr-data.ts. */
   arabic?: string;
   /** Bengali phonetic transliteration, only when the source provides it. */
   phonetic?: string;
@@ -26,10 +41,18 @@ export interface RecitationItem {
   /** True when the source names this recitation but doesn't give its full text. */
   needsReview?: boolean;
   reviewNote?: string;
-  /** Quran surah numbers (alquran.cloud convention) this item corresponds to,
-   *  when the user should be pointed at the app's existing Quran reader
-   *  instead of us re-typing canonical ayat ourselves. */
-  linkedSurahs?: number[];
+  /** Set only when this recitation's text has been verified (Phase 8.2
+   *  audit) to be an actual Quranic ayah or ayah range. The screen
+   *  loads and displays the canonical Arabic for each ref live, and
+   *  links to the existing Reader for the exact verse — never
+   *  hand-typed here. */
+  quranRefs?: QuranRef[];
+  /** A cautionary note shown alongside `quranRefs`, for the rare case
+   *  where the recited text is confirmed Quranic but the *practice*
+   *  around it (e.g. "recite N times morning and evening") rests on a
+   *  hadith whose authenticity is disputed among scholars — the two
+   *  facts must not be conflated into one confident claim. */
+  quranCaveatBn?: string;
 }
 
 /** A non-recitation practice: an action, habit, or situational dua. */
@@ -48,6 +71,11 @@ export interface PracticeItem {
   /** Points at a RecitationItem elsewhere that this item duplicates, so we
    *  cross-reference instead of creating a second counter for the same dhikr. */
   duplicatesItemId?: string;
+  /** Surah numbers this habit names by name (e.g. "recite Al-Baqarah,
+   *  Ya-Sin, ..."), for a quick-link list into the existing Reader —
+   *  surah-level only (no specific ayah range), since the practice
+   *  recommends recitation generally rather than one verse. */
+  quranSurahLinks?: number[];
 }
 
 export type ZikrItem = RecitationItem | PracticeItem;

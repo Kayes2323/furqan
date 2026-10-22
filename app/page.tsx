@@ -117,7 +117,7 @@ function AppShell() {
         {screen === 'qibla' && <QiblaScreen onBack={back} />}
         {screen === 'zikr' && <ZikrScreen onOpenSection={openZikrSection} />}
         {screen === 'zikr-section' && (
-          <ZikrSectionScreen sectionId={zikrSectionId} onBack={back} onOpenReading={openZikrReading} />
+          <ZikrSectionScreen sectionId={zikrSectionId} onBack={back} onOpenReading={openZikrReading} onOpenSurah={openReaderSurah} />
         )}
         {screen === 'zikr-read' && (
           <ZikrReadingScreen sectionId={zikrSectionId} itemId={zikrItemId} onBack={back} onOpenSurah={openReaderSurah} />

@@ -1,10 +1,12 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { CheckCircle2, Circle, ChevronDown, ChevronUp, Info } from 'lucide-react';
+import { CheckCircle2, Circle, ChevronDown, ChevronUp, Info, ExternalLink } from 'lucide-react';
 import BackButton from './BackButton';
 import { getZikrSection } from '../lib/zikr-data';
 import { isRecitation, recitationSequence, type ZikrItem } from '../lib/zikr-types';
+import { loadSurahMeta } from '../lib/reader-data';
+import type { SurahMeta } from '../lib/reader-types';
 import {
   loadSectionProgress,
   saveSectionProgress,
@@ -18,13 +20,15 @@ interface Props {
   sectionId: string;
   onBack: () => void;
   onOpenReading: (sectionId: string, itemId?: string) => void;
+  onOpenSurah: (surah: number, ayah?: number) => void;
 }
 
-export default function ZikrSectionScreen({ sectionId, onBack, onOpenReading }: Props) {
+export default function ZikrSectionScreen({ sectionId, onBack, onOpenReading, onOpenSurah }: Props) {
   const section = getZikrSection(sectionId);
   const sequence = section ? recitationSequence(section) : [];
   const [progress, setProgress] = useState<SectionProgress | null>(null);
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [surahMeta, setSurahMeta] = useState<SurahMeta[]>([]);
 
   useEffect(() => {
     if (!section) return;
@@ -35,6 +39,19 @@ export default function ZikrSectionScreen({ sectionId, onBack, onOpenReading }: 
       : { sectionId, counts: {}, completedIds: [], activeItemId: sequence[0]?.id ?? null, lastActiveDate: today };
     // eslint-disable-next-line react-hooks/set-state-in-effect -- reading localStorage progress on mount (matches app/lib/theme.tsx and the Sirah screens)
     setProgress(fresh);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sectionId]);
+
+  useEffect(() => {
+    const hasSurahLinks = section?.items.some((i) => !isRecitation(i) && i.quranSurahLinks && i.quranSurahLinks.length > 0);
+    if (!hasSurahLinks) return;
+    let cancelled = false;
+    loadSurahMeta().then((meta) => {
+      if (!cancelled) setSurahMeta(meta);
+    }).catch(() => {});
+    return () => {
+      cancelled = true;
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sectionId]);
 
@@ -98,6 +115,8 @@ export default function ZikrSectionScreen({ sectionId, onBack, onOpenReading }: 
             onToggleExpand={() => setExpandedId(expandedId === item.id ? null : item.id)}
             onTogglePractice={() => handleTogglePractice(item.id)}
             onOpenReading={() => onOpenReading(sectionId, item.id)}
+            surahMeta={surahMeta}
+            onOpenSurah={onOpenSurah}
           />
         ))}
       </div>
@@ -113,6 +132,8 @@ function ZikrItemRow({
   onToggleExpand,
   onTogglePractice,
   onOpenReading,
+  surahMeta,
+  onOpenSurah,
 }: {
   item: ZikrItem;
   done: boolean;
@@ -121,6 +142,8 @@ function ZikrItemRow({
   onToggleExpand: () => void;
   onTogglePractice: () => void;
   onOpenReading: () => void;
+  surahMeta: SurahMeta[];
+  onOpenSurah: (surah: number, ayah?: number) => void;
 }) {
   if (isRecitation(item)) {
     return (
@@ -157,7 +180,7 @@ function ZikrItemRow({
     );
   }
 
-  const hasReference = Boolean(item.phonetic);
+  const hasReference = Boolean(item.phonetic) || Boolean(item.quranSurahLinks && item.quranSurahLinks.length > 0);
 
   return (
     <div style={{
@@ -195,6 +218,32 @@ function ZikrItemRow({
           padding: '10px 14px 14px', borderTop: '1px solid var(--border)',
           fontSize: 13, color: 'var(--text)', lineHeight: 1.7, background: 'rgba(31,122,76,0.04)',
         }}>{item.phonetic}</div>
+      )}
+      {expanded && item.quranSurahLinks && item.quranSurahLinks.length > 0 && (
+        <div style={{
+          padding: '10px 14px 14px', borderTop: item.phonetic ? 'none' : '1px solid var(--border)',
+          background: 'rgba(31,122,76,0.04)',
+        }}>
+          <div style={{ fontSize: 10.5, color: 'var(--text-muted)', marginBottom: 8 }}>
+            উল্লেখিত সূরাসমূহ রিডারে পড়ুন:
+          </div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+            {item.quranSurahLinks.map((surahNum) => {
+              const meta = surahMeta.find((m) => m.number === surahNum);
+              return (
+                <button
+                  key={surahNum}
+                  onClick={(e) => { e.stopPropagation(); onOpenSurah(surahNum); }}
+                  style={{
+                    display: 'inline-flex', alignItems: 'center', gap: 4,
+                    background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 100,
+                    padding: '5px 11px', fontSize: 11, fontWeight: 600, color: 'var(--accent)', cursor: 'pointer',
+                  }}
+                >{meta ? meta.banglaName : `সূরা ${surahNum}`}<ExternalLink size={10} /></button>
+              );
+            })}
+          </div>
+        </div>
       )}
     </div>
   );
