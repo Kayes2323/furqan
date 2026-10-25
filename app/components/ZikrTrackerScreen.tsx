@@ -1,12 +1,13 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Plus, MoreHorizontal, Minus, CalendarDays, BarChart3, ListTodo, X } from 'lucide-react';
+import { Plus, MoreHorizontal, Minus, CalendarDays, BarChart3, ListTodo, X, ChevronRight } from 'lucide-react';
 import BackButton from './BackButton';
 import ZikrFormModal from './ZikrFormModal';
 import ZikrTrackerCalendarTab from './ZikrTrackerCalendarTab';
 import ZikrTrackerStatsTab from './ZikrTrackerStatsTab';
 import ZikrTrackerDayDetail from './ZikrTrackerDayDetail';
+import ZikrCounterScreen from './ZikrCounterScreen';
 import { loadTrackerData, saveTrackerData } from '../lib/zikr-tracker-storage';
 import {
   todayKey,
@@ -40,6 +41,7 @@ export default function ZikrTrackerScreen({ onBack }: Props) {
   const [actionSheetId, setActionSheetId] = useState<string | null>(null);
   const [correcting, setCorrecting] = useState(false);
   const [correctionValue, setCorrectionValue] = useState('');
+  const [countingZikrId, setCountingZikrId] = useState<string | null>(null);
   const [, forceTick] = useState(0);
 
   useEffect(() => {
@@ -109,6 +111,21 @@ export default function ZikrTrackerScreen({ onBack }: Props) {
   const inactiveZikrs = data.zikrs.filter((z) => z.status !== 'active');
   const editingZikr = editingId ? findZikr(data.zikrs, editingId) : undefined;
   const actionSheetZikr = actionSheetId ? findZikr(data.zikrs, actionSheetId) : undefined;
+  const countingZikr = countingZikrId ? findZikr(data.zikrs, countingZikrId) : undefined;
+
+  if (countingZikr) {
+    const record = findRecord(data.records, countingZikr.id, today);
+    const detail = buildDayZikrDetail(countingZikr, today, today, record)!;
+    return (
+      <ZikrCounterScreen
+        zikr={countingZikr}
+        detail={detail}
+        onIncrement={() => handleIncrement(countingZikr.id, 1)}
+        onDecrement={() => handleIncrement(countingZikr.id, -1)}
+        onBack={() => setCountingZikrId(null)}
+      />
+    );
+  }
 
   return (
     <div style={{ paddingBottom: 24 }}>
@@ -173,18 +190,40 @@ export default function ZikrTrackerScreen({ onBack }: Props) {
                 const record = findRecord(data.records, zikr.id, today);
                 const detail = buildDayZikrDetail(zikr, today, today, record)!;
                 return (
-                  <div key={zikr.id} style={{ background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 16, padding: '14px 14px' }}>
+                  <div
+                    key={zikr.id}
+                    role="button"
+                    tabIndex={0}
+                    aria-label={`${zikr.name} গণনার স্ক্রিন খুলুন — আজ ${detail.count} এর মধ্যে ${detail.target}`}
+                    className="zikr-card-pressable"
+                    onClick={() => setCountingZikrId(zikr.id)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        setCountingZikrId(zikr.id);
+                      }
+                    }}
+                    style={{ background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 16, padding: '14px 14px' }}
+                  >
                     <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8 }}>
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text)' }}>{zikr.name}</div>
                         {zikr.arabic && <div className="arabic" style={{ fontFamily: 'Amiri, serif', fontSize: 16, color: 'var(--text-muted)', marginTop: 2 }}>{zikr.arabic}</div>}
                       </div>
-                      <button
-                        type="button"
-                        aria-label="আরও অপশন"
-                        onClick={() => { setActionSheetId(zikr.id); setCorrecting(false); setCorrectionValue(String(detail.count)); }}
-                        style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-light)', padding: 4, flexShrink: 0 }}
-                      ><MoreHorizontal size={18} /></button>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 2, flexShrink: 0 }}>
+                        <ChevronRight size={16} color="var(--text-light)" aria-hidden="true" />
+                        <button
+                          type="button"
+                          aria-label="আরও অপশন"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setActionSheetId(zikr.id);
+                            setCorrecting(false);
+                            setCorrectionValue(String(detail.count));
+                          }}
+                          style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-light)', padding: 4 }}
+                        ><MoreHorizontal size={18} /></button>
+                      </div>
                     </div>
 
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 10 }}>
@@ -203,7 +242,7 @@ export default function ZikrTrackerScreen({ onBack }: Props) {
                         <button
                           type="button"
                           aria-label={`${zikr.name} এক কমান`}
-                          onClick={() => handleIncrement(zikr.id, -1)}
+                          onClick={(e) => { e.stopPropagation(); handleIncrement(zikr.id, -1); }}
                           style={{
                             width: 34, height: 34, borderRadius: '50%', border: '1px solid var(--border)',
                             background: 'var(--bg)', color: 'var(--text)', cursor: 'pointer',
@@ -213,7 +252,7 @@ export default function ZikrTrackerScreen({ onBack }: Props) {
                         <button
                           type="button"
                           aria-label={`${zikr.name} এক বাড়ান`}
-                          onClick={() => handleIncrement(zikr.id, 1)}
+                          onClick={(e) => { e.stopPropagation(); handleIncrement(zikr.id, 1); }}
                           style={{
                             minWidth: 56, height: 40, borderRadius: 12, border: 'none',
                             background: 'var(--accent)', color: '#fff', cursor: 'pointer', fontSize: 15, fontWeight: 700,
