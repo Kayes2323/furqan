@@ -92,3 +92,16 @@ body {
   .zikr-counter:active:not(:disabled) { transform: none; }
   .zikr-counter:disabled { animation: none; }
 }
+
+.zikr-card-pressable {
+  transition: transform 0.12s ease-out, box-shadow 0.12s ease-out;
+  cursor: pointer;
+}
+.zikr-card-pressable:active {
+  transform: scale(0.985);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .zikr-card-pressable { transition: none; }
+  .zikr-card-pressable:active { transform: none; }
+}

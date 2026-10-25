@@ -22,14 +22,18 @@ const labelStyle: React.CSSProperties = {
   fontSize: 11.5, fontWeight: 700, color: 'var(--text-muted)', display: 'block', marginBottom: 5,
 };
 
+// Deliberately minimal: only name + target are required. Arabic and
+// transliteration are optional and shown because they directly feed the
+// counting screen's display. Meaning/category/source were dropped from
+// this form by design (not from the data model — see zikr-tracker-engine's
+// updateZikr, which only ever touches a field that's actually present in
+// the submitted patch, so editing an older, richer zikr through this
+// simplified form never erases notes/category/sourceRef it already has).
 export default function ZikrFormModal({ existing, onSave, onClose }: Props) {
   const [name, setName] = useState(existing?.name ?? '');
   const [arabic, setArabic] = useState(existing?.arabic ?? '');
   const [transliteration, setTransliteration] = useState(existing?.transliteration ?? '');
-  const [notes, setNotes] = useState(existing?.notes ?? '');
   const [dailyTarget, setDailyTarget] = useState(existing ? String(existing.dailyTarget) : '33');
-  const [category, setCategory] = useState(existing?.category ?? '');
-  const [sourceRef, setSourceRef] = useState(existing?.sourceRef ?? '');
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   function handleSubmit(e: React.FormEvent) {
@@ -38,10 +42,7 @@ export default function ZikrFormModal({ existing, onSave, onClose }: Props) {
       name,
       arabic: arabic || undefined,
       transliteration: transliteration || undefined,
-      notes: notes || undefined,
       dailyTarget: Number(dailyTarget),
-      category: category || undefined,
-      sourceRef: sourceRef || undefined,
     };
     const result = validateZikrInput(input);
     if (!result.valid) {
@@ -85,7 +86,7 @@ export default function ZikrFormModal({ existing, onSave, onClose }: Props) {
         <div style={{ marginBottom: 12 }}>
           <label style={labelStyle} htmlFor="zikr-name">নাম *</label>
           <input
-            id="zikr-name" value={name} onChange={(e) => setName(e.target.value)}
+            id="zikr-name" autoFocus value={name} onChange={(e) => setName(e.target.value)}
             placeholder="যেমন: আস্তাগফিরুল্লাহ" style={inputStyle} maxLength={120}
           />
           {errors.name && <div style={{ color: '#C85A4C', fontSize: 11, marginTop: 4 }}>{errors.name}</div>}
@@ -100,7 +101,7 @@ export default function ZikrFormModal({ existing, onSave, onClose }: Props) {
           />
           {errors.dailyTarget && <div style={{ color: '#C85A4C', fontSize: 11, marginTop: 4 }}>{errors.dailyTarget}</div>}
           <div style={{ fontSize: 10.5, color: 'var(--text-light)', marginTop: 4, lineHeight: 1.5 }}>
-            এটি আপনার নিজের নির্ধারিত লক্ষ্য — এটিকে কোনো নির্দিষ্ট ধর্মীয় সংখ্যা হিসেবে দাবি করা হচ্ছে না।
+            এটি আপনার নিজের নির্ধারিত লক্ষ্য — কোনো নির্দিষ্ট ধর্মীয় সংখ্যা হিসেবে দাবি করা হচ্ছে না।
           </div>
         </div>
 
@@ -112,33 +113,9 @@ export default function ZikrFormModal({ existing, onSave, onClose }: Props) {
           />
         </div>
 
-        <div style={{ marginBottom: 12 }}>
+        <div style={{ marginBottom: 18 }}>
           <label style={labelStyle} htmlFor="zikr-translit">উচ্চারণ (ঐচ্ছিক)</label>
           <input id="zikr-translit" value={transliteration} onChange={(e) => setTransliteration(e.target.value)} style={inputStyle} />
-        </div>
-
-        <div style={{ marginBottom: 12 }}>
-          <label style={labelStyle} htmlFor="zikr-notes">অর্থ/নোট (ঐচ্ছিক)</label>
-          <textarea
-            id="zikr-notes" value={notes} onChange={(e) => setNotes(e.target.value)} rows={2}
-            style={{ ...inputStyle, resize: 'vertical', fontFamily: 'Hind Siliguri, sans-serif' }}
-          />
-        </div>
-
-        <div style={{ marginBottom: 12 }}>
-          <label style={labelStyle} htmlFor="zikr-category">ক্যাটাগরি (ঐচ্ছিক)</label>
-          <input id="zikr-category" value={category} onChange={(e) => setCategory(e.target.value)} placeholder="যেমন: তাসবিহ, দরূদ" style={inputStyle} />
-        </div>
-
-        <div style={{ marginBottom: 16 }}>
-          <label style={labelStyle} htmlFor="zikr-source">সূত্র/রেফারেন্স (ঐচ্ছিক)</label>
-          <input
-            id="zikr-source" value={sourceRef} onChange={(e) => setSourceRef(e.target.value)}
-            placeholder="যদি কোনো নির্দিষ্ট উৎস থাকে" style={inputStyle}
-          />
-          <div style={{ fontSize: 10.5, color: 'var(--text-light)', marginTop: 4, lineHeight: 1.5 }}>
-            আপনি যা লিখবেন তা অপরিবর্তিতভাবে রাখা হবে — কোনো কুরআন/হাদিস রেফারেন্স নিজে থেকে তৈরি করা হয় না।
-          </div>
         </div>
 
         <button
