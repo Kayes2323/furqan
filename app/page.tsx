@@ -13,6 +13,7 @@ import QiblaScreen from './components/QiblaScreen';
 import ZikrScreen from './components/ZikrScreen';
 import ZikrSectionScreen from './components/ZikrSectionScreen';
 import ZikrReadingScreen from './components/ZikrReadingScreen';
+import ZikrTrackerScreen from './components/ZikrTrackerScreen';
 import ReaderScreen from './components/ReaderScreen';
 import ReaderSurahScreen from './components/ReaderSurahScreen';
 import ReaderSearchScreen from './components/ReaderSearchScreen';
@@ -57,6 +58,7 @@ function AppShell() {
     openPart,
     openZikrSection,
     openZikrReading,
+    openZikrTracker,
     openReader,
     openReaderSurah,
     openReaderSearch,
@@ -168,13 +170,14 @@ function AppShell() {
           />
         )}
         {screen === 'qibla' && <QiblaScreen onBack={back} />}
-        {screen === 'zikr' && <ZikrScreen onOpenSection={openZikrSection} />}
+        {screen === 'zikr' && <ZikrScreen onOpenSection={openZikrSection} onOpenTracker={openZikrTracker} />}
         {screen === 'zikr-section' && (
           <ZikrSectionScreen sectionId={zikrSectionId} onBack={back} onOpenReading={openZikrReading} onOpenSurah={openReaderSurah} />
         )}
         {screen === 'zikr-read' && (
           <ZikrReadingScreen sectionId={zikrSectionId} itemId={zikrItemId} onBack={back} onOpenSurah={openReaderSurah} />
         )}
+        {screen === 'zikr-tracker' && <ZikrTrackerScreen onBack={back} />}
         {screen === 'reader' && (
           <ReaderScreen
             onBack={back}
