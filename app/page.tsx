@@ -29,8 +29,12 @@ import ImportantSurahDetailScreen from './components/ImportantSurahDetailScreen'
 import ProfileScreen from './components/ProfileScreen';
 import BottomNav from './components/BottomNav';
 import SplashScreen from './components/SplashScreen';
+import ReaderDesktopShell from './components/ReaderDesktopShell';
 import { ThemeProvider } from './lib/theme';
 import { useAppNavigation } from './hooks/useAppNavigation';
+import { useIsDesktop } from './hooks/useViewport';
+
+const READER_GROUP_SCREENS = ['reader', 'reader-surah', 'reader-search', 'reader-bookmarks'];
 
 function AppShell() {
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -53,6 +57,7 @@ function AppShell() {
     openPart,
     openZikrSection,
     openZikrReading,
+    openReader,
     openReaderSurah,
     openReaderSearch,
     openReaderBookmarks,
@@ -64,7 +69,55 @@ function AppShell() {
     openImportantDetail,
   } = useAppNavigation(scrollRef);
 
+  const isDesktop = useIsDesktop();
   const isReading = screen === 'sirah-read' || screen === 'zikr-read' || screen === 'reader-surah';
+
+  if (isDesktop && READER_GROUP_SCREENS.includes(screen)) {
+    return (
+      <>
+      {showSplash && <SplashScreen onDone={() => setShowSplash(false)} />}
+      <ReaderDesktopShell
+        screen={screen}
+        readerSurahNumber={readerSurahNumber}
+        onBack={back}
+        onHome={() => navigateScreen('home')}
+        onOpenReaderHome={openReader}
+        onOpenSurah={openReaderSurah}
+        onOpenSearch={openReaderSearch}
+        onOpenBookmarks={openReaderBookmarks}
+      >
+        {({ prefs, onPrefsChange }) => (
+          <>
+            {screen === 'reader' && (
+              <ReaderScreen
+                onBack={back}
+                onOpenSurah={openReaderSurah}
+                onOpenSearch={openReaderSearch}
+                onOpenBookmarks={openReaderBookmarks}
+              />
+            )}
+            {screen === 'reader-surah' && (
+              <ReaderSurahScreen
+                surahNumber={readerSurahNumber}
+                targetAyah={readerAyahNumber}
+                onBack={back}
+                onOpenSurah={openReaderSurah}
+                prefs={prefs}
+                onPrefsChange={onPrefsChange}
+              />
+            )}
+            {screen === 'reader-search' && (
+              <ReaderSearchScreen onBack={back} onOpenSurah={openReaderSurah} />
+            )}
+            {screen === 'reader-bookmarks' && (
+              <ReaderBookmarksScreen onBack={back} onOpenSurah={openReaderSurah} />
+            )}
+          </>
+        )}
+      </ReaderDesktopShell>
+      </>
+    );
+  }
 
   return (
     <div style={{
