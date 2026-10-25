@@ -1,8 +1,9 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
-import { Bookmark, BookmarkCheck, ChevronLeft, ChevronRight, RotateCw, WifiOff } from 'lucide-react';
+import { useEffect, useRef, useState, type CSSProperties } from 'react';
+import { Bookmark, BookmarkCheck, ChevronLeft, ChevronRight, Minimize2, RotateCw, WifiOff } from 'lucide-react';
 import BackButton from './BackButton';
+import ReaderToolbar from './ReaderToolbar';
 import { loadSurahMeta, loadSurah } from '../lib/reader-data';
 import {
   saveLastRead,
@@ -12,6 +13,18 @@ import {
   isBookmarked,
 } from '../lib/reader-progress';
 import { splitOpeningBismillah } from '../lib/bismillah';
+import {
+  type ReaderPrefs,
+  loadReaderPrefs,
+  saveReaderPrefs,
+  defaultReaderPrefs,
+  resolveReaderPalette,
+  toggleFocusMode,
+  BASE_ARABIC_PX_MOBILE,
+  BASE_ARABIC_PX_DESKTOP,
+  READER_WIDTH_PX,
+} from '../lib/reader-prefs';
+import { useTheme } from '../lib/theme';
 import type { SurahMeta, SurahDoc, ReaderBookmark } from '../lib/reader-types';
 
 interface Props {
@@ -19,16 +32,62 @@ interface Props {
   targetAyah?: number;
   onBack: () => void;
   onOpenSurah: (surah: number, ayah?: number) => void;
+  // When provided (desktop, via ReaderDesktopShell), reading preferences
+  // are controlled from outside and this screen renders no toolbar of its
+  // own. When omitted (mobile), the screen manages its own preferences
+  // and shows a compact inline control row.
+  prefs?: ReaderPrefs;
+  onPrefsChange?: (next: ReaderPrefs) => void;
 }
 
 type LoadState = 'loading' | 'error' | 'ready';
 
-export default function ReaderSurahScreen({ surahNumber, targetAyah, onBack, onOpenSurah }: Props) {
+export default function ReaderSurahScreen({ surahNumber, targetAyah, onBack, onOpenSurah, prefs: prefsProp, onPrefsChange: onPrefsChangeProp }: Props) {
+  const { theme: appTheme } = useTheme();
   const [allMeta, setAllMeta] = useState<SurahMeta[]>([]);
   const [doc, setDoc] = useState<SurahDoc | null>(null);
   const [loadState, setLoadState] = useState<LoadState>('loading');
   const [bookmarks, setBookmarks] = useState<ReaderBookmark[]>([]);
   const [retryTick, setRetryTick] = useState(0);
+  const [localPrefs, setLocalPrefs] = useState<ReaderPrefs>(() => defaultReaderPrefs());
+
+  const isControlled = prefsProp !== undefined;
+  const prefs = prefsProp ?? localPrefs;
+
+  useEffect(() => {
+    if (isControlled) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- reading localStorage reading-prefs on mount (matches app/lib/theme.tsx and the Sirah screens)
+    setLocalPrefs(loadReaderPrefs(appTheme === 'dark' ? 'dark' : 'light'));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  function handlePrefsChange(next: ReaderPrefs) {
+    if (onPrefsChangeProp) {
+      onPrefsChangeProp(next);
+      return;
+    }
+    setLocalPrefs(next);
+    saveReaderPrefs(next);
+  }
+
+  const palette = resolveReaderPalette(prefs.theme);
+  const paletteVars = {
+    '--bg': palette.bg,
+    '--card': palette.card,
+    '--text': palette.text,
+    '--text-muted': palette.textMuted,
+    '--text-light': palette.textLight,
+    '--border': palette.border,
+    '--accent': palette.accent,
+    '--accent-light': palette.accentLight,
+    '--gold': palette.gold,
+    '--gold-light': palette.goldLight,
+  } as CSSProperties;
+
+  const baseArabicPx = isControlled ? BASE_ARABIC_PX_DESKTOP : BASE_ARABIC_PX_MOBILE;
+  const arabicFontSize = Math.round(baseArabicPx * prefs.fontScale);
+  const bismillahFontSize = Math.round((baseArabicPx - 2) * prefs.fontScale);
+  const columnMaxWidth = READER_WIDTH_PX[prefs.width];
 
   const ayahRefs = useRef(new Map<number, HTMLDivElement>());
   const visibleAyahRef = useRef<number>(targetAyah ?? 1);
@@ -122,31 +181,61 @@ export default function ReaderSurahScreen({ surahNumber, targetAyah, onBack, onO
   const nextSurah = surahNumber < 114 ? surahNumber + 1 : null;
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: 'var(--bg)' }}>
-      <div style={{
-        padding: '44px 16px 12px', flexShrink: 0,
-        borderBottom: '1px solid var(--border)',
-        display: 'flex', alignItems: 'center', gap: 10,
-      }}>
-        <BackButton onClick={onBack} variant="dark" />
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 14.5, fontWeight: 700, color: 'var(--text)' }}>
-            {meta ? `${meta.number}. ${meta.banglaName}` : `সূরা ${surahNumber}`}
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: 'var(--bg)', ...paletteVars }}>
+      {prefs.focusMode && (
+        <button
+          type="button"
+          aria-label="ফোকাস মোড থেকে বের হন"
+          onClick={() => handlePrefsChange(toggleFocusMode(prefs))}
+          style={{
+            position: 'fixed', top: 14, right: 14, zIndex: 40,
+            width: 36, height: 36, borderRadius: '50%',
+            background: 'var(--card)', border: '1px solid var(--border)', color: 'var(--accent)',
+            cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+            boxShadow: '0 2px 10px rgba(0,0,0,0.14)',
+          }}
+        ><Minimize2 size={16} /></button>
+      )}
+
+      {!prefs.focusMode && (
+        <div style={{
+          padding: '44px 16px 12px', flexShrink: 0,
+          borderBottom: '1px solid var(--border)',
+          display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap',
+        }}>
+          <BackButton onClick={onBack} variant="dark" />
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontSize: 14.5, fontWeight: 700, color: 'var(--text)' }}>
+              {meta ? `${meta.number}. ${meta.banglaName}` : `সূরা ${surahNumber}`}
+            </div>
+            {meta && (
+              <div style={{ fontSize: 10.5, color: 'var(--text-muted)', marginTop: 1 }}>
+                {meta.ayahCount} আয়াত • {meta.revelationType === 'Meccan' ? 'মক্কি' : 'মাদানি'}
+              </div>
+            )}
           </div>
           {meta && (
-            <div style={{ fontSize: 10.5, color: 'var(--text-muted)', marginTop: 1 }}>
-              {meta.ayahCount} আয়াত • {meta.revelationType === 'Meccan' ? 'মক্কি' : 'মাদানি'}
+            <div className="arabic" style={{ fontFamily: 'Amiri, serif', fontSize: 20, color: 'var(--accent)', flexShrink: 0 }}>
+              {meta.arabicName}
+            </div>
+          )}
+          {!isControlled && (
+            <div style={{ width: '100%' }}>
+              <ReaderToolbar
+                compact
+                prefs={prefs}
+                onPrefsChange={handlePrefsChange}
+                allMeta={allMeta}
+                onOpenSurah={onOpenSurah}
+                currentSurah={surahNumber}
+              />
             </div>
           )}
         </div>
-        {meta && (
-          <div className="arabic" style={{ fontFamily: 'Amiri, serif', fontSize: 20, color: 'var(--accent)', flexShrink: 0 }}>
-            {meta.arabicName}
-          </div>
-        )}
-      </div>
+      )}
 
       <div style={{ overflowY: 'auto', flex: 1, minHeight: 0, padding: '14px 16px 10px' }}>
+        <div style={{ maxWidth: columnMaxWidth, margin: '0 auto', width: '100%' }}>
         {loadState === 'loading' && (
           <div style={{ padding: '60px 0', textAlign: 'center', color: 'var(--text-muted)' }}>
             <RotateCw size={22} className="qibla-spin" style={{ marginBottom: 10 }} />
@@ -184,7 +273,7 @@ export default function ReaderSurahScreen({ surahNumber, targetAyah, onBack, onO
                 <div
                   className="arabic"
                   style={{
-                    fontFamily: 'Amiri, serif', fontSize: 21, lineHeight: 1.9,
+                    fontFamily: 'Amiri, serif', fontSize: bismillahFontSize, lineHeight: 1.9,
                     textAlign: 'center', color: 'var(--accent)',
                     padding: '10px 16px', marginBottom: 10,
                   }}
@@ -206,7 +295,7 @@ export default function ReaderSurahScreen({ surahNumber, targetAyah, onBack, onO
                 <div
                   className="arabic"
                   style={{
-                    fontFamily: 'Amiri, serif', fontSize: 23, lineHeight: 2.1,
+                    fontFamily: 'Amiri, serif', fontSize: arabicFontSize, lineHeight: 2.1,
                     textAlign: 'right', color: 'var(--text)',
                   }}
                 >
@@ -265,6 +354,7 @@ export default function ReaderSurahScreen({ surahNumber, targetAyah, onBack, onO
             >পরবর্তী সূরা<ChevronRight size={15} /></button>
           </div>
         )}
+        </div>
       </div>
     </div>
   );
