@@ -15,7 +15,7 @@ export interface AppRoute {
 
 const VALID_SCREENS: Screen[] = [
   'home', 'tafsir', 'nur', 'knowledge', 'research', 'sirah', 'sirah-part', 'sirah-read', 'qibla',
-  'zikr', 'zikr-section', 'zikr-read', 'reader', 'reader-surah', 'reader-search', 'reader-bookmarks',
+  'zikr', 'zikr-section', 'zikr-read', 'zikr-tracker', 'reader', 'reader-surah', 'reader-search', 'reader-bookmarks',
   'khatm', 'khatm-setup', 'nazera', 'nazera-setup', 'recite',
   'quran-hub', 'quran-topics', 'topic-detail', 'important-detail', 'profile',
 ];

@@ -1,13 +1,14 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Sunrise, ListChecks, MoonStar, ChevronRight, ShieldCheck } from 'lucide-react';
+import { Sunrise, ListChecks, MoonStar, ChevronRight, ShieldCheck, Target } from 'lucide-react';
 import { ZIKR_COLLECTION } from '../lib/zikr-data';
 import { recitationSequence } from '../lib/zikr-types';
 import { loadSectionProgress, withDailyReset, todayKey } from '../lib/zikr-progress';
 
 interface Props {
   onOpenSection: (sectionId: string) => void;
+  onOpenTracker: () => void;
 }
 
 const SECTION_VISUALS: Record<string, { icon: React.ElementType; color: string; bg: string }> = {
@@ -16,7 +17,7 @@ const SECTION_VISUALS: Record<string, { icon: React.ElementType; color: string; 
   'before-sleep': { icon: MoonStar, color: '#3B4C8A', bg: 'rgba(59,76,138,0.12)' },
 };
 
-export default function ZikrScreen({ onOpenSection }: Props) {
+export default function ZikrScreen({ onOpenSection, onOpenTracker }: Props) {
   const [progressTick, setProgressTick] = useState(0);
 
   useEffect(() => {
@@ -96,6 +97,31 @@ export default function ZikrScreen({ onOpenSection }: Props) {
             </div>
           );
         })}
+      </div>
+
+      <div style={{ padding: '16px 16px 0' }}>
+        <div
+          onClick={onOpenTracker}
+          style={{
+            background: 'var(--card)', border: '1px solid var(--border)',
+            borderRadius: 18, padding: '16px 16px', cursor: 'pointer',
+            display: 'flex', alignItems: 'center', gap: 14,
+            boxShadow: '0 3px 14px rgba(15,42,25,0.07)',
+          }}
+        >
+          <div style={{
+            width: 46, height: 46, borderRadius: 14, flexShrink: 0,
+            background: 'rgba(150,112,42,0.14)', color: 'var(--gold)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}><Target size={22} strokeWidth={1.8} /></div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text)' }}>আমার কাস্টম যিকির ট্র্যাকার</div>
+            <div style={{ fontSize: 11.5, color: 'var(--text-muted)', marginTop: 2, lineHeight: 1.4 }}>
+              নিজের যিকির যোগ করুন, দৈনিক গণনা রাখুন, ৩০ দিনের ইতিহাস দেখুন
+            </div>
+          </div>
+          <ChevronRight size={18} color="var(--text-light)" strokeWidth={1.8} />
+        </div>
       </div>
 
       <div style={{

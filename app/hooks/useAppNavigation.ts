@@ -112,6 +112,10 @@ export function useAppNavigation(scrollContainerRef?: RefObject<HTMLElement | nu
     [navigate],
   );
 
+  const openZikrTracker = useCallback(() => {
+    navigate({ screen: 'zikr-tracker' });
+  }, [navigate]);
+
   const openReader = useCallback(() => {
     navigate({ screen: 'reader' });
   }, [navigate]);
@@ -193,6 +197,7 @@ export function useAppNavigation(scrollContainerRef?: RefObject<HTMLElement | nu
     openPart,
     openZikrSection,
     openZikrReading,
+    openZikrTracker,
     openReader,
     openReaderSurah,
     openReaderSearch,

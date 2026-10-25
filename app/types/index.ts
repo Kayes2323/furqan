@@ -11,6 +11,7 @@ export type Screen =
   | 'zikr'
   | 'zikr-section'
   | 'zikr-read'
+  | 'zikr-tracker'
   | 'reader'
   | 'reader-surah'
   | 'reader-search'
