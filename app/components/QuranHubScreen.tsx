@@ -18,8 +18,8 @@ const ITEMS = [
     screen: 'quran-topics' as Screen, tint: { bg: 'rgba(150,112,42,0.16)', fg: 'var(--gold)' },
   },
   {
-    icon: BookOpen, title: 'তাফসির', sub: '১১৪টি সূরার তাফসির',
-    screen: 'tafsir' as Screen, tint: { bg: 'rgba(47,160,107,0.14)', fg: 'var(--green-light)' },
+    icon: BookOpen, title: 'তাফসির', sub: 'রিডারে আয়াত নির্বাচন করে বাংলা তাফসির পড়ুন',
+    screen: 'reader' as Screen, tint: { bg: 'rgba(47,160,107,0.14)', fg: 'var(--green-light)' },
   },
   {
     icon: BookOpenCheck, title: 'নাযেরা', sub: 'মুসহাফ দেখে নিয়মিত তিলাওয়াতের অভ্যাস গড়ুন',

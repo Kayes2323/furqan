@@ -2,7 +2,6 @@
 
 import { Suspense, useRef, useState } from 'react';
 import HomeScreen from './components/HomeScreen';
-import TafsirScreen from './components/TafsirScreen';
 import NurScreen from './components/NurScreen';
 import KnowledgeScreen from './components/KnowledgeScreen';
 import ResearchScreen from './components/ResearchScreen';
@@ -42,7 +41,6 @@ function AppShell() {
   const [showSplash, setShowSplash] = useState(true);
   const {
     screen,
-    surahNumber,
     chapterId,
     partId,
     zikrSectionId,
@@ -53,7 +51,6 @@ function AppShell() {
     importantId,
     navigateScreen,
     back,
-    openSurah,
     openChapter,
     openPart,
     openZikrSection,
@@ -145,13 +142,6 @@ function AppShell() {
         }}
       >
         {screen === 'home' && <HomeScreen onNavigate={navigateScreen} />}
-        {screen === 'tafsir' && (
-          <TafsirScreen
-            surahNumber={surahNumber}
-            onOpenSurah={openSurah}
-            onBack={back}
-          />
-        )}
         {screen === 'nur' && <NurScreen />}
         {screen === 'knowledge' && <KnowledgeScreen onNavigate={navigateScreen} />}
         {screen === 'research' && <ResearchScreen onBack={back} />}
