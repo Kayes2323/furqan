@@ -170,6 +170,24 @@ export function useAppNavigation(scrollContainerRef?: RefObject<HTMLElement | nu
     [navigate],
   );
 
+  const openSunnahLifeAreas = useCallback(() => {
+    navigate({ screen: 'sunnah-life-areas' });
+  }, [navigate]);
+
+  const openSunnahLifeAreaDetail = useCallback(
+    (lifeAreaId: string) => {
+      navigate({ screen: 'sunnah-life-area-detail', lifeAreaId });
+    },
+    [navigate],
+  );
+
+  const openSunnahPracticeDetail = useCallback(
+    (practiceId: string) => {
+      navigate({ screen: 'sunnah-practice-detail', practiceId });
+    },
+    [navigate],
+  );
+
   return {
     route,
     screen: route.screen,
@@ -181,6 +199,8 @@ export function useAppNavigation(scrollContainerRef?: RefObject<HTMLElement | nu
     readerAyahNumber: route.readerAyah,
     topicId: route.topicId ?? 'sabr',
     importantId: route.importantId ?? 'al-mulk',
+    lifeAreaId: route.lifeAreaId ?? 'relationship-with-allah',
+    practiceId: route.practiceId ?? 'sp-fajr-prayer',
     navigate,
     navigateScreen,
     back,
@@ -202,5 +222,8 @@ export function useAppNavigation(scrollContainerRef?: RefObject<HTMLElement | nu
     openQuranTopics,
     openTopicDetail,
     openImportantDetail,
+    openSunnahLifeAreas,
+    openSunnahLifeAreaDetail,
+    openSunnahPracticeDetail,
   };
 }

@@ -26,6 +26,10 @@ import QuranHubScreen from './components/QuranHubScreen';
 import QuranTopicsScreen from './components/QuranTopicsScreen';
 import TopicDetailScreen from './components/TopicDetailScreen';
 import ImportantSurahDetailScreen from './components/ImportantSurahDetailScreen';
+import SunnahLifeTodayScreen from './components/SunnahLifeTodayScreen';
+import SunnahLifeAreasScreen from './components/SunnahLifeAreasScreen';
+import SunnahLifeAreaDetailScreen from './components/SunnahLifeAreaDetailScreen';
+import SunnahPracticeDetailScreen from './components/SunnahPracticeDetailScreen';
 import ProfileScreen from './components/ProfileScreen';
 import BottomNav from './components/BottomNav';
 import MainSidebar from './components/MainSidebar';
@@ -50,6 +54,8 @@ function AppShell() {
     readerAyahNumber,
     topicId,
     importantId,
+    lifeAreaId,
+    practiceId,
     navigateScreen,
     back,
     openChapter,
@@ -67,6 +73,9 @@ function AppShell() {
     openNazeraSetup,
     openTopicDetail,
     openImportantDetail,
+    openSunnahLifeAreas,
+    openSunnahLifeAreaDetail,
+    openSunnahPracticeDetail,
   } = useAppNavigation(scrollRef);
 
   const isDesktop = useIsDesktop();
@@ -194,6 +203,26 @@ function AppShell() {
         )}
         {screen === 'important-detail' && (
           <ImportantSurahDetailScreen importantId={importantId} onBack={back} onOpenReaderSurah={openReaderSurah} />
+        )}
+        {screen === 'sunnah-life' && (
+          <SunnahLifeTodayScreen
+            onBack={back}
+            onOpenAreas={openSunnahLifeAreas}
+            onOpenPractice={openSunnahPracticeDetail}
+          />
+        )}
+        {screen === 'sunnah-life-areas' && (
+          <SunnahLifeAreasScreen onBack={back} onOpenArea={openSunnahLifeAreaDetail} />
+        )}
+        {screen === 'sunnah-life-area-detail' && (
+          <SunnahLifeAreaDetailScreen
+            lifeAreaId={lifeAreaId}
+            onBack={back}
+            onOpenPractice={openSunnahPracticeDetail}
+          />
+        )}
+        {screen === 'sunnah-practice-detail' && (
+          <SunnahPracticeDetailScreen practiceId={practiceId} onBack={back} />
         )}
         {screen === 'profile' && <ProfileScreen />}
     </>

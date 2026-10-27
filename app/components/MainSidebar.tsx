@@ -37,7 +37,11 @@ export default function MainSidebar({ current, onNavigate }: Props) {
     current === 'zikr' ||
     current === 'zikr-section' ||
     current === 'zikr-read' ||
-    current === 'recite';
+    current === 'recite' ||
+    current === 'sunnah-life' ||
+    current === 'sunnah-life-areas' ||
+    current === 'sunnah-life-area-detail' ||
+    current === 'sunnah-practice-detail';
 
   return (
     <nav

@@ -10,13 +10,17 @@ export interface AppRoute {
   readerAyah?: number;
   topicId?: string;
   importantId?: string;
+  lifeAreaId?: string;
+  practiceId?: string;
 }
 
 const VALID_SCREENS: Screen[] = [
   'home', 'nur', 'knowledge', 'research', 'sirah', 'sirah-part', 'sirah-read', 'qibla',
   'zikr', 'zikr-section', 'zikr-read', 'zikr-tracker', 'reader', 'reader-surah', 'reader-search', 'reader-bookmarks',
   'khatm', 'khatm-setup', 'nazera', 'nazera-setup', 'recite',
-  'quran-hub', 'quran-topics', 'topic-detail', 'important-detail', 'profile',
+  'quran-hub', 'quran-topics', 'topic-detail', 'important-detail',
+  'sunnah-life', 'sunnah-life-areas', 'sunnah-life-area-detail', 'sunnah-practice-detail',
+  'profile',
 ];
 
 export function isValidScreen(value: string | null): value is Screen {
@@ -34,6 +38,8 @@ export function routeToParams(route: AppRoute): URLSearchParams {
   if (route.readerAyah != null) params.set('rayah', String(route.readerAyah));
   if (route.topicId) params.set('topic', route.topicId);
   if (route.importantId) params.set('imp', route.importantId);
+  if (route.lifeAreaId) params.set('area', route.lifeAreaId);
+  if (route.practiceId) params.set('practice', route.practiceId);
   return params;
 }
 
@@ -54,6 +60,16 @@ export function paramsToRoute(params: URLSearchParams): AppRoute {
   const readerAyah = readerAyahRaw ? Number(readerAyahRaw) : undefined;
   const topicId = params.get('topic') ?? undefined;
   const importantId = params.get('imp') ?? undefined;
+  const lifeAreaId = params.get('area') ?? undefined;
+  const practiceId = params.get('practice') ?? undefined;
+
+  if (screen === 'sunnah-life-area-detail') {
+    return { screen, lifeAreaId: lifeAreaId ?? 'relationship-with-allah' };
+  }
+
+  if (screen === 'sunnah-practice-detail') {
+    return { screen, practiceId: practiceId ?? 'sp-fajr-prayer' };
+  }
 
   if (screen === 'topic-detail') {
     return { screen, topicId: topicId ?? 'sabr' };
@@ -92,6 +108,8 @@ export function routesEqual(a: AppRoute, b: AppRoute): boolean {
     a.readerSurah === b.readerSurah &&
     a.readerAyah === b.readerAyah &&
     a.topicId === b.topicId &&
-    a.importantId === b.importantId
+    a.importantId === b.importantId &&
+    a.lifeAreaId === b.lifeAreaId &&
+    a.practiceId === b.practiceId
   );
 }
