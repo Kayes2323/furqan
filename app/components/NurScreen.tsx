@@ -1,7 +1,8 @@
 'use client';
 import { useState, useRef, useEffect } from 'react';
 import { Send } from 'lucide-react';
-import type { ChatMessage } from '../types';
+import type { ChatMessage, NurRef, NurSource } from '../types';
+import { consumePendingNurQuery } from '../lib/nur-handoff';
 
 const SUGGESTIONS = [
   'সুদ কেন হারাম?',
@@ -14,11 +15,15 @@ const SUGGESTIONS = [
 
 const INITIAL: ChatMessage = {
   role: 'nur',
-  content: 'আস-সালামু আলাইকুম! আমি NUR — নূর।\n\nকুরআন ও সহীহ হাদিসের আলোয় যেকোনো প্রশ্নের উত্তর দিতে প্রস্তুত।\n\nসরাসরি উত্তর না জানলেও সংশ্লিষ্ট আয়াত দেবো, যাতে তুমি নিজে ভাবতে পারো। আল্লাহ চিন্তাশীলদের জন্যই এই কিতাব নাজিল করেছেন।',
-  refs: ['সূরা ৩৮:২৯'],
+  content: 'আস-সালামু আলাইকুম! আমি NUR — নূর।\n\nকুরআন ও তাফসিরের যাচাইকৃত উৎস থেকে যেকোনো প্রশ্নের উত্তর দিতে প্রস্তুত।\n\nসরাসরি উত্তর না জানলেও সংশ্লিষ্ট আয়াত দেবো, যাতে তুমি নিজে ভাবতে পারো। আল্লাহ চিন্তাশীলদের জন্যই এই কিতাব নাজিল করেছেন।',
+  refs: [{ surah: 38, ayah: 29, label: 'সূরা সাদ ৩৮:২৯' }],
 };
 
-export default function NurScreen() {
+interface Props {
+  onOpenReaderSurah?: (surah: number, ayah?: number) => void;
+}
+
+export default function NurScreen({ onOpenReaderSurah }: Props) {
   const [messages, setMessages] = useState<ChatMessage[]>([INITIAL]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -28,7 +33,16 @@ export default function NurScreen() {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  async function send(text: string) {
+  // Consume a one-shot "ask NUR about this ayah" handoff from the Reader,
+  // if one was set, and auto-send it with its explicit surah/ayah context
+  // — NUR never has to guess which ayah is meant in this flow.
+  useEffect(() => {
+    const pending = consumePendingNurQuery();
+    if (pending) send(pending.text, { surah: pending.surah, ayah: pending.ayah });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  async function send(text: string, context?: { surah: number; ayah?: number }) {
     if (!text.trim() || loading) return;
     const userMsg: ChatMessage = { role: 'user', content: text };
     setMessages(prev => [...prev, userMsg]);
@@ -39,10 +53,10 @@ export default function NurScreen() {
       const res = await fetch('/api/nur', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: text, history: messages }),
+        body: JSON.stringify({ message: text, history: messages, context }),
       });
       const data = await res.json();
-      setMessages(prev => [...prev, { role: 'nur', content: data.reply, refs: data.refs }]);
+      setMessages(prev => [...prev, { role: 'nur', content: data.reply, refs: data.refs, sources: data.sources }]);
     } catch {
       setMessages(prev => [...prev, {
         role: 'nur',
@@ -50,6 +64,10 @@ export default function NurScreen() {
       }]);
     }
     setLoading(false);
+  }
+
+  function handleRefTap(ref: NurRef) {
+    onOpenReaderSurah?.(ref.surah, ref.ayah);
   }
 
   return (
@@ -62,7 +80,7 @@ export default function NurScreen() {
       }}>
         <div style={{ fontFamily: 'Amiri, serif', fontSize: 44, marginBottom: 4, lineHeight: 1 }}>ن</div>
         <div style={{ fontSize: 22, fontWeight: 700, letterSpacing: 2 }}>NUR</div>
-        <div style={{ fontSize: 12, opacity: 0.8, marginTop: 4 }}>نور — কুরআন ও হাদিসের আলোয় উত্তর</div>
+        <div style={{ fontSize: 12, opacity: 0.8, marginTop: 4 }}>نور — কুরআন ও তাফসিরের আলোয় উত্তর</div>
       </div>
 
       {/* Suggestions */}
@@ -103,11 +121,28 @@ export default function NurScreen() {
               {msg.content}
               {msg.refs && msg.refs.length > 0 && (
                 <div style={{ marginTop: 8, display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-                  {msg.refs.map(r => (
-                    <span key={r} style={{
-                      background: 'rgba(26,95,122,0.1)', color: 'var(--accent)',
-                      fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 10,
-                    }}>{r}</span>
+                  {msg.refs.map((r, ri) => (
+                    <button
+                      key={`${r.surah}:${r.ayah}:${ri}`}
+                      onClick={() => handleRefTap(r)}
+                      disabled={!onOpenReaderSurah}
+                      style={{
+                        background: 'rgba(26,95,122,0.1)', color: 'var(--accent)',
+                        fontSize: 10, fontWeight: 700, padding: '3px 9px', borderRadius: 10,
+                        border: 'none', cursor: onOpenReaderSurah ? 'pointer' : 'default',
+                        fontFamily: 'Hind Siliguri, sans-serif',
+                      }}
+                    >{r.label}</button>
+                  ))}
+                </div>
+              )}
+              {msg.sources && msg.sources.length > 0 && (
+                <div style={{ marginTop: 8, paddingTop: 8, borderTop: '1px dashed var(--border)' }}>
+                  <div style={{ fontSize: 9.5, fontWeight: 700, color: 'var(--text-light)', marginBottom: 3, letterSpacing: 0.3 }}>সূত্র</div>
+                  {msg.sources.map((s: NurSource) => (
+                    <div key={s.id} style={{ fontSize: 10.5, color: 'var(--text-muted)', lineHeight: 1.6 }}>
+                      {s.title} — {s.authorAttribution}
+                    </div>
                   ))}
                 </div>
               )}

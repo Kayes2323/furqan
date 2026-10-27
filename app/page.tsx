@@ -101,6 +101,7 @@ function AppShell() {
                 targetAyah={readerAyahNumber}
                 onBack={back}
                 onOpenSurah={openReaderSurah}
+                onAskNur={() => navigateScreen('nur')}
                 prefs={prefs}
                 onPrefsChange={onPrefsChange}
               />
@@ -142,7 +143,7 @@ function AppShell() {
         }}
       >
         {screen === 'home' && <HomeScreen onNavigate={navigateScreen} />}
-        {screen === 'nur' && <NurScreen />}
+        {screen === 'nur' && <NurScreen onOpenReaderSurah={openReaderSurah} />}
         {screen === 'knowledge' && <KnowledgeScreen onNavigate={navigateScreen} />}
         {screen === 'research' && <ResearchScreen onBack={back} />}
         {screen === 'sirah' && (
@@ -182,6 +183,7 @@ function AppShell() {
             targetAyah={readerAyahNumber}
             onBack={back}
             onOpenSurah={openReaderSurah}
+            onAskNur={() => navigateScreen('nur')}
           />
         )}
         {screen === 'reader-search' && (

@@ -47,8 +47,23 @@ export interface ResearchCategory {
   topics: string[];
 }
 
+export interface NurRef {
+  surah: number;
+  ayah: number;
+  label: string; // e.g. "সূরা আল-বাকারা ২:২৫৫"
+}
+
+export interface NurSource {
+  id: string;
+  title: string;
+  authorAttribution: string;
+  translatorEditorPublisher: string;
+  language: 'ar' | 'bn';
+}
+
 export interface ChatMessage {
   role: 'user' | 'nur';
   content: string;
-  refs?: string[];
+  refs?: NurRef[];
+  sources?: NurSource[];
 }
