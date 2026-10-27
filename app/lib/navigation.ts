@@ -1,4 +1,5 @@
 import type { Screen } from '../types';
+import { JOURNEY_TABS, type JourneyTab } from './journey-types.ts';
 
 export interface AppRoute {
   screen: Screen;
@@ -12,16 +13,29 @@ export interface AppRoute {
   importantId?: string;
   lifeAreaId?: string;
   practiceId?: string;
+  journeyTab?: JourneyTab;
 }
 
 const VALID_SCREENS: Screen[] = [
   'home', 'nur', 'knowledge', 'research', 'sirah', 'sirah-part', 'sirah-read', 'qibla',
   'zikr', 'zikr-section', 'zikr-read', 'zikr-tracker', 'reader', 'reader-surah', 'reader-search', 'reader-bookmarks',
-  'khatm', 'khatm-setup', 'nazera', 'nazera-setup', 'recite',
+  'quran-journey', 'khatm-setup', 'nazera-setup', 'recite',
   'quran-hub', 'quran-topics', 'topic-detail', 'important-detail',
   'sunnah-life', 'sunnah-life-areas', 'sunnah-life-area-detail', 'sunnah-practice-detail',
   'profile',
 ];
+
+// Old standalone entry points (bookmarks, installed-PWA shortcuts, shared
+// links) still resolve — into the matching section of Quran Journey.
+const LEGACY_JOURNEY_SCREENS: Record<string, JourneyTab> = { khatm: 'khatm', nazera: 'nazera' };
+
+export function isLegacyJourneyScreen(value: string | null): boolean {
+  return value !== null && Object.prototype.hasOwnProperty.call(LEGACY_JOURNEY_SCREENS, value);
+}
+
+export function isJourneyTab(value: string | null): value is JourneyTab {
+  return JOURNEY_TABS.includes(value as JourneyTab);
+}
 
 export function isValidScreen(value: string | null): value is Screen {
   return VALID_SCREENS.includes(value as Screen);
@@ -40,6 +54,7 @@ export function routeToParams(route: AppRoute): URLSearchParams {
   if (route.importantId) params.set('imp', route.importantId);
   if (route.lifeAreaId) params.set('area', route.lifeAreaId);
   if (route.practiceId) params.set('practice', route.practiceId);
+  if (route.screen === 'quran-journey' && route.journeyTab) params.set('jt', route.journeyTab);
   return params;
 }
 
@@ -49,6 +64,9 @@ export function routeToUrl(route: AppRoute): string {
 
 export function paramsToRoute(params: URLSearchParams): AppRoute {
   const raw = params.get('s');
+  if (isLegacyJourneyScreen(raw)) {
+    return { screen: 'quran-journey', journeyTab: LEGACY_JOURNEY_SCREENS[raw as string] };
+  }
   const screen: Screen = isValidScreen(raw) ? raw : 'home';
   const chapter = params.get('chapter') ?? undefined;
   const part = params.get('part') ?? undefined;
@@ -62,6 +80,11 @@ export function paramsToRoute(params: URLSearchParams): AppRoute {
   const importantId = params.get('imp') ?? undefined;
   const lifeAreaId = params.get('area') ?? undefined;
   const practiceId = params.get('practice') ?? undefined;
+
+  if (screen === 'quran-journey') {
+    const tab = params.get('jt');
+    return { screen, journeyTab: isJourneyTab(tab) ? tab : 'plan' };
+  }
 
   if (screen === 'sunnah-life-area-detail') {
     return { screen, lifeAreaId: lifeAreaId ?? 'relationship-with-allah' };
@@ -110,6 +133,7 @@ export function routesEqual(a: AppRoute, b: AppRoute): boolean {
     a.topicId === b.topicId &&
     a.importantId === b.importantId &&
     a.lifeAreaId === b.lifeAreaId &&
-    a.practiceId === b.practiceId
+    a.practiceId === b.practiceId &&
+    a.journeyTab === b.journeyTab
   );
 }

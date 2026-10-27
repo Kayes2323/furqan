@@ -53,6 +53,10 @@ export interface KhatmPlan {
   startDate: string; // YYYY-MM-DD
   targetDate: string; // YYYY-MM-DD — always concrete, even in duration mode
   scheduleStyle: ScheduleStyle;
+  /** Optional subset of prayer slots to read at (only meaningful when
+   *  scheduleStyle === 'fivePrayers'). Absent on every pre-existing plan,
+   *  which keeps meaning "all five". */
+  prayerSlots?: PrayerSlot[];
   status: PlanStatus;
   completedAyahs: number; // 0..totalAyahs, global progress pointer
   pausedAt?: string; // YYYY-MM-DD
@@ -67,6 +71,7 @@ export interface CreatePlanParams {
   targetDate?: string; // required if mode === 'targetDate'
   durationDays?: number; // required if mode === 'duration'
   scheduleStyle: ScheduleStyle;
+  prayerSlots?: PrayerSlot[];
 }
 
 export interface PlanValidationError {

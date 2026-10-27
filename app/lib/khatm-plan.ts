@@ -16,6 +16,7 @@ import type {
   CreatePlanParams,
   PlanValidationError,
   ScheduleStyle,
+  PrayerSlot,
   DayAnchor,
   RescheduleReason,
 } from './khatm-types';
@@ -68,6 +69,7 @@ export function createPlan(params: CreatePlanParams, today: string): KhatmPlan {
     startDate: today,
     targetDate,
     scheduleStyle: params.scheduleStyle,
+    ...(normalizeSlots(params.prayerSlots) ? { prayerSlots: normalizeSlots(params.prayerSlots) } : {}),
     status: 'active',
     completedAyahs: 0,
     history: [],
@@ -110,8 +112,23 @@ export function ensureDayAnchor(index: QuranIndex, plan: KhatmPlan, today: strin
   return { ...plan, history, dayAnchor };
 }
 
-function slotCount(scheduleStyle: ScheduleStyle): number {
-  return scheduleStyle === 'fivePrayers' ? PRAYER_SLOTS.length : 1;
+/** Keeps only valid, unique slots in canonical prayer order; a missing,
+ *  empty or full set means "all five" (undefined = legacy behaviour). */
+export function normalizeSlots(slots?: PrayerSlot[]): PrayerSlot[] | undefined {
+  if (!slots) return undefined;
+  const kept = PRAYER_SLOTS.filter((s) => slots.includes(s));
+  if (kept.length === 0 || kept.length === PRAYER_SLOTS.length) return undefined;
+  return [...kept];
+}
+
+/** The prayer slots a plan actually reads at, in order. */
+export function activeSlots(plan: Pick<KhatmPlan, 'scheduleStyle' | 'prayerSlots'>): PrayerSlot[] {
+  if (plan.scheduleStyle !== 'fivePrayers') return [];
+  return plan.prayerSlots && plan.prayerSlots.length > 0 ? plan.prayerSlots : [...PRAYER_SLOTS];
+}
+
+function slotCount(plan: Pick<KhatmPlan, 'scheduleStyle' | 'prayerSlots'>): number {
+  return plan.scheduleStyle === 'fivePrayers' ? activeSlots(plan).length : 1;
 }
 
 /** Splits `total` ayahs into `n` contiguous, non-overlapping, roughly
@@ -147,7 +164,7 @@ export function todaysPortion(index: QuranIndex, plan: KhatmPlan): AyahRange | n
  *  by index (0-based) against plan.dayAnchor.slotsCompleted. */
 export function slotRanges(index: QuranIndex, plan: KhatmPlan): AyahRange[] {
   if (!plan.dayAnchor || plan.dayAnchor.target <= 0) return [];
-  const n = slotCount(plan.scheduleStyle);
+  const n = slotCount(plan);
   const shares = splitEvenly(plan.dayAnchor.target, n);
   const ranges: AyahRange[] = [];
   let cursor = plan.dayAnchor.startCompletedAyahs;
@@ -255,7 +272,7 @@ export function resumePlan(plan: KhatmPlan, today: string): KhatmPlan {
  *  "adjust the remaining schedule" action, logged for transparency. */
 export function reschedulePlan(
   plan: KhatmPlan,
-  params: { mode: KhatmPlan['mode']; targetDate?: string; durationDays?: number; scheduleStyle?: ScheduleStyle },
+  params: { mode: KhatmPlan['mode']; targetDate?: string; durationDays?: number; scheduleStyle?: ScheduleStyle; prayerSlots?: PrayerSlot[] },
   today: string,
   reason: RescheduleReason = 'user-adjusted',
 ): KhatmPlan {
@@ -273,6 +290,7 @@ export function reschedulePlan(
     mode: params.mode,
     targetDate: newTargetDate,
     scheduleStyle: params.scheduleStyle ?? plan.scheduleStyle,
+    ...(params.prayerSlots !== undefined ? { prayerSlots: normalizeSlots(params.prayerSlots) } : {}),
     dayAnchor: null, // recompute today's target against the new date
     rescheduleLog: [
       ...plan.rescheduleLog,

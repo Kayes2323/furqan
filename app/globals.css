@@ -13,6 +13,7 @@
   --green: #1F7A4C;
   --green-light: #2FA06B;
   --border: #D9D6B8;
+  --on-accent: #FFFFFF; /* readable text on --accent; flipped in dark mode by ThemeProvider */
 }
 
 * { box-sizing: border-box; }
@@ -105,3 +106,37 @@ body {
   .zikr-card-pressable { transition: none; }
   .zikr-card-pressable:active { transform: none; }
 }
+
+/* ── Quran Journey (কুরআন যাত্রা) ─────────────────────────────── */
+.qj-root button:focus-visible,
+.qj-root input:focus-visible,
+.qj-root select:focus-visible,
+.qj-root summary:focus-visible,
+.qj-root [role="tab"]:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.qj-root button { font-family: 'Hind Siliguri', sans-serif; }
+.qj-root button:disabled { cursor: not-allowed; opacity: 0.55; }
+.qj-tabs { display: flex; gap: 6px; overflow-x: auto; padding: 4px 16px 10px; scroll-snap-type: x proximity; }
+.qj-tab {
+  flex: 1 0 auto; min-height: 44px; padding: 0 16px; border-radius: 100px; cursor: pointer;
+  border: 1px solid var(--border); background: var(--card); color: var(--text-muted);
+  font-size: 13px; font-weight: 700; white-space: nowrap; scroll-snap-align: start;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+.qj-tab[aria-selected="true"] { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.qj-bar { transition: width 0.4s ease; }
+.qj-chip {
+  min-height: 44px; padding: 0 16px; border-radius: 100px; cursor: pointer;
+  border: 1px solid var(--border); background: var(--card); color: var(--text);
+  font-size: 13.5px; font-weight: 600;
+}
+.qj-chip[aria-pressed="true"] { border-color: var(--accent); background: rgba(31,122,76,0.12); color: var(--accent); }
+.qj-chip:hover { border-color: var(--accent); }
+@media (prefers-reduced-motion: reduce) {
+  .qj-bar, .qj-tab { transition: none; }
+}
+@keyframes qjSkeleton { 0%,100% { opacity: 0.45; } 50% { opacity: 0.9; } }
+.qj-skeleton { background: var(--border); border-radius: 12px; animation: qjSkeleton 1.4s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .qj-skeleton { animation: none; } }

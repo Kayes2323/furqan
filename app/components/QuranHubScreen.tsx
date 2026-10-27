@@ -1,5 +1,5 @@
 'use client';
-import { BookMarked, LayoutGrid, BookOpen, Target, BookOpenCheck } from 'lucide-react';
+import { BookMarked, LayoutGrid, BookOpen, Route } from 'lucide-react';
 import BackButton from './BackButton';
 import type { Screen } from '../types';
 
@@ -9,6 +9,10 @@ interface Props {
 }
 
 const ITEMS = [
+  {
+    icon: Route, title: 'কুরআন যাত্রা', sub: 'তোমার সময় ও গতিতে খতম, নাযেরা ও ব্যক্তিগত পরিকল্পনা — এক জায়গায়',
+    screen: 'quran-journey' as Screen, tint: { bg: 'rgba(31,122,76,0.12)', fg: 'var(--accent)' },
+  },
   {
     icon: BookMarked, title: 'কুরআন রিডার', sub: '১১৪টি সূরা — সম্পূর্ণ আরবি মুসহাফ, বুকমার্ক ও পঠন অগ্রগতিসহ',
     screen: 'reader' as Screen, tint: { bg: 'rgba(31,122,76,0.12)', fg: 'var(--accent)' },
@@ -20,14 +24,6 @@ const ITEMS = [
   {
     icon: BookOpen, title: 'তাফসির', sub: 'রিডারে আয়াত নির্বাচন করে বাংলা তাফসির পড়ুন',
     screen: 'reader' as Screen, tint: { bg: 'rgba(47,160,107,0.14)', fg: 'var(--green-light)' },
-  },
-  {
-    icon: BookOpenCheck, title: 'নাযেরা', sub: 'মুসহাফ দেখে নিয়মিত তিলাওয়াতের অভ্যাস গড়ুন',
-    screen: 'nazera' as Screen, tint: { bg: 'rgba(31,122,76,0.12)', fg: 'var(--accent)' },
-  },
-  {
-    icon: Target, title: 'খতম পরিকল্পনা', sub: 'লক্ষ্য তারিখ অনুযায়ী সম্পূর্ণ কুরআন পড়া সম্পন্ন করুন',
-    screen: 'khatm' as Screen, tint: { bg: 'rgba(150,112,42,0.16)', fg: 'var(--gold)' },
   },
 ];
 
@@ -45,7 +41,7 @@ export default function QuranHubScreen({ onNavigate, onBack }: Props) {
       <div style={{ padding: '8px 20px 20px', display: 'flex', flexDirection: 'column', gap: 10 }}>
         {ITEMS.map((item) => (
           <div
-            key={item.screen}
+            key={item.title}
             onClick={() => onNavigate(item.screen)}
             style={{
               background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 16,

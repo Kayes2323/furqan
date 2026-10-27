@@ -6,25 +6,35 @@ import {
   Sunrise, SunMedium, CloudSun, Sunset, MoonStar, CheckCircle2, Circle, RotateCw, WifiOff,
 } from 'lucide-react';
 import BackButton from './BackButton';
+import { ConfirmDialog } from './journey/ui';
 import { loadSurahMeta } from '../lib/reader-data';
 import { loadPlan, savePlan } from '../lib/khatm-storage';
 import {
   buildQuranIndex, ensureDayAnchor, summarize, slotRanges, todaysPortion,
-  markSlotComplete, markTodayComplete, pausePlan, resumePlan, restartPlan, todayKey, daysBetween,
+  markSlotComplete, markTodayComplete, pausePlan, resumePlan, restartPlan, todayKey, daysBetween, activeSlots,
 } from '../lib/khatm-plan';
 import type { SurahMeta } from '../lib/reader-types';
-import type { KhatmPlan, QuranIndex, AyahRange } from '../lib/khatm-types';
-import { PRAYER_SLOTS } from '../lib/khatm-types';
+import type { KhatmPlan, QuranIndex, AyahRange, PrayerSlot } from '../lib/khatm-types';
 
 interface Props {
-  onBack: () => void;
+  onBack?: () => void;
   onOpenSetup: () => void;
   onOpenReaderSurah: (surah: number, ayah?: number) => void;
+  /** Rendered inside Quran Journey: no page header/back button of its own. */
+  embedded?: boolean;
+  /** Called after the completed-ayah pointer moves (used to mirror a shared Nazera). */
+  onAdvance?: (prevCompleted: number, nextCompleted: number) => void;
+  /** Called after any change is persisted, so the Journey dashboard can refresh. */
+  onChange?: () => void;
+  /** Shows that this reading also counts toward Nazera. */
+  sharedWithNazera?: boolean;
+  /** Opens the NUR planning conversation (Journey only). */
+  onOpenPlanner?: () => void;
 }
 
 type LoadState = 'loading' | 'error' | 'ready';
 
-const SLOT_META: Record<(typeof PRAYER_SLOTS)[number], { label: string; icon: React.ElementType }> = {
+const SLOT_META: Record<PrayerSlot, { label: string; icon: React.ElementType }> = {
   fajr: { label: 'ফজর', icon: Sunrise },
   dhuhr: { label: 'যোহর', icon: SunMedium },
   asr: { label: 'আসর', icon: CloudSun },
@@ -48,7 +58,7 @@ function rangeLabel(range: AyahRange, meta: SurahMeta[]): string {
   return `${refLabel(range.start, meta)} — ${refLabel(range.end, meta)}`;
 }
 
-export default function KhatmScreen({ onBack, onOpenSetup, onOpenReaderSurah }: Props) {
+export default function KhatmScreen({ onBack, onOpenSetup, onOpenReaderSurah, embedded, onAdvance, onChange, sharedWithNazera, onOpenPlanner }: Props) {
   const [meta, setMeta] = useState<SurahMeta[]>([]);
   const [index, setIndex] = useState<QuranIndex | null>(null);
   const [plan, setPlan] = useState<KhatmPlan | null>(null);
@@ -92,16 +102,22 @@ export default function KhatmScreen({ onBack, onOpenSetup, onOpenReaderSurah }: 
   function persist(next: KhatmPlan) {
     setPlan(next);
     savePlan(next);
+    onChange?.();
+  }
+
+  function persistAdvance(prev: KhatmPlan, next: KhatmPlan) {
+    persist(next);
+    if (next.completedAyahs !== prev.completedAyahs) onAdvance?.(prev.completedAyahs, next.completedAyahs);
   }
 
   function handleSlotTap(slotIdx: number) {
     if (!index || !plan) return;
-    persist(markSlotComplete(index, plan, slotIdx));
+    persistAdvance(plan, markSlotComplete(index, plan, slotIdx));
   }
 
   function handleMarkTodayComplete() {
     if (!index || !plan) return;
-    persist(markTodayComplete(index, plan));
+    persistAdvance(plan, markTodayComplete(index, plan));
   }
 
   function handlePauseConfirmed() {
@@ -123,17 +139,20 @@ export default function KhatmScreen({ onBack, onOpenSetup, onOpenReaderSurah }: 
     const originalSpanDays = Math.max(1, daysBetween(plan.startDate, plan.targetDate) + 1);
     const restarted = restartPlan(
       plan,
-      { mode: 'duration', durationDays: originalSpanDays, scheduleStyle: plan.scheduleStyle },
+      { mode: 'duration', durationDays: originalSpanDays, scheduleStyle: plan.scheduleStyle, prayerSlots: plan.prayerSlots },
       today,
     );
     persist(ensureDayAnchor(index, restarted, today));
     setConfirmAction(null);
   }
 
+  const pageTop = embedded ? '4px 16px 0' : '44px 16px 12px';
+  const backBtn = !embedded && onBack ? <BackButton onClick={onBack} variant="dark" /> : null;
+
   if (loadState === 'loading') {
     return (
-      <div style={{ padding: '44px 16px 12px' }}>
-        <BackButton onClick={onBack} variant="dark" />
+      <div style={{ padding: pageTop }}>
+        {backBtn}
         <div style={{ padding: '60px 20px', textAlign: 'center', color: 'var(--text-muted)' }}>
           <RotateCw size={22} className="qibla-spin" style={{ marginBottom: 10 }} />
           <div style={{ fontSize: 13 }}>লোড হচ্ছে...</div>
@@ -144,8 +163,8 @@ export default function KhatmScreen({ onBack, onOpenSetup, onOpenReaderSurah }: 
 
   if (loadState === 'error') {
     return (
-      <div style={{ padding: '44px 16px 12px' }}>
-        <BackButton onClick={onBack} variant="dark" />
+      <div style={{ padding: pageTop }}>
+        {backBtn}
         <div style={{ padding: '60px 24px', textAlign: 'center', color: 'var(--text-muted)' }}>
           <WifiOff size={28} style={{ marginBottom: 10 }} />
           <div style={{ fontSize: 13, marginBottom: 14 }}>কুরআনের তথ্য লোড করা যায়নি। ইন্টারনেট সংযোগ পরীক্ষা করুন।</div>
@@ -165,11 +184,13 @@ export default function KhatmScreen({ onBack, onOpenSetup, onOpenReaderSurah }: 
   if (!plan || !index) {
     return (
       <div>
-        <div style={{ padding: '44px 16px 12px', display: 'flex', alignItems: 'center', gap: 10 }}>
-          <BackButton onClick={onBack} variant="dark" />
-          <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--text)' }}>খতম পরিকল্পনা</div>
-        </div>
-        <div style={{ padding: '40px 24px', textAlign: 'center' }}>
+        {!embedded && (
+          <div style={{ padding: '44px 16px 12px', display: 'flex', alignItems: 'center', gap: 10 }}>
+            {backBtn}
+            <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--text)' }}>খতম পরিকল্পনা</div>
+          </div>
+        )}
+        <div style={{ padding: embedded ? '24px 24px' : '40px 24px', textAlign: 'center' }}>
           <div style={{
             width: 64, height: 64, borderRadius: 20, margin: '0 auto 16px',
             background: 'rgba(31,122,76,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -188,6 +209,14 @@ export default function KhatmScreen({ onBack, onOpenSetup, onOpenReaderSurah }: 
               fontFamily: 'Hind Siliguri, sans-serif', boxShadow: '0 4px 16px rgba(31,122,76,0.3)',
             }}
           >নতুন পরিকল্পনা শুরু করুন</button>
+          {onOpenPlanner && (
+            <div>
+              <button onClick={onOpenPlanner} style={{
+                marginTop: 12, background: 'none', border: 'none', color: 'var(--accent)', fontSize: 12.5, fontWeight: 700,
+                cursor: 'pointer', fontFamily: 'Hind Siliguri, sans-serif', textDecoration: 'underline', padding: 8,
+              }}>অথবা NUR-এর সঙ্গে কথা বলে পরিকল্পনা বানাও</button>
+            </div>
+          )}
         </div>
       </div>
     );
@@ -195,7 +224,7 @@ export default function KhatmScreen({ onBack, onOpenSetup, onOpenReaderSurah }: 
 
   if (plan.status === 'completed') {
     return (
-      <div style={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '20px 30px', textAlign: 'center' }}>
+      <div style={{ height: embedded ? undefined : '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: embedded ? '28px 30px' : '20px 30px', textAlign: 'center' }}>
         <div style={{
           width: 84, height: 84, borderRadius: 26, background: 'rgba(31,122,76,0.12)',
           display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 18,
@@ -215,10 +244,10 @@ export default function KhatmScreen({ onBack, onOpenSetup, onOpenReaderSurah }: 
 
   return (
     <div style={{ paddingBottom: 24 }}>
-      <div style={{ padding: '44px 16px 10px', display: 'flex', alignItems: 'center', gap: 10 }}>
-        <BackButton onClick={onBack} variant="dark" />
-        <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--text)', flex: 1 }}>খতম পরিকল্পনা</div>
-        <button onClick={onOpenSetup} aria-label="সম্পাদনা" style={{
+      <div style={{ padding: embedded ? '0 16px 10px' : '44px 16px 10px', display: 'flex', alignItems: 'center', gap: 10 }}>
+        {backBtn}
+        <div style={{ fontSize: embedded ? 13 : 16, fontWeight: 700, color: 'var(--text)', flex: 1 }}>{embedded ? 'খতমের বিস্তারিত' : 'খতম পরিকল্পনা'}</div>
+        <button onClick={onOpenSetup} aria-label="খতম পরিকল্পনা সম্পাদনা" style={{
           width: 34, height: 34, borderRadius: '50%', background: 'var(--card)', border: '1px solid var(--border)',
           color: 'var(--text-muted)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}><Pencil size={14} /></button>
@@ -252,7 +281,7 @@ export default function KhatmScreen({ onBack, onOpenSetup, onOpenReaderSurah }: 
         <div style={{ display: 'flex', gap: 10 }}>
           <StatTile label="সম্পন্ন" value={summary!.completedAyahs} />
           <StatTile label="বাকি" value={summary!.remainingAyahs} />
-          {summary!.overdueAyahs > 0 && <StatTile label="পিছিয়ে আছেন" value={summary!.overdueAyahs} accent="#B3362C" />}
+          {summary!.overdueAyahs > 0 && <StatTile label="ধরে নিতে বাকি" value={summary!.overdueAyahs} accent="var(--gold)" />}
         </div>
       </div>
 
@@ -267,13 +296,18 @@ export default function KhatmScreen({ onBack, onOpenSetup, onOpenReaderSurah }: 
             <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 12 }}>
               {plan.dayAnchor?.target ?? 0} আয়াত · {summary!.daysRemaining} দিন বাকি · লক্ষ্য তারিখ {plan.targetDate}
             </div>
+            {sharedWithNazera && (
+              <div style={{ fontSize: 11.5, color: 'var(--accent)', fontWeight: 600, marginBottom: 12 }}>
+                এই পড়া নাযেরাতেও গণনা হবে।
+              </div>
+            )}
 
             {portion ? (
               <>
                 {plan.scheduleStyle === 'fivePrayers' ? (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                     {slots.map((range, idx) => {
-                      const slotKey = PRAYER_SLOTS[idx];
+                      const slotKey = activeSlots(plan)[idx] ?? 'fajr';
                       const slotInfo = SLOT_META[slotKey];
                       const done = idx < (plan.dayAnchor?.slotsCompleted ?? 0);
                       const Icon = slotInfo.icon;
@@ -366,7 +400,7 @@ export default function KhatmScreen({ onBack, onOpenSetup, onOpenReaderSurah }: 
       </div>
 
       {confirmAction === 'pause' && (
-        <ConfirmSheet
+        <ConfirmDialog
           title="পরিকল্পনা বিরতি দেবেন?"
           body="আপনার অগ্রগতি সংরক্ষিত থাকবে। আবার শুরু করলে লক্ষ্য তারিখ বিরতির দিনসংখ্যা অনুযায়ী স্বয়ংক্রিয়ভাবে পিছিয়ে যাবে।"
           confirmLabel="বিরতি দিন"
@@ -375,7 +409,7 @@ export default function KhatmScreen({ onBack, onOpenSetup, onOpenReaderSurah }: 
         />
       )}
       {confirmAction === 'restart' && (
-        <ConfirmSheet
+        <ConfirmDialog
           title="পরিকল্পনা পুনরায় শুরু করবেন?"
           body="বর্তমান অগ্রগতি (সম্পন্ন আয়াত) শূন্য থেকে শুরু হবে। পূর্বের ইতিহাস মুছে ফেলা হবে না।"
           confirmLabel="পুনরায় শুরু করুন"
@@ -393,39 +427,6 @@ function StatTile({ label, value, accent }: { label: string; value: number; acce
     <div style={{ flex: 1, background: 'var(--bg)', borderRadius: 12, padding: '10px 8px', textAlign: 'center' }}>
       <div style={{ fontSize: 16, fontWeight: 800, color: accent ?? 'var(--text)' }}>{value}</div>
       <div style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 2 }}>{label}</div>
-    </div>
-  );
-}
-
-function ConfirmSheet({ title, body, confirmLabel, danger, onCancel, onConfirm }: {
-  title: string; body: string; confirmLabel: string; danger?: boolean; onCancel: () => void; onConfirm: () => void;
-}) {
-  return (
-    <div style={{
-      position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 998,
-      display: 'flex', alignItems: 'flex-end', justifyContent: 'center',
-    }} onClick={onCancel}>
-      <div
-        onClick={(e) => e.stopPropagation()}
-        style={{
-          width: '100%', maxWidth: 430, background: 'var(--card)', borderRadius: '20px 20px 0 0',
-          padding: '20px 20px max(20px, env(safe-area-inset-bottom))',
-          boxShadow: '0 -8px 30px rgba(0,0,0,0.2)',
-        }}
-      >
-        <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text)', marginBottom: 6 }}>{title}</div>
-        <div style={{ fontSize: 12.5, color: 'var(--text-muted)', marginBottom: 16, lineHeight: 1.6 }}>{body}</div>
-        <div style={{ display: 'flex', gap: 10 }}>
-          <button onClick={onCancel} style={{
-            flex: 1, padding: '11px 0', borderRadius: 12, border: '1px solid var(--border)',
-            background: 'var(--bg)', color: 'var(--text)', fontSize: 13, fontWeight: 700, cursor: 'pointer',
-          }}>বাতিল</button>
-          <button onClick={onConfirm} style={{
-            flex: 1, padding: '11px 0', borderRadius: 12, border: 'none',
-            background: danger ? '#B3362C' : 'var(--accent)', color: '#fff', fontSize: 13, fontWeight: 700, cursor: 'pointer',
-          }}>{confirmLabel}</button>
-        </div>
-      </div>
     </div>
   );
 }
