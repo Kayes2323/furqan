@@ -24,7 +24,13 @@ export async function GET(req: NextRequest) {
     if (!tafsir) {
       return NextResponse.json({ ok: false, reason: 'not_found' });
     }
-    return NextResponse.json({ ok: true, data: tafsir });
+    // Tafsir text for a given ayah/resource never changes, so a long-lived
+    // CDN cache (ordinary display/runtime caching — see TAFSIR-SOURCES.md)
+    // makes every visit after the first one instant.
+    return NextResponse.json(
+      { ok: true, data: tafsir },
+      { headers: { 'Cache-Control': 'public, s-maxage=86400, stale-while-revalidate=604800' } }
+    );
   } catch (err) {
     if (err instanceof QuranFoundationNotConfiguredError) {
       return NextResponse.json({ ok: false, reason: 'not_configured' });
