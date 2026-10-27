@@ -116,15 +116,22 @@ export async function resolveBengaliTranslationId(): Promise<number | null> {
   return translationIdCache;
 }
 
-export async function resolveBengaliIbnKathirTafsirId(): Promise<number | null> {
-  const override = process.env.QURAN_TAFSIR_BN_IBN_KATHIR_ID;
+// Named generically (not "...IbnKathirTafsirId") because the resolved
+// resource is whatever this account's catalog actually contains — Ibn
+// Kathir is preferred when present, but the UI always labels the result
+// with the API's own resource_name, so a different, equally-real Bengali
+// tafsir (e.g. this account's current catalog only has "Tafsir Fathul
+// Majid") is never mislabeled as Ibn Kathir. See TAFSIR-SOURCES.md.
+export async function resolveBengaliTafsirId(): Promise<number | null> {
+  const override = process.env.QURAN_TAFSIR_BN_ID;
   if (override) return Number(override);
   if (tafsirIdCache !== undefined) return tafsirIdCache;
 
   const { tafsirs } = await apiGet<{ tafsirs: ResourceListItem[] }>('/resources/tafsirs');
   const bengali = tafsirs.filter(isBengali);
   const ibnKathir = bengali.find((t) => /ibn.?kath[ei]r|kaseer/i.test(t.name) || /ibn.?kath[ei]r|kaseer/i.test(t.slug ?? ''));
-  tafsirIdCache = ibnKathir ? ibnKathir.id : null;
+  const preferred = ibnKathir ?? bengali[0] ?? null;
+  tafsirIdCache = preferred ? preferred.id : null;
   return tafsirIdCache;
 }
 
@@ -170,7 +177,7 @@ export async function fetchSurahTranslations(surah: number): Promise<{ ayah: num
 // "2:3" can come back keyed "2:1-5") — we surface that range as-is rather
 // than inventing a per-ayah split of the same text.
 export async function fetchAyahTafsir(surah: number, ayah: number): Promise<RawAyahTafsir | null> {
-  const tafsirId = await resolveBengaliIbnKathirTafsirId();
+  const tafsirId = await resolveBengaliTafsirId();
   if (tafsirId == null) return null;
 
   const data = await apiGet<{ tafsir: RawAyahTafsir }>(

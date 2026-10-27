@@ -80,35 +80,49 @@ IDs are resolved by the server-side client **at runtime** against the live
 `/resources/translations` and `/resources/tafsirs` endpoints, matching on
 `language` and known slug/name patterns, with an environment-variable
 override available once the project owner confirms the correct IDs from
-their own dashboard/API access. Below is what research surfaced, explicitly
-flagged by confidence:
+their own dashboard/API access.
 
-- **Bengali Tafsir Ibn Kathir, Tawheed Publication** — third-party API
-  mirrors and indexed documentation references describe a Bengali Ibn
-  Kathir tafsir resource (commonly surfaced with resource id **31** and
-  slug-like name `bn-tafseer-ibn-e-kaseer`) attributed to Tawheed
-  Publication. **This has NOT been confirmed against the live primary
-  API** in this session (no credentials, and the `.foundation` domain was
-  blocked at the network layer — see §5). Treat `31` as a *candidate*, not
-  a verified fact. The implementation resolves it by live lookup/name
-  match first, and only falls back to an ID from
-  `QURAN_TAFSIR_BN_IBN_KATHIR_ID` env var if explicitly set by the owner.
-- **Bengali Quran translation** — no specific resource ID was confirmed
-  with any reasonable confidence from research. Quran Foundation's
-  catalogue has historically carried more than one Bengali translation
-  (e.g. ones attributed to Taisirul Quran / Rawai Al-bayan-style
-  renderings); which one is "the verified" one is a judgment the project
-  owner should make, ideally the Bengali translation with the widest
-  acceptance. The implementation resolves by live lookup against
-  `language=bengali`/`bn` and exposes
-  `QURAN_TRANSLATION_BN_ID` as an explicit override env var, so the owner
-  can pin the exact resource once they've reviewed the live resource list
-  with real credentials.
+**Update — live-verified against the project owner's real Quran Foundation
+credentials (prelive/testing tier) on 2026-10-27:**
 
-**Until a human confirms credentials and resource IDs, the app must show
-an honest "not configured" / "unavailable" state — never a fabricated or
-guessed translation/tafsir body.** This is enforced in the client/server
-code, not just documentation.
+- The owner's **prelive tier catalog is small** — 14 translation resources
+  and 6 tafsir resources total, far fewer than the full production
+  catalogue. This is expected: Quran Foundation apps start in prelive and
+  request production scope only once testing is complete (per their
+  quickstart docs).
+- **Bengali translation**: exactly one resource exists in this tier —
+  **id 161, "Taisirul Quran", attributed to Tawheed Publication**. Live
+  response-verified: returns real Bengali text for all 7 ayahs of
+  Al-Fatiha. This is what `resolveBengaliTranslationId()` resolves to.
+- **Bengali tafsir**: exactly one resource exists in this tier —
+  **id 381, "Tafsir Fathul Majid", by AbdulRahman Bin Hasan Al-Alshaikh**.
+  **This is NOT Ibn Kathir.** No Bengali Ibn Kathir tafsir resource exists
+  in this account's current (prelive) catalog. The originally-researched
+  candidate id `31`/`bn-tafseer-ibn-e-kaseer` was not found live — it may
+  exist only in the full production catalogue, which this tier does not
+  expose.
+- **Resolution, with the project owner's explicit sign-off (asked via the
+  app, 2026-10-27)**: rather than leave tafsir unavailable, the owner chose
+  to use Tafsir Fathul Majid now. To keep this honest, the resolver
+  function was renamed from `resolveBengaliIbnKathirTafsirId` to
+  `resolveBengaliTafsirId` — it prefers an Ibn Kathir match by name/slug
+  if one is ever present (e.g. after the owner requests production
+  access), but falls back to whatever real, named Bengali tafsir the
+  catalog actually has. **The UI never hardcodes a source name** — it
+  always displays the API's own `resource_name` for whatever was
+  resolved, so a user always sees "Tafsir Fathul Majid" (not "Ibn Kathir")
+  while this is the active resource. The override env var was renamed to
+  the source-agnostic `QURAN_TAFSIR_BN_ID` to match.
+- **If/when the owner requests production scope** and a Bengali Ibn Kathir
+  resource becomes available in the catalogue, the resolver will pick it
+  up automatically on next cold start (no code change needed) because of
+  the name/slug-match preference — or the owner can pin it explicitly via
+  `QURAN_TAFSIR_BN_ID`.
+
+**Until credentials are configured, the app shows an honest "not
+configured" / "unavailable" state — never a fabricated or guessed
+translation/tafsir body.** This is enforced in the client/server code, not
+just documentation.
 
 ## 4. Caching & redistribution posture adopted in this app
 

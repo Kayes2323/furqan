@@ -110,7 +110,7 @@ export default function TafsirPanel({ surah, ayah, meta, onClose, onNavigate }: 
               <BookX size={26} style={{ marginBottom: 10, opacity: 0.6 }} />
               <div style={{ fontSize: 13, lineHeight: 1.7 }}>
                 তাফসির সংযোগ এখনো সম্পন্ন হয়নি।<br />
-                বাংলা তাফসীরে ইবনে কাসীর যুক্ত হলে এখানে দেখানো হবে।
+                বাংলা তাফসির যুক্ত হলে এখানে দেখানো হবে।
               </div>
             </div>
           )}
