@@ -179,17 +179,6 @@ export async function fetchAyahTafsir(surah: number, ayah: number): Promise<RawA
   return data.tafsir ?? null;
 }
 
-// Temporary diagnostic helper — lists resource metadata only (id/name/
-// slug/language), never copyrighted text — used once to confirm the live
-// catalog shape while wiring up a fresh API credential, then removed.
-export async function debugListResources(): Promise<{ translations: ResourceListItem[]; tafsirs: ResourceListItem[] }> {
-  const [{ translations }, { tafsirs }] = await Promise.all([
-    apiGet<{ translations: ResourceListItem[] }>('/resources/translations'),
-    apiGet<{ tafsirs: ResourceListItem[] }>('/resources/tafsirs'),
-  ]);
-  return { translations, tafsirs };
-}
-
 export function isQuranFoundationConfigured(): boolean {
   return Boolean(process.env.QURAN_FOUNDATION_CLIENT_ID && process.env.QURAN_FOUNDATION_CLIENT_SECRET);
 }
