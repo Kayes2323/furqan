@@ -20,7 +20,14 @@ export async function GET(req: NextRequest) {
 
   try {
     const results = await fetchSurahTranslations(surah);
-    return NextResponse.json({ ok: true, data: results });
+    // Translation text for a given surah/resource never changes, so a
+    // long-lived CDN cache (ordinary display/runtime caching — see
+    // TAFSIR-SOURCES.md) makes every visit after the first one instant
+    // instead of re-hitting the upstream API on every page load.
+    return NextResponse.json(
+      { ok: true, data: results },
+      { headers: { 'Cache-Control': 'public, s-maxage=86400, stale-while-revalidate=604800' } }
+    );
   } catch (err) {
     if (err instanceof QuranFoundationNotConfiguredError) {
       return NextResponse.json({ ok: false, reason: 'not_configured' });

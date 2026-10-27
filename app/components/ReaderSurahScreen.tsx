@@ -353,7 +353,7 @@ export default function ReaderSurahScreen({ surahNumber, targetAyah, onBack, onO
                 </div>
 
                 {translation && (
-                  <div style={{ fontSize: 13, lineHeight: 1.8, color: 'var(--text-muted)', marginTop: 10, paddingTop: 10, borderTop: '1px solid var(--border)' }}>
+                  <div style={{ fontSize: 15.5, lineHeight: 2, color: 'var(--text)', marginTop: 10, paddingTop: 10, borderTop: '1px solid var(--border)' }}>
                     {translation.text}
                   </div>
                 )}
