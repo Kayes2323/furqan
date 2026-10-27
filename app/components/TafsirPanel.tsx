@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { ChevronLeft, ChevronRight, RotateCw, WifiOff, BookX } from 'lucide-react';
+import { ChevronLeft, ChevronRight, MessageCircleQuestion, RotateCw, WifiOff, BookX } from 'lucide-react';
 import BackButton from './BackButton';
 import { loadAyahTafsir, type TafsirResult } from '../lib/translation-tafsir-data';
 import type { SurahMeta } from '../lib/reader-types';
@@ -14,6 +14,7 @@ interface Props {
   meta?: SurahMeta;
   onClose: () => void;
   onNavigate: (ayah: number) => void;
+  onAskNur?: () => void;
 }
 
 // Dedicated tafsir reading experience — a full page (not a sheet/modal),
@@ -23,7 +24,7 @@ interface Props {
 // hands control back to the Reader via onClose; it never touches the
 // Reader's own scroll position itself (the caller already knows where it
 // was — closing just unmounts this page and the Reader reappears as-is).
-export default function TafsirPanel({ surah, ayah, meta, onClose, onNavigate }: Props) {
+export default function TafsirPanel({ surah, ayah, meta, onClose, onNavigate, onAskNur }: Props) {
   const [result, setResult] = useState<PanelState>({ status: 'loading' });
   const [retryTick, setRetryTick] = useState(0);
 
@@ -77,6 +78,18 @@ export default function TafsirPanel({ surah, ayah, meta, onClose, onNavigate }: 
             {isReady ? result.data.verseKey : `${surah}:${ayah}`}
           </div>
         </div>
+        {onAskNur && (
+          <button
+            type="button"
+            onClick={onAskNur}
+            aria-label="NUR-কে জিজ্ঞাসা করো"
+            style={{
+              width: 38, height: 38, borderRadius: '50%', flexShrink: 0,
+              background: 'var(--card)', border: '1px solid var(--border)', color: 'var(--accent)',
+              cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}
+          ><MessageCircleQuestion size={18} /></button>
+        )}
       </div>
 
       <div style={{ overflowY: 'auto', flex: 1, minHeight: 0, padding: '18px 16px' }}>

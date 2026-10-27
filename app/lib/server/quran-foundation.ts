@@ -170,6 +170,20 @@ export async function fetchSurahTranslations(surah: number): Promise<{ ayah: num
   });
 }
 
+// Single-ayah translation fetch — used by NUR's retrieval layer, which
+// only ever needs one ayah's translation per question, unlike the
+// Reader's whole-surah view (fetchSurahTranslations above). Avoids
+// pulling an entire surah's translations just to answer one question.
+export async function fetchAyahTranslation(surah: number, ayah: number): Promise<RawAyahTranslation | null> {
+  const translationId = await resolveBengaliTranslationId();
+  if (translationId == null) return null;
+
+  const { verse } = await apiGet<{ verse: { translations: RawAyahTranslation[] } }>(
+    `/verses/by_key/${surah}:${ayah}?translations=${translationId}&fields=text_uthmani`
+  );
+  return verse.translations.find((t) => t.resource_id === translationId) ?? verse.translations[0] ?? null;
+}
+
 // The tafsir-by-ayah endpoint returns the resource's single commentary
 // passage for the requested ayah. When a source groups several ayat under
 // one explanation (common for short consecutive verses), the API's own

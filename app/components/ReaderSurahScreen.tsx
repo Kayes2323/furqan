@@ -1,12 +1,13 @@
 'use client';
 
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
-import { Bookmark, BookmarkCheck, ChevronLeft, ChevronRight, Copy, Minimize2, RotateCw, ScrollText, WifiOff } from 'lucide-react';
+import { Bookmark, BookmarkCheck, ChevronLeft, ChevronRight, Copy, MessageCircleQuestion, Minimize2, RotateCw, ScrollText, WifiOff } from 'lucide-react';
 import BackButton from './BackButton';
 import ReaderToolbar from './ReaderToolbar';
 import TafsirPanel from './TafsirPanel';
 import { loadSurahMeta, loadSurah } from '../lib/reader-data';
 import { loadSurahTranslations, type TranslationsResult } from '../lib/translation-tafsir-data';
+import { setPendingNurQuery } from '../lib/nur-handoff';
 import {
   saveLastRead,
   getBookmarks,
@@ -34,6 +35,9 @@ interface Props {
   targetAyah?: number;
   onBack: () => void;
   onOpenSurah: (surah: number, ayah?: number) => void;
+  /** Navigates to the NUR screen; the ayah-specific query + explicit
+   *  surah/ayah context is set via setPendingNurQuery before calling this. */
+  onAskNur?: () => void;
   // When provided (desktop, via ReaderDesktopShell), reading preferences
   // are controlled from outside and this screen renders no toolbar of its
   // own. When omitted (mobile), the screen manages its own preferences
@@ -45,7 +49,7 @@ interface Props {
 type LoadState = 'loading' | 'error' | 'ready';
 type TranslationsState = { status: 'loading' } | TranslationsResult;
 
-export default function ReaderSurahScreen({ surahNumber, targetAyah, onBack, onOpenSurah, prefs: prefsProp, onPrefsChange: onPrefsChangeProp }: Props) {
+export default function ReaderSurahScreen({ surahNumber, targetAyah, onBack, onOpenSurah, onAskNur, prefs: prefsProp, onPrefsChange: onPrefsChangeProp }: Props) {
   const { theme: appTheme } = useTheme();
   const [allMeta, setAllMeta] = useState<SurahMeta[]>([]);
   const [doc, setDoc] = useState<SurahDoc | null>(null);
@@ -216,6 +220,15 @@ export default function ReaderSurahScreen({ surahNumber, targetAyah, onBack, onO
       // Clipboard access can be denied (permissions, insecure context); no
       // further fallback is attempted — the UI simply doesn't show "copied".
     }
+  }
+
+  function handleAskNur(ayah: number) {
+    setPendingNurQuery({
+      text: `সূরা ${meta?.banglaName ?? surahNumber} আয়াত ${surahNumber}:${ayah} এর তাফসির সহজ ভাষায় বুঝিয়ে দাও।`,
+      surah: surahNumber,
+      ayah,
+    });
+    onAskNur?.();
   }
 
   const prevSurah = surahNumber > 1 ? surahNumber - 1 : null;
@@ -419,6 +432,18 @@ export default function ReaderSurahScreen({ surahNumber, targetAyah, onBack, onO
                         fontFamily: 'Hind Siliguri, sans-serif',
                       }}
                     ><Copy size={14} />{copiedAyah === a.number ? 'কপি হয়েছে' : 'কপি'}</button>
+                    {onAskNur && (
+                      <button
+                        onClick={() => handleAskNur(a.number)}
+                        aria-label="NUR-কে জিজ্ঞাসা করো"
+                        style={{
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          width: 38, flexShrink: 0, padding: '9px 0', borderRadius: 10,
+                          border: '1px solid var(--border)', background: 'var(--bg)',
+                          color: 'var(--accent)', cursor: 'pointer',
+                        }}
+                      ><MessageCircleQuestion size={16} /></button>
+                    )}
                   </div>
                 )}
               </div>
@@ -462,6 +487,7 @@ export default function ReaderSurahScreen({ surahNumber, targetAyah, onBack, onO
           meta={meta}
           onClose={() => setTafsirAyah(null)}
           onNavigate={(ayah) => setTafsirAyah(ayah)}
+          onAskNur={onAskNur ? () => handleAskNur(tafsirAyah) : undefined}
         />
       )}
     </div>
