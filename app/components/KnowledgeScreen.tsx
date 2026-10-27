@@ -1,6 +1,6 @@
 'use client';
 import {
-  FlaskConical, BookOpen, Scale, Users, Landmark, Compass, Heart, ArrowLeftRight, Library, ShieldCheck, Mic,
+  FlaskConical, BookOpen, Scale, Users, Landmark, Compass, Heart, ArrowLeftRight, Library, ShieldCheck, Mic, Sunrise,
 } from 'lucide-react';
 import type { Screen } from '../types';
 
@@ -62,6 +62,42 @@ export default function KnowledgeScreen({ onNavigate }: Props) {
               borderRadius: 100, padding: '5px 12px',
               fontSize: 11, lineHeight: 1.3, fontWeight: 600, color: '#fff',
             }}>দিক নির্ণয় করুন →</div>
+          </div>
+        </div>
+
+        {/* ── সুন্নাহ লাইফ Card ── */}
+        <div onClick={() => onNavigate('sunnah-life')} style={{
+          borderRadius: 22,
+          overflow: 'hidden',
+          cursor: 'pointer',
+          aspectRatio: '3 / 2',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'flex-end',
+          padding: '16px 18px 16px',
+          backgroundImage: 'linear-gradient(155deg, #0E2A1C 0%, #1F7A4C 55%, #4FAE7E 130%)',
+          position: 'relative',
+        }}>
+          <div style={{
+            position: 'absolute', right: -14, bottom: -24, pointerEvents: 'none', opacity: 0.1,
+          }}><Sunrise size={150} color="#fff" strokeWidth={1} /></div>
+          <div style={{ position: 'relative', zIndex: 2 }}>
+            <div style={{
+              width: 32, height: 32, borderRadius: 10, marginBottom: 8,
+              background: 'rgba(255,255,255,0.16)', border: '1px solid rgba(255,255,255,0.28)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}><Sunrise size={16} color="#fff" strokeWidth={1.8} /></div>
+            <div style={{ fontSize: 17, lineHeight: 1.25, fontWeight: 700, color: '#fff', marginBottom: 3 }}>সুন্নাহ লাইফ</div>
+            <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.78)', marginBottom: 10, maxWidth: 230, lineHeight: 1.4 }}>
+              দৈনিক রুটিন ও জীবনক্ষেত্র অনুযায়ী সুন্নাহ শিখুন
+            </div>
+            <div style={{
+              display: 'inline-flex', alignItems: 'center', gap: 6,
+              background: 'rgba(255,255,255,0.16)',
+              border: '1px solid rgba(255,255,255,0.28)',
+              borderRadius: 100, padding: '5px 12px',
+              fontSize: 11, lineHeight: 1.3, fontWeight: 600, color: '#fff',
+            }}>রুটিন দেখুন →</div>
           </div>
         </div>
 

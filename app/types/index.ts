@@ -24,6 +24,10 @@ export type Screen =
   | 'quran-topics'
   | 'topic-detail'
   | 'important-detail'
+  | 'sunnah-life'
+  | 'sunnah-life-areas'
+  | 'sunnah-life-area-detail'
+  | 'sunnah-practice-detail'
   | 'profile';
 
 export interface Surah {
