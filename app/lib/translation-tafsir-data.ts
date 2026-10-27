@@ -12,11 +12,11 @@ import type { AyahTranslation, TafsirContent } from './translation-tafsir-types'
 
 export type TranslationsResult =
   | { ok: true; data: Map<number, AyahTranslation> }
-  | { ok: false; reason: 'not_configured' | 'offline' | 'error' };
+  | { ok: false; reason: 'not_configured' | 'offline' | 'error' | 'content_unavailable' };
 
 export type TafsirResult =
   | { ok: true; data: TafsirContent }
-  | { ok: false; reason: 'not_configured' | 'not_found' | 'offline' | 'error' };
+  | { ok: false; reason: 'not_configured' | 'not_found' | 'offline' | 'error' | 'content_unavailable' };
 
 function isOffline(): boolean {
   return typeof navigator !== 'undefined' && 'onLine' in navigator && !navigator.onLine;
@@ -35,9 +35,9 @@ export async function loadSurahTranslations(surah: number): Promise<Translations
         const res = await fetch(`/api/quran-translation?surah=${surah}`);
         const body = await res.json();
         if (!body.ok) {
-          return body.reason === 'not_configured'
-            ? { ok: false, reason: 'not_configured' }
-            : { ok: false, reason: 'error' };
+          if (body.reason === 'not_configured') return { ok: false, reason: 'not_configured' };
+          if (body.reason === 'content_unavailable') return { ok: false, reason: 'content_unavailable' };
+          return { ok: false, reason: 'error' };
         }
         const map = new Map<number, AyahTranslation>();
         for (const row of body.data as { ayah: number; translation: { text: string; resource_name: string } | null }[]) {
@@ -78,6 +78,7 @@ export async function loadAyahTafsir(surah: number, ayah: number): Promise<Tafsi
         if (!body.ok) {
           if (body.reason === 'not_configured') return { ok: false, reason: 'not_configured' };
           if (body.reason === 'not_found') return { ok: false, reason: 'not_found' };
+          if (body.reason === 'content_unavailable') return { ok: false, reason: 'content_unavailable' };
           return { ok: false, reason: 'error' };
         }
         const raw = body.data as { text: string; resource_name: string; verse_key?: string };

@@ -135,6 +135,16 @@ export default function TafsirPanel({ surah, ayah, meta, onClose, onNavigate, on
             </div>
           )}
 
+          {!isLoading && 'ok' in result && !result.ok && result.reason === 'content_unavailable' && (
+            <div style={{ padding: '40px 10px', textAlign: 'center', color: 'var(--text-muted)' }}>
+              <BookX size={28} style={{ marginBottom: 10, opacity: 0.6 }} />
+              <div style={{ fontSize: 14, lineHeight: 1.8 }}>
+                এই সূরার তাফসির এই মুহূর্তে আমাদের উৎসে উপলব্ধ নয়।<br />
+                এটি কোনো ত্রুটি নয় — আমাদের API অ্যাক্সেস এখনো সীমিত পর্যায়ে আছে, সম্পূর্ণ অ্যাক্সেস পেলে এটি স্বয়ংক্রিয়ভাবে যুক্ত হয়ে যাবে।
+              </div>
+            </div>
+          )}
+
           {isReady && (
             <>
               <div style={{

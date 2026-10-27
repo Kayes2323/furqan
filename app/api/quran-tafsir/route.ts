@@ -35,6 +35,11 @@ export async function GET(req: NextRequest) {
     if (err instanceof QuranFoundationNotConfiguredError) {
       return NextResponse.json({ ok: false, reason: 'not_configured' });
     }
+    // See the matching comment in /api/quran-translation/route.ts — a 404
+    // here means this surah's verse content isn't in the current API tier.
+    if (err instanceof QuranFoundationUpstreamError && err.status === 404) {
+      return NextResponse.json({ ok: false, reason: 'content_unavailable' });
+    }
     console.error(err);
     const status = err instanceof QuranFoundationUpstreamError ? err.status : 500;
     return NextResponse.json({ ok: false, reason: 'upstream_error' }, { status: status >= 400 && status < 600 ? 502 : 500 });
