@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import {
-  BookOpenCheck, Flame, CalendarCheck, Pencil, MapPin, CircleCheck, Circle, RotateCw, WifiOff,
+  BookOpenCheck, Sprout, CalendarCheck, Pencil, MapPin, CircleCheck, Circle, RotateCw, WifiOff,
 } from 'lucide-react';
 import BackButton from './BackButton';
 import { loadSurahMeta } from '../lib/reader-data';
@@ -16,9 +16,18 @@ import type { NazeraProfile } from '../lib/nazera-types';
 import type { QuranIndex, AyahRange } from '../lib/quran-index';
 
 interface Props {
-  onBack: () => void;
+  onBack?: () => void;
   onOpenSetup: () => void;
   onOpenReaderSurah: (surah: number, ayah?: number) => void;
+  /** Rendered inside Quran Journey: no page header/back button of its own. */
+  embedded?: boolean;
+  /** Called after any change is persisted, so the Journey dashboard can refresh. */
+  onChange?: () => void;
+  /** Reading is logged through the Khatm plan and mirrored here, so this
+   *  view is read-only to keep the two pointers from drifting apart. */
+  sharedWithKhatm?: boolean;
+  onOpenKhatm?: () => void;
+  onOpenPlanner?: () => void;
 }
 
 type LoadState = 'loading' | 'error' | 'ready';
@@ -39,7 +48,7 @@ function rangeLabel(range: AyahRange, meta: SurahMeta[]): string {
   return `${refLabel(range.start, meta)} — ${refLabel(range.end, meta)}`;
 }
 
-export default function NazeraScreen({ onBack, onOpenSetup, onOpenReaderSurah }: Props) {
+export default function NazeraScreen({ onBack, onOpenSetup, onOpenReaderSurah, embedded, onChange, sharedWithKhatm, onOpenKhatm, onOpenPlanner }: Props) {
   const [meta, setMeta] = useState<SurahMeta[]>([]);
   const [index, setIndex] = useState<QuranIndex | null>(null);
   const [profile, setProfile] = useState<NazeraProfile | null>(null);
@@ -83,6 +92,7 @@ export default function NazeraScreen({ onBack, onOpenSetup, onOpenReaderSurah }:
   function persist(next: NazeraProfile) {
     setProfile(next);
     saveProfile(next);
+    onChange?.();
   }
 
   function handleMarkComplete() {
@@ -94,10 +104,13 @@ export default function NazeraScreen({ onBack, onOpenSetup, onOpenReaderSurah }:
     }
   }
 
+  const pageTop = embedded ? '4px 16px 0' : '44px 16px 12px';
+  const backBtn = !embedded && onBack ? <BackButton onClick={onBack} variant="dark" /> : null;
+
   if (loadState === 'loading') {
     return (
-      <div style={{ padding: '44px 16px 12px' }}>
-        <BackButton onClick={onBack} variant="dark" />
+      <div style={{ padding: pageTop }}>
+        {backBtn}
         <div style={{ padding: '60px 20px', textAlign: 'center', color: 'var(--text-muted)' }}>
           <RotateCw size={22} className="qibla-spin" style={{ marginBottom: 10 }} />
           <div style={{ fontSize: 13 }}>লোড হচ্ছে...</div>
@@ -108,8 +121,8 @@ export default function NazeraScreen({ onBack, onOpenSetup, onOpenReaderSurah }:
 
   if (loadState === 'error') {
     return (
-      <div style={{ padding: '44px 16px 12px' }}>
-        <BackButton onClick={onBack} variant="dark" />
+      <div style={{ padding: pageTop }}>
+        {backBtn}
         <div style={{ padding: '60px 24px', textAlign: 'center', color: 'var(--text-muted)' }}>
           <WifiOff size={28} style={{ marginBottom: 10 }} />
           <div style={{ fontSize: 13, marginBottom: 14 }}>কুরআনের তথ্য লোড করা যায়নি। ইন্টারনেট সংযোগ পরীক্ষা করুন।</div>
@@ -129,11 +142,13 @@ export default function NazeraScreen({ onBack, onOpenSetup, onOpenReaderSurah }:
   if (!profile || !index) {
     return (
       <div>
-        <div style={{ padding: '44px 16px 12px', display: 'flex', alignItems: 'center', gap: 10 }}>
-          <BackButton onClick={onBack} variant="dark" />
-          <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--text)' }}>নাযেরা</div>
-        </div>
-        <div style={{ padding: '40px 24px', textAlign: 'center' }}>
+        {!embedded && (
+          <div style={{ padding: '44px 16px 12px', display: 'flex', alignItems: 'center', gap: 10 }}>
+            {backBtn}
+            <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--text)' }}>নাযেরা</div>
+          </div>
+        )}
+        <div style={{ padding: embedded ? '24px 24px' : '40px 24px', textAlign: 'center' }}>
           <div style={{
             width: 64, height: 64, borderRadius: 20, margin: '0 auto 16px',
             background: 'rgba(31,122,76,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -152,6 +167,14 @@ export default function NazeraScreen({ onBack, onOpenSetup, onOpenReaderSurah }:
               fontFamily: 'Hind Siliguri, sans-serif', boxShadow: '0 4px 16px rgba(31,122,76,0.3)',
             }}
           >নাযেরা শুরু করুন</button>
+          {onOpenPlanner && (
+            <div>
+              <button onClick={onOpenPlanner} style={{
+                marginTop: 12, background: 'none', border: 'none', color: 'var(--accent)', fontSize: 12.5, fontWeight: 700,
+                cursor: 'pointer', fontFamily: 'Hind Siliguri, sans-serif', textDecoration: 'underline', padding: 8,
+              }}>অথবা NUR-এর সঙ্গে কথা বলে পরিকল্পনা বানাও</button>
+            </div>
+          )}
         </div>
       </div>
     );
@@ -164,21 +187,37 @@ export default function NazeraScreen({ onBack, onOpenSetup, onOpenReaderSurah }:
 
   return (
     <div style={{ paddingBottom: 24 }}>
-      <div style={{ padding: '44px 16px 10px', display: 'flex', alignItems: 'center', gap: 10 }}>
-        <BackButton onClick={onBack} variant="dark" />
-        <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--text)', flex: 1 }}>নাযেরা</div>
-        <button onClick={onOpenSetup} aria-label="সম্পাদনা" style={{
+      <div style={{ padding: embedded ? '0 16px 10px' : '44px 16px 10px', display: 'flex', alignItems: 'center', gap: 10 }}>
+        {backBtn}
+        <div style={{ fontSize: embedded ? 13 : 16, fontWeight: 700, color: 'var(--text)', flex: 1 }}>{embedded ? 'নাযেরার বিস্তারিত' : 'নাযেরা'}</div>
+        <button onClick={onOpenSetup} aria-label="নাযেরা পরিকল্পনা সম্পাদনা" style={{
           width: 34, height: 34, borderRadius: '50%', background: 'var(--card)', border: '1px solid var(--border)',
           color: 'var(--text-muted)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}><Pencil size={14} /></button>
       </div>
 
+      {sharedWithKhatm && (
+        <div style={{
+          margin: '0 16px 14px', padding: '12px 14px', borderRadius: 14,
+          background: 'rgba(31,122,76,0.08)', border: '1px solid rgba(31,122,76,0.2)',
+          fontSize: 12, color: 'var(--text)', lineHeight: 1.6,
+        }}>
+          তোমার পরিকল্পনায় <b>একই পড়া খতম ও নাযেরা — দুটোতেই</b> গণনা হচ্ছে। পড়া সম্পন্ন করার বোতাম খতম ট্যাবে; এখানে তার প্রতিফলন দেখা যাবে।
+          {onOpenKhatm && (
+            <button onClick={onOpenKhatm} style={{
+              display: 'block', marginTop: 8, background: 'none', border: 'none', padding: '6px 0', cursor: 'pointer',
+              color: 'var(--accent)', fontWeight: 700, fontSize: 12, fontFamily: 'Hind Siliguri, sans-serif', textDecoration: 'underline',
+            }}>খতম ট্যাবে যাও</button>
+          )}
+        </div>
+      )}
+
       {/* consistency */}
       <div style={{ margin: '0 16px 14px', display: 'flex', gap: 10 }}>
         <div style={{ flex: 1, background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 16, padding: '14px 12px', textAlign: 'center' }}>
-          <Flame size={18} color="var(--gold)" style={{ marginBottom: 4 }} />
+          <Sprout size={18} color="var(--gold)" style={{ marginBottom: 4 }} />
           <div style={{ fontSize: 18, fontWeight: 800, color: 'var(--text)' }}>{cons!.currentStreak}</div>
-          <div style={{ fontSize: 10, color: 'var(--text-muted)' }}>দিনের ধারাবাহিকতা</div>
+          <div style={{ fontSize: 10, color: 'var(--text-muted)' }}>টানা দিন</div>
         </div>
         <div style={{ flex: 1, background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 16, padding: '14px 12px', textAlign: 'center' }}>
           <CalendarCheck size={18} color="var(--accent)" style={{ marginBottom: 4 }} />
@@ -243,7 +282,7 @@ export default function NazeraScreen({ onBack, onOpenSetup, onOpenReaderSurah }:
               >পড়ুন</button>
             </div>
 
-            <button
+            {!sharedWithKhatm && <button
               onClick={handleMarkComplete}
               style={{
                 width: '100%', marginTop: 14, background: 'var(--accent)', color: '#fff', border: 'none',
@@ -253,7 +292,7 @@ export default function NazeraScreen({ onBack, onOpenSetup, onOpenReaderSurah }:
             >
               {profile.targetMode === 'sessions' ? <CircleCheck size={15} /> : <Circle size={15} />}
               {profile.targetMode === 'sessions' ? 'এই সেশন সম্পন্ন করুন' : 'আজকের অংশ সম্পন্ন করুন'}
-            </button>
+            </button>}
           </>
         )}
       </div>

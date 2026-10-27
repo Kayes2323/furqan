@@ -8,7 +8,9 @@ import {
   paramsToRoute,
   routeToUrl,
   routesEqual,
+  isLegacyJourneyScreen,
 } from '../lib/navigation';
+import type { JourneyTab } from '../lib/journey-types';
 
 export function useAppNavigation(scrollContainerRef?: RefObject<HTMLElement | null>) {
   const router = useRouter();
@@ -20,10 +22,14 @@ export function useAppNavigation(scrollContainerRef?: RefObject<HTMLElement | nu
   const currentUrl = routeToUrl(route);
 
   useEffect(() => {
-    if (!searchParams.get('s')) {
+    const raw = searchParams.get('s');
+    if (!raw) {
       router.replace('/?s=home', { scroll: false });
+    } else if (isLegacyJourneyScreen(raw)) {
+      // old ?s=khatm / ?s=nazera links land in the matching Quran Journey section
+      router.replace(currentUrl, { scroll: false });
     }
-  }, [router, searchParams]);
+  }, [router, searchParams, currentUrl]);
 
   useEffect(() => {
     const el = scrollContainerRef?.current;
@@ -128,8 +134,15 @@ export function useAppNavigation(scrollContainerRef?: RefObject<HTMLElement | nu
     navigate({ screen: 'reader-bookmarks' });
   }, [navigate]);
 
+  const openQuranJourney = useCallback(
+    (journeyTab?: JourneyTab, options?: { replace?: boolean }) => {
+      navigate({ screen: 'quran-journey', journeyTab: journeyTab ?? 'plan' }, options);
+    },
+    [navigate],
+  );
+
   const openKhatm = useCallback(() => {
-    navigate({ screen: 'khatm' });
+    navigate({ screen: 'quran-journey', journeyTab: 'khatm' }, { replace: true });
   }, [navigate]);
 
   const openKhatmSetup = useCallback(() => {
@@ -137,7 +150,7 @@ export function useAppNavigation(scrollContainerRef?: RefObject<HTMLElement | nu
   }, [navigate]);
 
   const openNazera = useCallback(() => {
-    navigate({ screen: 'nazera' });
+    navigate({ screen: 'quran-journey', journeyTab: 'nazera' }, { replace: true });
   }, [navigate]);
 
   const openNazeraSetup = useCallback(() => {
@@ -213,6 +226,8 @@ export function useAppNavigation(scrollContainerRef?: RefObject<HTMLElement | nu
     openReaderSurah,
     openReaderSearch,
     openReaderBookmarks,
+    journeyTab: route.journeyTab ?? 'plan',
+    openQuranJourney,
     openKhatm,
     openKhatmSetup,
     openNazera,

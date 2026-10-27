@@ -18,6 +18,7 @@ Furqan helps Bengali-speaking readers move from *reading* the Quran to *understa
 | 💬 | **NUR** | Ask questions in Bangla and get answers grounded in the Quran and Hadith (AI, powered by Gemini). |
 | 🔬 | **Research** | Long-form Bangla articles on themes such as science, economics, psychology and society. |
 | 🕌 | **Sirah journey** | Read the life of the Prophet ﷺ part by part, chapter by chapter. |
+| 🧭 | **কুরআন যাত্রা (Quran Journey)** | One place for Khatm, Nazera and a NUR-assisted personal reading plan (goal, daily time, prayer-time split). Plans are calculated by the app, explained by NUR, editable, and stored on this device only. |
 | 🔖 | **Bookmarks and profile** | Save what matters and pick up where you left off. |
 | 📱 | **Installable** | Mobile-first, works as a PWA, with light and dark themes. |
 

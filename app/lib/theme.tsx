@@ -29,6 +29,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       root.style.setProperty('--gold-light', '#F0D896');
       root.style.setProperty('--green', '#4CC48B');
       root.style.setProperty('--green-light', '#5BD79A');
+      root.style.setProperty('--on-accent', '#06180F');
     } else {
       root.style.setProperty('--bg', '#F4F1E1');
       root.style.setProperty('--card', '#FFFEF8');
@@ -42,6 +43,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       root.style.setProperty('--gold-light', '#E4C878');
       root.style.setProperty('--green', '#1F7A4C');
       root.style.setProperty('--green-light', '#2FA06B');
+      root.style.setProperty('--on-accent', '#FFFFFF');
     }
     localStorage.setItem('furqan-theme', theme);
   }, [theme]);

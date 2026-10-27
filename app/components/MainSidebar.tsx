@@ -22,9 +22,8 @@ export default function MainSidebar({ current, onNavigate }: Props) {
     current === 'reader-surah' ||
     current === 'reader-search' ||
     current === 'reader-bookmarks' ||
-    current === 'khatm' ||
+    current === 'quran-journey' ||
     current === 'khatm-setup' ||
-    current === 'nazera' ||
     current === 'nazera-setup';
 
   const isKnowledgeActive =

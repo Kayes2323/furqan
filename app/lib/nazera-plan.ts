@@ -143,6 +143,18 @@ export function markTodayComplete(index: QuranIndex, profile: NazeraProfile): Na
   return finalizeAdvance(profile, index, portion.endGlobal, portion.count);
 }
 
+/** 'ayahs' mode: advances the position by exactly `count` ayahs and
+ *  counts them toward today's progress. Used when the same reading is
+ *  deliberately shared with a Khatm plan (see journey-plan.ts). Capped at
+ *  the end of the Quran; a no-op for non-positive counts. */
+export function advanceAyahs(index: QuranIndex, profile: NazeraProfile, count: number): NazeraProfile {
+  if (profile.targetMode !== 'ayahs' || !profile.dayAnchor || count <= 0) return profile;
+  const newPosition = Math.min(index.totalAyahs, profile.position + count);
+  const delta = newPosition - profile.position;
+  if (delta <= 0) return profile;
+  return finalizeAdvance(profile, index, newPosition, delta);
+}
+
 /** 'sessions' mode: logs exactly one session. A no-op once the day's
  *  session target is already met or the whole Quran is finished. */
 export function markSessionComplete(index: QuranIndex, profile: NazeraProfile): NazeraProfile {

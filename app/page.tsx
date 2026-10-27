@@ -17,9 +17,8 @@ import ReaderScreen from './components/ReaderScreen';
 import ReaderSurahScreen from './components/ReaderSurahScreen';
 import ReaderSearchScreen from './components/ReaderSearchScreen';
 import ReaderBookmarksScreen from './components/ReaderBookmarksScreen';
-import KhatmScreen from './components/KhatmScreen';
+import QuranJourneyScreen from './components/journey/QuranJourneyScreen';
 import KhatmSetupScreen from './components/KhatmSetupScreen';
-import NazeraScreen from './components/NazeraScreen';
 import NazeraSetupScreen from './components/NazeraSetupScreen';
 import ReciteScreen from './components/ReciteScreen';
 import QuranHubScreen from './components/QuranHubScreen';
@@ -67,6 +66,8 @@ function AppShell() {
     openReaderSurah,
     openReaderSearch,
     openReaderBookmarks,
+    journeyTab,
+    openQuranJourney,
     openKhatm,
     openKhatmSetup,
     openNazera,
@@ -181,14 +182,18 @@ function AppShell() {
         {screen === 'reader-bookmarks' && (
           <ReaderBookmarksScreen onBack={back} onOpenSurah={openReaderSurah} />
         )}
-        {screen === 'khatm' && (
-          <KhatmScreen onBack={back} onOpenSetup={openKhatmSetup} onOpenReaderSurah={openReaderSurah} />
+        {screen === 'quran-journey' && (
+          <QuranJourneyScreen
+            tab={journeyTab}
+            onTabChange={(t) => openQuranJourney(t, { replace: true })}
+            onBack={back}
+            onOpenReaderSurah={openReaderSurah}
+            onOpenKhatmSetup={openKhatmSetup}
+            onOpenNazeraSetup={openNazeraSetup}
+          />
         )}
         {screen === 'khatm-setup' && (
           <KhatmSetupScreen onBack={openKhatm} onDone={openKhatm} />
-        )}
-        {screen === 'nazera' && (
-          <NazeraScreen onBack={back} onOpenSetup={openNazeraSetup} onOpenReaderSurah={openReaderSurah} />
         )}
         {screen === 'nazera-setup' && (
           <NazeraSetupScreen onBack={openNazera} onDone={openNazera} />
