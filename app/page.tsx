@@ -28,6 +28,7 @@ import TopicDetailScreen from './components/TopicDetailScreen';
 import ImportantSurahDetailScreen from './components/ImportantSurahDetailScreen';
 import ProfileScreen from './components/ProfileScreen';
 import BottomNav from './components/BottomNav';
+import MainSidebar from './components/MainSidebar';
 import SplashScreen from './components/SplashScreen';
 import ReaderDesktopShell from './components/ReaderDesktopShell';
 import { ThemeProvider } from './lib/theme';
@@ -119,29 +120,8 @@ function AppShell() {
     );
   }
 
-  return (
-    <div style={{
-      maxWidth: 430,
-      width: '100%',
-      margin: '0 auto',
-      height: '100dvh',
-      maxHeight: '100dvh',
-      background: 'var(--bg)',
-      display: 'flex',
-      flexDirection: 'column',
-      position: 'relative',
-      overflow: 'hidden',
-    }}>
-      <div
-        ref={scrollRef}
-        style={{
-          flex: 1,
-          minHeight: 0,
-          overflowY: isReading ? 'hidden' : 'auto',
-          overflowX: 'hidden',
-          WebkitOverflowScrolling: 'touch',
-        }}
-      >
+  const screenContent = (
+    <>
         {screen === 'home' && <HomeScreen onNavigate={navigateScreen} />}
         {screen === 'nur' && <NurScreen onOpenReaderSurah={openReaderSurah} />}
         {screen === 'knowledge' && <KnowledgeScreen onNavigate={navigateScreen} />}
@@ -216,6 +196,56 @@ function AppShell() {
           <ImportantSurahDetailScreen importantId={importantId} onBack={back} onOpenReaderSurah={openReaderSurah} />
         )}
         {screen === 'profile' && <ProfileScreen />}
+    </>
+  );
+
+  if (isDesktop) {
+    return (
+      <>
+        <div style={{ height: '100dvh', width: '100%', display: 'flex', background: 'var(--bg)' }}>
+          {!isReading && <MainSidebar current={screen} onNavigate={navigateScreen} />}
+          <div
+            ref={scrollRef}
+            style={{
+              flex: 1, minWidth: 0,
+              overflowY: isReading ? 'hidden' : 'auto',
+              overflowX: 'hidden',
+            }}
+          >
+            <div style={{ maxWidth: 880, width: '100%', margin: '0 auto' }}>
+              {screenContent}
+            </div>
+          </div>
+        </div>
+        {showSplash && <SplashScreen onDone={() => setShowSplash(false)} />}
+      </>
+    );
+  }
+
+  return (
+    <div style={{
+      maxWidth: 430,
+      width: '100%',
+      margin: '0 auto',
+      height: '100dvh',
+      maxHeight: '100dvh',
+      background: 'var(--bg)',
+      display: 'flex',
+      flexDirection: 'column',
+      position: 'relative',
+      overflow: 'hidden',
+    }}>
+      <div
+        ref={scrollRef}
+        style={{
+          flex: 1,
+          minHeight: 0,
+          overflowY: isReading ? 'hidden' : 'auto',
+          overflowX: 'hidden',
+          WebkitOverflowScrolling: 'touch',
+        }}
+      >
+        {screenContent}
       </div>
 
       {!isReading && <BottomNav current={screen} onNavigate={navigateScreen} />}
