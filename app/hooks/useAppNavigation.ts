@@ -77,13 +77,6 @@ export function useAppNavigation(scrollContainerRef?: RefObject<HTMLElement | nu
     router.back();
   }, [router]);
 
-  const openSurah = useCallback(
-    (surah: number) => {
-      navigate({ screen: 'tafsir', surah });
-    },
-    [navigate],
-  );
-
   const openChapter = useCallback(
     (chapterId: string) => {
       navigate({ screen: 'sirah-read', chapter: chapterId });
@@ -180,7 +173,6 @@ export function useAppNavigation(scrollContainerRef?: RefObject<HTMLElement | nu
   return {
     route,
     screen: route.screen,
-    surahNumber: route.surah,
     chapterId: route.chapter ?? 'ch-01',
     partId: route.part ?? 'part-1',
     zikrSectionId: route.zikrSection ?? 'morning-evening',
@@ -192,7 +184,6 @@ export function useAppNavigation(scrollContainerRef?: RefObject<HTMLElement | nu
     navigate,
     navigateScreen,
     back,
-    openSurah,
     openChapter,
     openPart,
     openZikrSection,

@@ -1,10 +1,12 @@
 'use client';
 
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
-import { Bookmark, BookmarkCheck, ChevronLeft, ChevronRight, Minimize2, RotateCw, WifiOff } from 'lucide-react';
+import { Bookmark, BookmarkCheck, ChevronLeft, ChevronRight, Copy, Minimize2, RotateCw, ScrollText, WifiOff } from 'lucide-react';
 import BackButton from './BackButton';
 import ReaderToolbar from './ReaderToolbar';
+import TafsirPanel from './TafsirPanel';
 import { loadSurahMeta, loadSurah } from '../lib/reader-data';
+import { loadSurahTranslations, type TranslationsResult } from '../lib/translation-tafsir-data';
 import {
   saveLastRead,
   getBookmarks,
@@ -41,6 +43,7 @@ interface Props {
 }
 
 type LoadState = 'loading' | 'error' | 'ready';
+type TranslationsState = { status: 'loading' } | TranslationsResult;
 
 export default function ReaderSurahScreen({ surahNumber, targetAyah, onBack, onOpenSurah, prefs: prefsProp, onPrefsChange: onPrefsChangeProp }: Props) {
   const { theme: appTheme } = useTheme();
@@ -50,6 +53,10 @@ export default function ReaderSurahScreen({ surahNumber, targetAyah, onBack, onO
   const [bookmarks, setBookmarks] = useState<ReaderBookmark[]>([]);
   const [retryTick, setRetryTick] = useState(0);
   const [localPrefs, setLocalPrefs] = useState<ReaderPrefs>(() => defaultReaderPrefs());
+  const [translations, setTranslations] = useState<TranslationsState>({ status: 'loading' });
+  const [selectedAyah, setSelectedAyah] = useState<number | null>(null);
+  const [tafsirAyah, setTafsirAyah] = useState<number | null>(null);
+  const [copiedAyah, setCopiedAyah] = useState<number | null>(null);
 
   const isControlled = prefsProp !== undefined;
   const prefs = prefsProp ?? localPrefs;
@@ -121,6 +128,21 @@ export default function ReaderSurahScreen({ surahNumber, targetAyah, onBack, onO
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [surahNumber, retryTick]);
 
+  // Bengali translation loads independently of the Arabic text/dataset —
+  // its own loading/failure never blocks or alters canonical reading.
+  useEffect(() => {
+    let cancelled = false;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- kicking off a data fetch on mount/surah change (matches the surah-load effect above)
+    setTranslations({ status: 'loading' });
+    loadSurahTranslations(surahNumber).then((result) => {
+      if (!cancelled) setTranslations(result);
+    });
+    setSelectedAyah(null);
+    return () => {
+      cancelled = true;
+    };
+  }, [surahNumber, retryTick]);
+
   // Scroll to the deep-linked ayah once content is ready.
   useEffect(() => {
     if (loadState !== 'ready' || !targetAyah || scrolledRef.current) return;
@@ -175,6 +197,25 @@ export default function ReaderSurahScreen({ surahNumber, targetAyah, onBack, onO
     const next = toggleBookmark(bookmarks, surahNumber, ayah);
     setBookmarks(next);
     saveBookmarks(next);
+  }
+
+  function handleSelectAyah(ayah: number) {
+    setSelectedAyah((prev) => (prev === ayah ? null : ayah));
+  }
+
+  async function handleCopyAyah(ayah: number, arabicText: string) {
+    const translation = 'ok' in translations && translations.ok ? translations.data.get(ayah) : undefined;
+    const parts = [arabicText];
+    if (translation) parts.push(translation.text);
+    parts.push(`— সূরা ${surahNumber}:${ayah}`);
+    try {
+      await navigator.clipboard.writeText(parts.join('\n\n'));
+      setCopiedAyah(ayah);
+      setTimeout(() => setCopiedAyah((prev) => (prev === ayah ? null : prev)), 1600);
+    } catch {
+      // Clipboard access can be denied (permissions, insecure context); no
+      // further fallback is attempted — the UI simply doesn't show "copied".
+    }
   }
 
   const prevSurah = surahNumber > 1 ? surahNumber - 1 : null;
@@ -260,6 +301,8 @@ export default function ReaderSurahScreen({ surahNumber, targetAyah, onBack, onO
 
         {loadState === 'ready' && doc && doc.ayahs.map((a) => {
           const bookmarked = isBookmarked(bookmarks, surahNumber, a.number);
+          const isSelected = selectedAyah === a.number;
+          const translation = 'ok' in translations && translations.ok ? translations.data.get(a.number) : undefined;
           // Display-only: the opening Bismillah embedded in ayah 1's
           // text (Tanzil's own source convention) is shown as its own
           // header, separate from the ayah card. The canonical ayah
@@ -287,9 +330,16 @@ export default function ReaderSurahScreen({ surahNumber, targetAyah, onBack, onO
                   if (el) ayahRefs.current.set(a.number, el);
                   else ayahRefs.current.delete(a.number);
                 }}
+                onClick={() => handleSelectAyah(a.number)}
+                role="button"
+                tabIndex={0}
+                aria-label={`আয়াত ${surahNumber}:${a.number} নির্বাচন করুন`}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleSelectAyah(a.number); } }}
                 style={{
-                  background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 16,
-                  padding: '16px 16px 12px', marginBottom: 10,
+                  background: 'var(--card)',
+                  border: isSelected ? '1px solid var(--accent)' : '1px solid var(--border)',
+                  borderRadius: 16, padding: '16px 16px 12px', marginBottom: 10,
+                  cursor: 'pointer',
                 }}
               >
                 <div
@@ -301,6 +351,28 @@ export default function ReaderSurahScreen({ surahNumber, targetAyah, onBack, onO
                 >
                   {bodyText}
                 </div>
+
+                {translation && (
+                  <div style={{ fontSize: 13, lineHeight: 1.8, color: 'var(--text-muted)', marginTop: 10, paddingTop: 10, borderTop: '1px solid var(--border)' }}>
+                    {translation.text}
+                  </div>
+                )}
+                {!translation && 'status' in translations && translations.status === 'loading' && (
+                  <div style={{ marginTop: 10, paddingTop: 10, borderTop: '1px solid var(--border)' }}>
+                    <div style={{ height: 11, width: '90%', borderRadius: 4, background: 'var(--border)', opacity: 0.5 }} />
+                  </div>
+                )}
+                {!translation && 'ok' in translations && !translations.ok && translations.reason === 'not_configured' && (
+                  <div style={{ fontSize: 11, color: 'var(--text-light)', marginTop: 10, paddingTop: 10, borderTop: '1px solid var(--border)' }}>
+                    বাংলা অনুবাদ এখনো যুক্ত করা হয়নি
+                  </div>
+                )}
+                {!translation && 'ok' in translations && !translations.ok && (translations.reason === 'offline' || translations.reason === 'error') && (
+                  <div style={{ fontSize: 11, color: 'var(--text-light)', marginTop: 10, paddingTop: 10, borderTop: '1px solid var(--border)' }}>
+                    অনুবাদ লোড করা যায়নি
+                  </div>
+                )}
+
                 <div style={{
                   display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                   marginTop: 10, paddingTop: 8, borderTop: '1px solid var(--border)',
@@ -312,7 +384,7 @@ export default function ReaderSurahScreen({ surahNumber, targetAyah, onBack, onO
                     {surahNumber}:{a.number}
                   </div>
                   <button
-                    onClick={() => handleToggleBookmark(a.number)}
+                    onClick={(e) => { e.stopPropagation(); handleToggleBookmark(a.number); }}
                     aria-label={bookmarked ? 'বুকমার্ক সরান' : 'বুকমার্ক করুন'}
                     style={{
                       background: 'none', border: 'none', cursor: 'pointer', padding: 4,
@@ -323,6 +395,32 @@ export default function ReaderSurahScreen({ surahNumber, targetAyah, onBack, onO
                     {bookmarked ? <BookmarkCheck size={17} /> : <Bookmark size={17} />}
                   </button>
                 </div>
+
+                {isSelected && (
+                  <div
+                    onClick={(e) => e.stopPropagation()}
+                    style={{ display: 'flex', gap: 8, marginTop: 10, paddingTop: 10, borderTop: '1px dashed var(--border)' }}
+                  >
+                    <button
+                      onClick={() => setTafsirAyah(a.number)}
+                      style={{
+                        flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+                        padding: '9px 0', borderRadius: 10, border: 'none', background: 'var(--accent)',
+                        color: '#fff', fontSize: 12, fontWeight: 700, cursor: 'pointer',
+                        fontFamily: 'Hind Siliguri, sans-serif',
+                      }}
+                    ><ScrollText size={14} />তাফসির পড়ুন</button>
+                    <button
+                      onClick={() => handleCopyAyah(a.number, bodyText)}
+                      style={{
+                        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+                        padding: '9px 14px', borderRadius: 10, border: '1px solid var(--border)',
+                        background: 'var(--bg)', color: 'var(--text)', fontSize: 12, fontWeight: 700, cursor: 'pointer',
+                        fontFamily: 'Hind Siliguri, sans-serif',
+                      }}
+                    ><Copy size={14} />{copiedAyah === a.number ? 'কপি হয়েছে' : 'কপি'}</button>
+                  </div>
+                )}
               </div>
             </div>
           );
@@ -356,6 +454,16 @@ export default function ReaderSurahScreen({ surahNumber, targetAyah, onBack, onO
         )}
         </div>
       </div>
+
+      {tafsirAyah != null && (
+        <TafsirPanel
+          surah={surahNumber}
+          ayah={tafsirAyah}
+          meta={meta}
+          onClose={() => setTafsirAyah(null)}
+          onNavigate={(ayah) => setTafsirAyah(ayah)}
+        />
+      )}
     </div>
   );
 }

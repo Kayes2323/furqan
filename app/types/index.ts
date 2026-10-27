@@ -1,6 +1,5 @@
 export type Screen =
   | 'home'
-  | 'tafsir'
   | 'nur'
   | 'knowledge'
   | 'research'
@@ -34,13 +33,6 @@ export interface Surah {
   banglaName: string;
   numberOfAyahs: number;
   revelationType: 'Meccan' | 'Medinan';
-}
-
-export interface Ayah {
-  number: number;
-  text: string; // Arabic
-  translation: string; // Bangla
-  tafsir?: string; // Ibn Kathir simplified Bangla
 }
 
 export interface ResearchCategory {

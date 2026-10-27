@@ -13,7 +13,6 @@ export default function BottomNav({ current, onNavigate }: Props) {
     current === 'quran-topics' ||
     current === 'topic-detail' ||
     current === 'important-detail' ||
-    current === 'tafsir' ||
     current === 'reader' ||
     current === 'reader-surah' ||
     current === 'reader-search' ||

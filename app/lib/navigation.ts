@@ -2,7 +2,6 @@ import type { Screen } from '../types';
 
 export interface AppRoute {
   screen: Screen;
-  surah?: number;
   chapter?: string;
   part?: string;
   zikrSection?: string;
@@ -14,7 +13,7 @@ export interface AppRoute {
 }
 
 const VALID_SCREENS: Screen[] = [
-  'home', 'tafsir', 'nur', 'knowledge', 'research', 'sirah', 'sirah-part', 'sirah-read', 'qibla',
+  'home', 'nur', 'knowledge', 'research', 'sirah', 'sirah-part', 'sirah-read', 'qibla',
   'zikr', 'zikr-section', 'zikr-read', 'zikr-tracker', 'reader', 'reader-surah', 'reader-search', 'reader-bookmarks',
   'khatm', 'khatm-setup', 'nazera', 'nazera-setup', 'recite',
   'quran-hub', 'quran-topics', 'topic-detail', 'important-detail', 'profile',
@@ -27,7 +26,6 @@ export function isValidScreen(value: string | null): value is Screen {
 export function routeToParams(route: AppRoute): URLSearchParams {
   const params = new URLSearchParams();
   params.set('s', route.screen);
-  if (route.surah != null) params.set('surah', String(route.surah));
   if (route.chapter) params.set('chapter', route.chapter);
   if (route.part) params.set('part', route.part);
   if (route.zikrSection) params.set('zsec', route.zikrSection);
@@ -46,8 +44,6 @@ export function routeToUrl(route: AppRoute): string {
 export function paramsToRoute(params: URLSearchParams): AppRoute {
   const raw = params.get('s');
   const screen: Screen = isValidScreen(raw) ? raw : 'home';
-  const surahRaw = params.get('surah');
-  const surah = surahRaw ? Number(surahRaw) : undefined;
   const chapter = params.get('chapter') ?? undefined;
   const part = params.get('part') ?? undefined;
   const zikrSection = params.get('zsec') ?? undefined;
@@ -83,17 +79,12 @@ export function paramsToRoute(params: URLSearchParams): AppRoute {
     return { screen, zikrSection: zikrSection ?? 'morning-evening', zikrItem };
   }
 
-  if (screen === 'tafsir' && surah != null && !Number.isNaN(surah)) {
-    return { screen, surah };
-  }
-
   return { screen };
 }
 
 export function routesEqual(a: AppRoute, b: AppRoute): boolean {
   return (
     a.screen === b.screen &&
-    a.surah === b.surah &&
     a.chapter === b.chapter &&
     a.part === b.part &&
     a.zikrSection === b.zikrSection &&
