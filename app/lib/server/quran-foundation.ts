@@ -180,8 +180,11 @@ export async function fetchAyahTafsir(surah: number, ayah: number): Promise<RawA
   const tafsirId = await resolveBengaliTafsirId();
   if (tafsirId == null) return null;
 
+  // Like the verses endpoint (which needs fields=text_uthmani), this API
+  // omits the actual commentary body unless `fields` explicitly asks for
+  // it — otherwise it returns metadata only with an empty "text".
   const data = await apiGet<{ tafsir: RawAyahTafsir }>(
-    `/tafsirs/${tafsirId}/by_ayah/${surah}:${ayah}`
+    `/tafsirs/${tafsirId}/by_ayah/${surah}:${ayah}?fields=text`
   );
   return data.tafsir ?? null;
 }
