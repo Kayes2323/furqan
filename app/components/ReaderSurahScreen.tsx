@@ -312,6 +312,15 @@ export default function ReaderSurahScreen({ surahNumber, targetAyah, onBack, onO
           </div>
         )}
 
+        {loadState === 'ready' && 'ok' in translations && !translations.ok && translations.reason === 'content_unavailable' && (
+          <div style={{
+            background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 14,
+            padding: '12px 14px', marginBottom: 10, fontSize: 12, lineHeight: 1.8, color: 'var(--text-muted)',
+          }}>
+            এই সূরার বাংলা অনুবাদ ও তাফসির এই মুহূর্তে আমাদের উৎসে উপলব্ধ নয় — এটি কোনো ত্রুটি নয়, বরং আমাদের API অ্যাক্সেস এখনো সীমিত পর্যায়ে আছে। সম্পূর্ণ অ্যাক্সেস পেলে এটি স্বয়ংক্রিয়ভাবে যুক্ত হয়ে যাবে।
+          </div>
+        )}
+
         {loadState === 'ready' && doc && doc.ayahs.map((a) => {
           const bookmarked = isBookmarked(bookmarks, surahNumber, a.number);
           const isSelected = selectedAyah === a.number;
@@ -385,6 +394,9 @@ export default function ReaderSurahScreen({ surahNumber, targetAyah, onBack, onO
                     অনুবাদ লোড করা যায়নি
                   </div>
                 )}
+                {/* content_unavailable is explained once at the top of the
+                    surah, not repeated on every ayah card — see the banner
+                    above the ayah list. */}
 
                 <div style={{
                   display: 'flex', alignItems: 'center', justifyContent: 'space-between',

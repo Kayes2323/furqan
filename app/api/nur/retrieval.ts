@@ -99,13 +99,24 @@ export const defaultRetrievalDeps: RetrievalDeps = {
     return a?.text ?? null;
   },
   loadAyahTranslation: async (surah, ayah) => {
-    const t = await fetchAyahTranslation(surah, ayah);
-    return t ? { text: t.text } : null;
+    try {
+      const t = await fetchAyahTranslation(surah, ayah);
+      return t ? { text: t.text } : null;
+    } catch {
+      // A surah/ayah whose content isn't present in the current API tier
+      // (or any other upstream failure) must never crash the whole NUR
+      // reply — it's reported as unavailable, same as a genuine 404.
+      return null;
+    }
   },
   loadAyahTafsir: async (surah, ayah) => {
-    const raw = await fetchAyahTafsir(surah, ayah);
-    if (!raw) return 'not_found';
-    return { verseKey: raw.verse_key ?? `${surah}:${ayah}`, blocks: parseTafsirHtml(raw.text) };
+    try {
+      const raw = await fetchAyahTafsir(surah, ayah);
+      if (!raw) return 'not_found';
+      return { verseKey: raw.verse_key ?? `${surah}:${ayah}`, blocks: parseTafsirHtml(raw.text) };
+    } catch {
+      return 'not_found';
+    }
   },
   isConfigured: isQuranFoundationConfigured,
   translationSource: getActiveBengaliTranslationSource,

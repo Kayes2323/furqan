@@ -32,6 +32,14 @@ export async function GET(req: NextRequest) {
     if (err instanceof QuranFoundationNotConfiguredError) {
       return NextResponse.json({ ok: false, reason: 'not_configured' });
     }
+    // A 404 from the upstream chapter-content endpoint means this
+    // specific surah's verse content isn't present in this account's
+    // current API tier (e.g. a prelive/sandbox tier with only sample
+    // surahs) — a real, known, non-transient limitation, distinct from
+    // a genuine network/server error. See TAFSIR-SOURCES.md §7.
+    if (err instanceof QuranFoundationUpstreamError && err.status === 404) {
+      return NextResponse.json({ ok: false, reason: 'content_unavailable' });
+    }
     console.error(err);
     const status = err instanceof QuranFoundationUpstreamError ? err.status : 500;
     return NextResponse.json({ ok: false, reason: 'upstream_error' }, { status: status >= 400 && status < 600 ? 502 : 500 });
