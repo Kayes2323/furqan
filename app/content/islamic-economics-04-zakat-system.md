@@ -1,6 +1,6 @@
 # ইসলামী অর্থনীতি — পর্ব ৪
 ## যাকাতের পূর্ণাঙ্গ System — কীভাবে বাস্তবায়ন হবে
-### Tadabbur App | গবেষণা বিভাগ
+### FURQAN APP | গবেষণা বিভাগ
 
 ---
 
@@ -359,4 +359,4 @@ Waqf হলো সদকায়ে জারিয়া — মৃত্য�
 
 ---
 
-*এই content Tadabbur App এর গবেষণা বিভাগের জন্য তৈরি। সব তথ্য Quran, Hadith ও peer-reviewed sources থেকে নেওয়া হয়েছে।*
+*এই content FURQAN APP এর গবেষণা বিভাগের জন্য তৈরি। সব তথ্য Quran, Hadith ও peer-reviewed sources থেকে নেওয়া হয়েছে।*

@@ -1,6 +1,6 @@
 # গবেষণা — রাজনীতি | পর্ব ৮
 ## রাসূলুল্লাহ (সা.) যদি ২০২৬ সালে সৌদি আরবে থাকতেন
-### Tadabbur App | গবেষণা বিভাগ
+### FURQAN APP | গবেষণা বিভাগ
 
 ---
 
@@ -351,4 +351,4 @@ English, French, Spanish এ ইসলামের সত্য উপস্থ�
 
 ---
 
-*এই content Tadabbur App এর গবেষণা বিভাগের জন্য তৈরি। সব তথ্য Quran, Hadith ও peer-reviewed sources থেকে নেওয়া হয়েছে।*
+*এই content FURQAN APP এর গবেষণা বিভাগের জন্য তৈরি। সব তথ্য Quran, Hadith ও peer-reviewed sources থেকে নেওয়া হয়েছে।*

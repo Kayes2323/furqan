@@ -1,5 +1,5 @@
 # গবেষণা — চিকিৎসাবিজ্ঞান (Medicine)
-### পুরো কুরআন থেকে সংকলিত | Tadabbur App
+### পুরো কুরআন থেকে সংকলিত | FURQAN APP
 
 ---
 
@@ -365,4 +365,4 @@ WHO ও UNICEF দুই বছর পর্যন্ত breastfeeding এর re
 
 ---
 
-*এই content Tadabbur App এর গবেষণা বিভাগের জন্য তৈরি। সব তথ্য Quran, Hadith ও peer-reviewed scientific sources থেকে নেওয়া হয়েছে।*
+*এই content FURQAN APP এর গবেষণা বিভাগের জন্য তৈরি। সব তথ্য Quran, Hadith ও peer-reviewed scientific sources থেকে নেওয়া হয়েছে।*

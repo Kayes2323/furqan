@@ -1,5 +1,5 @@
 # গবেষণা — ভূগোল ও পৃথিবী
-### পুরো কুরআন থেকে সংকলিত | Tadabbur App
+### পুরো কুরআন থেকে সংকলিত | FURQAN APP
 
 ---
 
@@ -271,4 +271,4 @@ Ozone layer সূর্যের ক্ষতিকর UV রশ্মি আ�
 
 ---
 
-*এই content Tadabbur App এর গবেষণা বিভাগের জন্য তৈরি। সব তথ্য Quran, Hadith ও peer-reviewed scientific sources থেকে নেওয়া হয়েছে।*
+*এই content FURQAN APP এর গবেষণা বিভাগের জন্য তৈরি। সব তথ্য Quran, Hadith ও peer-reviewed scientific sources থেকে নেওয়া হয়েছে।*

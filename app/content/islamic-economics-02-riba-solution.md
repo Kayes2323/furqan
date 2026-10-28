@@ -1,6 +1,6 @@
 # ইসলামী অর্থনীতি — পর্ব ২
 ## সুদের বিকল্প কী? — শুধু স্বপ্ন নয়, বাস্তব সমাধান
-### Tadabbur App | গবেষণা বিভাগ
+### FURQAN APP | গবেষণা বিভাগ
 
 ---
 
@@ -308,4 +308,4 @@ Sukuk হলো সুদমুক্ত বিকল্প। সরকার p
 
 ---
 
-*এই content Tadabbur App এর গবেষণা বিভাগের জন্য তৈরি। সব তথ্য Quran, Hadith ও peer-reviewed sources থেকে নেওয়া হয়েছে।*
+*এই content FURQAN APP এর গবেষণা বিভাগের জন্য তৈরি। সব তথ্য Quran, Hadith ও peer-reviewed sources থেকে নেওয়া হয়েছে।*

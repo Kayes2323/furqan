@@ -1,6 +1,6 @@
 # গবেষণা — সমাজবিজ্ঞান | পর্ব ৪
 ## অপরাধ ও শাস্তি — Hudud কেন এত কঠোর?
-### Tadabbur App | গবেষণা বিভাগ
+### FURQAN APP | গবেষণা বিভাগ
 
 ---
 
@@ -309,4 +309,4 @@ Hudud শুধু শাস্তি দিয়ে কার্যকর হ�
 
 ---
 
-*এই content Tadabbur App এর গবেষণা বিভাগের জন্য তৈরি। সব তথ্য Quran, Hadith ও peer-reviewed sources থেকে নেওয়া হয়েছে।*
+*এই content FURQAN APP এর গবেষণা বিভাগের জন্য তৈরি। সব তথ্য Quran, Hadith ও peer-reviewed sources থেকে নেওয়া হয়েছে।*

@@ -1,6 +1,6 @@
 # ইসলামী অর্থনীতি — পর্ব ৬ (চূড়ান্ত)
 ## পূর্ণাঙ্গ Islamic Economic System — একটি সম্পূর্ণ দৃষ্টিভঙ্গি
-### Tadabbur App | গবেষণা বিভাগ
+### FURQAN APP | গবেষণা বিভাগ
 
 ---
 
@@ -378,4 +378,4 @@ Ibn Khaldun — মধ্যযুগের সেরা অর্থনীত�
 
 ---
 
-*এই content Tadabbur App এর গবেষণা বিভাগের জন্য তৈরি। সব তথ্য Quran, Hadith ও peer-reviewed sources থেকে নেওয়া হয়েছে।*
+*এই content FURQAN APP এর গবেষণা বিভাগের জন্য তৈরি। সব তথ্য Quran, Hadith ও peer-reviewed sources থেকে নেওয়া হয়েছে।*

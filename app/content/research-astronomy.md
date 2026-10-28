@@ -1,5 +1,5 @@
 # গবেষণা — জ্যোতির্বিজ্ঞান (Astronomy)
-## পুরো কুরআন থেকে সংকলিত | Tadabbur App
+## পুরো কুরআন থেকে সংকলিত | FURQAN APP
 
 ---
 
@@ -285,4 +285,4 @@ Pulsar হলো মৃত নক্ষত্র যা অত্যন্ত �
 
 ---
 
-*এই content Tadabbur App এর গবেষণা বিভাগের জন্য তৈরি। সব তথ্য Quran, Hadith ও peer-reviewed scientific sources থেকে নেওয়া হয়েছে।*
+*এই content FURQAN APP এর গবেষণা বিভাগের জন্য তৈরি। সব তথ্য Quran, Hadith ও peer-reviewed scientific sources থেকে নেওয়া হয়েছে।*

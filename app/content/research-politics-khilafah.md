@@ -1,6 +1,6 @@
 # গবেষণা — রাজনীতি
 ## ইসলামী খিলাফত — একটি সম্পূর্ণ শাসনব্যবস্থা
-### Tadabbur App | গবেষণা বিভাগ
+### FURQAN APP | গবেষণা বিভাগ
 
 ---
 
@@ -458,4 +458,4 @@ Social media — কিন্তু গীবত, মিথ্যা নিষ�
 
 ---
 
-*এই content Tadabbur App এর গবেষণা বিভাগের জন্য তৈরি। সব তথ্য Quran, Hadith ও peer-reviewed sources থেকে নেওয়া হয়েছে।*
+*এই content FURQAN APP এর গবেষণা বিভাগের জন্য তৈরি। সব তথ্য Quran, Hadith ও peer-reviewed sources থেকে নেওয়া হয়েছে।*

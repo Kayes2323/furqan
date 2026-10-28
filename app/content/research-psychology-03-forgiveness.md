@@ -1,6 +1,6 @@
 # গবেষণা — মনোবিজ্ঞান | পর্ব ৩
 ## ক্ষমা ও মানসিক মুক্তি — যে শিকল আপনি নিজে পরেছেন
-### Tadabbur App | গবেষণা বিভাগ
+### FURQAN APP | গবেষণা বিভাগ
 
 ---
 
@@ -244,4 +244,4 @@ Dr. Kristin Neff বলেছেন:
 
 ---
 
-*এই content Tadabbur App এর গবেষণা বিভাগের জন্য তৈরি। সব তথ্য Quran, Hadith ও peer-reviewed sources থেকে নেওয়া হয়েছে।*
+*এই content FURQAN APP এর গবেষণা বিভাগের জন্য তৈরি। সব তথ্য Quran, Hadith ও peer-reviewed sources থেকে নেওয়া হয়েছে।*

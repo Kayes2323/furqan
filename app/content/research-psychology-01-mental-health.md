@@ -1,6 +1,6 @@
 # গবেষণা — মনোবিজ্ঞান | পর্ব ১
 ## মানসিক স্বাস্থ্য ও উদ্বেগ
-### Tadabbur App | গবেষণা বিভাগ
+### FURQAN APP | গবেষণা বিভাগ
 
 ---
 
@@ -337,4 +337,4 @@ Pill দিয়ে সাময়িক সমাধান হয়। ক�
 
 ---
 
-*এই content Tadabbur App এর গবেষণা বিভাগের জন্য তৈরি। সব তথ্য Quran, Hadith ও peer-reviewed sources থেকে নেওয়া হয়েছে।*
+*এই content FURQAN APP এর গবেষণা বিভাগের জন্য তৈরি। সব তথ্য Quran, Hadith ও peer-reviewed sources থেকে নেওয়া হয়েছে।*

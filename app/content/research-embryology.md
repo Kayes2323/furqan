@@ -1,5 +1,5 @@
 # গবেষণা — ভ্রূণবিদ্যা (Embryology)
-## পুরো কুরআন থেকে সংকলিত | Tadabbur App
+## পুরো কুরআন থেকে সংকলিত | FURQAN APP
 
 ---
 
@@ -322,4 +322,4 @@ Embryo তে কান (cochlea) আগে পরিপক্ব হয় — 
 
 ---
 
-*এই content Tadabbur App এর গবেষণা বিভাগের জন্য তৈরি। সব তথ্য Quran, Hadith ও peer-reviewed scientific sources থেকে নেওয়া হয়েছে।*
+*এই content FURQAN APP এর গবেষণা বিভাগের জন্য তৈরি। সব তথ্য Quran, Hadith ও peer-reviewed scientific sources থেকে নেওয়া হয়েছে।*

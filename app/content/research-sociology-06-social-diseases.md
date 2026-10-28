@@ -1,6 +1,6 @@
 # গবেষণা — সমাজবিজ্ঞান | পর্ব ৬
 ## সামাজিক রোগ — মাদক, দুর্নীতি, পর্নোগ্রাফি, সোশ্যাল মিডিয়া
-### Tadabbur App | গবেষণা বিভাগ
+### FURQAN APP | গবেষণা বিভাগ
 
 ---
 
@@ -263,4 +263,4 @@ Social media নিষেধ নয় — নিয়ন্ত্রণ।
 
 ---
 
-*এই content Tadabbur App এর গবেষণা বিভাগের জন্য তৈরি। সব তথ্য Quran, Hadith ও peer-reviewed sources থেকে নেওয়া হয়েছে।*
+*এই content FURQAN APP এর গবেষণা বিভাগের জন্য তৈরি। সব তথ্য Quran, Hadith ও peer-reviewed sources থেকে নেওয়া হয়েছে।*

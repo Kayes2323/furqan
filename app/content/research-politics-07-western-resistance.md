@@ -1,6 +1,6 @@
 # গবেষণা — রাজনীতি | পর্ব ৭
 ## পশ্চিমের বাধা ও ষড়যন্ত্র মোকাবেলা
-### Tadabbur App | গবেষণা বিভাগ
+### FURQAN APP | গবেষণা বিভাগ
 
 ---
 
@@ -228,4 +228,4 @@ Halal শিল্পে বিনিয়োগ।
 
 ---
 
-*এই content Tadabbur App এর গবেষণা বিভাগের জন্য তৈরি। সব তথ্য Quran, Hadith ও peer-reviewed sources থেকে নেওয়া হয়েছে।*
+*এই content FURQAN APP এর গবেষণা বিভাগের জন্য তৈরি। সব তথ্য Quran, Hadith ও peer-reviewed sources থেকে নেওয়া হয়েছে।*

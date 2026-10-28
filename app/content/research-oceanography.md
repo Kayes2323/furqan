@@ -1,5 +1,5 @@
 # গবেষণা — সমুদ্রবিজ্ঞান (Oceanography)
-## পুরো কুরআন থেকে সংকলিত | Tadabbur App
+## পুরো কুরআন থেকে সংকলিত | FURQAN APP
 
 ---
 
@@ -241,4 +241,4 @@ Water cycle বা Hydrological cycle আধুনিক বিজ্ঞান�
 
 ---
 
-*এই content Tadabbur App এর গবেষণা বিভাগের জন্য তৈরি। সব তথ্য Quran, Hadith ও peer-reviewed scientific sources থেকে নেওয়া হয়েছে।*
+*এই content FURQAN APP এর গবেষণা বিভাগের জন্য তৈরি। সব তথ্য Quran, Hadith ও peer-reviewed scientific sources থেকে নেওয়া হয়েছে।*

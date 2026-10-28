@@ -1,6 +1,6 @@
 # গবেষণা — দর্শন (Philosophy)
 ## কুরআনের আলোয় জীবনের বড় প্রশ্নগুলো
-### Tadabbur App | গবেষণা বিভাগ
+### FURQAN APP | গবেষণা বিভাগ
 
 ---
 
@@ -388,7 +388,7 @@ Socrates বলেছিলেন — "অপরীক্ষিত জীবন 
 
 তাদাব্বুর — গভীর চিন্তা।
 
-এটাই Tadabbur App এর নাম।
+এটাই FURQAN APP এর নাম।
 
 কুরআন চায় আপনি ভাবুন। প্রশ্ন করুন। খুঁজুন।
 
@@ -429,4 +429,4 @@ Socrates বলেছিলেন — "অপরীক্ষিত জীবন 
 
 ---
 
-*এই content Tadabbur App এর গবেষণা বিভাগের জন্য তৈরি। সব তথ্য Quran, Hadith ও peer-reviewed sources থেকে নেওয়া হয়েছে।*
+*এই content FURQAN APP এর গবেষণা বিভাগের জন্য তৈরি। সব তথ্য Quran, Hadith ও peer-reviewed sources থেকে নেওয়া হয়েছে।*

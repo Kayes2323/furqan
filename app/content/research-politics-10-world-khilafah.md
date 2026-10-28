@@ -1,6 +1,6 @@
 # গবেষণা — রাজনীতি | পর্ব ১০
 ## বিশ্বে ইসলামী শাসন — সম্ভব কিনা, কীভাবে?
-### Tadabbur App | গবেষণা বিভাগ
+### FURQAN APP | গবেষণা বিভাগ
 
 ---
 
@@ -282,4 +282,4 @@ Sukuk Blockchain। Digital Zakat। Smart Contracts।
 
 ---
 
-*এই content Tadabbur App এর গবেষণা বিভাগের জন্য তৈরি। সব তথ্য Quran, Hadith ও peer-reviewed sources থেকে নেওয়া হয়েছে।*
+*এই content FURQAN APP এর গবেষণা বিভাগের জন্য তৈরি। সব তথ্য Quran, Hadith ও peer-reviewed sources থেকে নেওয়া হয়েছে।*
