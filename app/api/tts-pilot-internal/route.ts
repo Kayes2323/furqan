@@ -18,7 +18,13 @@ import { extractNarrationText, splitIntoNarrationChunks } from '../../lib/markdo
 // - Removed once this batch of articles is fully narrated.
 export const maxDuration = 60;
 
-const client = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+// Uses a dedicated key (GEMINI_API_KEY_TTS), separate from the
+// GEMINI_API_KEY the NUR feature depends on, so this pilot's TTS calls
+// draw against their own Gemini Cloud project's free-tier quota rather
+// than competing with NUR's chat quota — and so NUR is unaffected if
+// this key's quota runs out. Falls back to GEMINI_API_KEY only if the
+// dedicated key isn't set.
+const client = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY_TTS || process.env.GEMINI_API_KEY });
 
 const ALLOWED_CATEGORY_IDS = ['economy', 'politics'];
 const TTS_MODEL = 'gemini-3.8-flash-tts';
