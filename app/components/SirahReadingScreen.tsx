@@ -2,6 +2,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { getChapter, getNextChapter, getPrevChapter, getPart } from '../lib/sirah-data';
 import { saveLastRead, markCompleted, saveScroll, getScroll } from '../lib/sirah-progress';
+import { isChapterAudioAvailable } from '../lib/sirah-audio-data';
+import SirahAudioPlayer from './SirahAudioPlayer';
 import type { ContentBlock } from '../lib/sirah-types';
 
 interface Props {
@@ -228,6 +230,12 @@ export default function SirahReadingScreen({ chapterId, onBack, onOpenChapter, o
             </div>
           </div>
         </div>
+
+        {isChapterAudioAvailable(chapter.id) && (
+          <div style={{ paddingTop: 16 }}>
+            <SirahAudioPlayer chapter={chapter} />
+          </div>
+        )}
 
         <div style={{ maxWidth: 680, margin: '0 auto', padding: '36px 22px 48px' }}>
           {chapter.sections.map((section, si) => (
