@@ -91,15 +91,16 @@ export async function GET(req: NextRequest) {
     const sampleRate = rateMatch ? parseInt(rateMatch[1], 10) : 24000;
     const wav = pcmToWav(inline.data, sampleRate);
 
-    return new NextResponse(new Uint8Array(wav), {
-      headers: {
-        'Content-Type': 'audio/wav',
-        'Content-Disposition': `attachment; filename="${sectionId}.wav"`,
-        'X-TTS-Voice': voice,
-        'X-TTS-Model': TTS_MODEL,
-        'X-TTS-Sample-Rate': String(sampleRate),
-        'X-TTS-Char-Count': String(text.length),
-      },
+    // Returned as base64 inside JSON (pure ASCII) rather than raw binary —
+    // a raw-binary response fetched through a text-oriented HTTP tool can
+    // get corrupted by lossy UTF-8 decoding; base64 round-trips exactly.
+    return NextResponse.json({
+      sectionId,
+      voice,
+      model: TTS_MODEL,
+      sampleRate,
+      charCount: text.length,
+      audioBase64: wav.toString('base64'),
     });
   } catch (err) {
     return NextResponse.json({ error: String(err instanceof Error ? err.message : err) }, { status: 500 });
