@@ -58,7 +58,11 @@ export const RESEARCH_AUDIO: Record<string, ResearchCategoryAudio> = {
         { path: '/audio/research/economy/overview-4.mp3', durationSec: 156.816000 },
         { path: '/audio/research/economy/overview-5.mp3', durationSec: 120.144000 },
       ] },
-      { articleId: 'part1_problem', title: 'পর্ব ১ — বর্তমান সংকট', subtitle: 'আজকের অর্থনীতির রোগ', order: 2, totalChunksExpected: 5, chunks: [] },
+      { articleId: 'part1_problem', title: 'পর্ব ১ — বর্তমান সংকট', subtitle: 'আজকের অর্থনীতির রোগ', order: 2, totalChunksExpected: 5, chunks: [
+        { path: '/audio/research/economy/part1_problem-0.mp3', durationSec: 161.424000 },
+        { path: '/audio/research/economy/part1_problem-1.mp3', durationSec: 161.016000 },
+        { path: '/audio/research/economy/part1_problem-2.mp3', durationSec: 169.632000 },
+      ] },
       { articleId: 'part2_riba', title: 'পর্ব ২ — সুদের বিকল্প', subtitle: 'সুদ ছাড়া অর্থনীতি কীভাবে?', order: 3, totalChunksExpected: 5, chunks: [] },
       { articleId: 'part3_vision', title: 'পর্ব ৩ — বাংলাদেশ ভিশন', subtitle: 'নতুন বাংলাদেশের স্বপ্ন', order: 4, totalChunksExpected: 7, chunks: [] },
       { articleId: 'part4_zakat', title: 'পর্ব ৪ — যাকাত ব্যবস্থা', subtitle: 'দারিদ্র্যমুক্তির রোডম্যাপ', order: 5, totalChunksExpected: 6, chunks: [] },
