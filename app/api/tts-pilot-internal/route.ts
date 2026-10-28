@@ -91,6 +91,27 @@ export async function GET(req: NextRequest) {
     const sampleRate = rateMatch ? parseInt(rateMatch[1], 10) : 24000;
     const wav = pcmToWav(inline.data, sampleRate);
 
+    // Content-integrity check: feed the just-generated audio back to a
+    // text model and ask for a Bengali transcription, so a gross failure
+    // (wrong language, silence, garbled output) is caught automatically
+    // rather than assumed away.
+    let transcription: string | null = null;
+    try {
+      const transcribeResult = await client.models.generateContent({
+        model: 'gemini-3.6-flash',
+        contents: [{
+          role: 'user',
+          parts: [
+            { text: 'এই অডিওতে যা বলা হয়েছে তা হুবহু বাংলা লিপিতে লিখুন। শুধু ট্রান্সক্রিপশন দিন, অন্য কিছু নয়।' },
+            { inlineData: { mimeType: 'audio/wav', data: wav.toString('base64') } },
+          ],
+        }],
+      });
+      transcription = transcribeResult.text ?? null;
+    } catch {
+      transcription = null; // best-effort only — never fails the main generation
+    }
+
     // Returned as base64 inside JSON (pure ASCII) rather than raw binary —
     // a raw-binary response fetched through a text-oriented HTTP tool can
     // get corrupted by lossy UTF-8 decoding; base64 round-trips exactly.
@@ -100,6 +121,8 @@ export async function GET(req: NextRequest) {
       model: TTS_MODEL,
       sampleRate,
       charCount: text.length,
+      sourceText: text,
+      transcription,
       audioBase64: wav.toString('base64'),
     });
   } catch (err) {
