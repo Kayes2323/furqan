@@ -62,6 +62,8 @@ export const RESEARCH_AUDIO: Record<string, ResearchCategoryAudio> = {
         { path: '/audio/research/economy/part1_problem-0.mp3', durationSec: 161.424000 },
         { path: '/audio/research/economy/part1_problem-1.mp3', durationSec: 161.016000 },
         { path: '/audio/research/economy/part1_problem-2.mp3', durationSec: 169.632000 },
+        { path: '/audio/research/economy/part1_problem-3.mp3', durationSec: 152.736000 },
+        { path: '/audio/research/economy/part1_problem-4.mp3', durationSec: 55.704000 },
       ] },
       { articleId: 'part2_riba', title: 'পর্ব ২ — সুদের বিকল্প', subtitle: 'সুদ ছাড়া অর্থনীতি কীভাবে?', order: 3, totalChunksExpected: 5, chunks: [] },
       { articleId: 'part3_vision', title: 'পর্ব ৩ — বাংলাদেশ ভিশন', subtitle: 'নতুন বাংলাদেশের স্বপ্ন', order: 4, totalChunksExpected: 7, chunks: [] },
