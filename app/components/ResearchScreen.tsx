@@ -6,6 +6,8 @@ import { useTheme } from '../lib/theme';
 import BackButton from './BackButton';
 import MarkdownRenderer from './MarkdownRenderer';
 import { researchCategories } from '../lib/research-data';
+import { getArticleAudio } from '../lib/research-audio-data';
+import ResearchAudioPlayer from './ResearchAudioPlayer';
 
 interface Props {
   onBack: () => void;
@@ -52,6 +54,8 @@ export default function ResearchScreen({ onBack }: Props) {
     setArticleLoading(false);
   }
 
+  const selectedArticleAudio = selectedArticle ? getArticleAudio(activeId, selectedArticle.id) : undefined;
+
   if (selectedArticle) {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: 'var(--bg)' }}>
@@ -89,6 +93,11 @@ export default function ResearchScreen({ onBack }: Props) {
           <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 20 }}>
             {selectedArticle.subtitle}
           </div>
+          {selectedArticleAudio && selectedArticleAudio.chunks.length > 0 && (
+            <div style={{ margin: '0 -18px 20px' }}>
+              <ResearchAudioPlayer article={selectedArticleAudio} categoryLabel={activeCat.name} />
+            </div>
+          )}
           <div style={{ fontSize }}>
             <MarkdownRenderer content={selectedArticle.content} />
           </div>
