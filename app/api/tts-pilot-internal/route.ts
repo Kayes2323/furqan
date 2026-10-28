@@ -20,9 +20,14 @@ const ALLOWED_CHAPTER_ID = 'ch-11';
 const TTS_MODEL = 'gemini-3.8-flash-tts';
 const DEFAULT_VOICE = 'Charon';
 
-function sectionToPlainText(section: { title: string; blocks: { type: string; text: string }[] }): string {
-  const parts = [section.title];
-  for (const block of section.blocks) {
+function sectionToPlainText(
+  section: { title: string; blocks: { type: string; text: string }[] },
+  blockRange?: [number, number],
+): string {
+  const parts: string[] = [];
+  if (!blockRange || blockRange[0] === 0) parts.push(section.title);
+  const blocks = blockRange ? section.blocks.slice(blockRange[0], blockRange[1] + 1) : section.blocks;
+  for (const block of blocks) {
     if (block.type === 'image') continue;
     parts.push(block.text);
   }
@@ -67,7 +72,11 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'section not found' }, { status: 404 });
   }
 
-  const text = sectionToPlainText(section);
+  const blockRangeRaw = searchParams.get('blockRange');
+  const blockRange = blockRangeRaw
+    ? (blockRangeRaw.split('-').map((n) => parseInt(n, 10)) as [number, number])
+    : undefined;
+  const text = sectionToPlainText(section, blockRange);
 
   try {
     const result = await client.models.generateContent({
@@ -117,6 +126,7 @@ export async function GET(req: NextRequest) {
     // get corrupted by lossy UTF-8 decoding; base64 round-trips exactly.
     return NextResponse.json({
       sectionId,
+      blockRange: blockRange ?? null,
       voice,
       model: TTS_MODEL,
       sampleRate,
