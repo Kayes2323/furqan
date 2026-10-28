@@ -65,7 +65,11 @@ export const RESEARCH_AUDIO: Record<string, ResearchCategoryAudio> = {
         { path: '/audio/research/economy/part1_problem-3.mp3', durationSec: 152.736000 },
         { path: '/audio/research/economy/part1_problem-4.mp3', durationSec: 55.704000 },
       ] },
-      { articleId: 'part2_riba', title: 'পর্ব ২ — সুদের বিকল্প', subtitle: 'সুদ ছাড়া অর্থনীতি কীভাবে?', order: 3, totalChunksExpected: 5, chunks: [] },
+      { articleId: 'part2_riba', title: 'পর্ব ২ — সুদের বিকল্প', subtitle: 'সুদ ছাড়া অর্থনীতি কীভাবে?', order: 3, totalChunksExpected: 5, chunks: [
+        { path: '/audio/research/economy/part2_riba-0.mp3', durationSec: 165.192000 },
+        { path: '/audio/research/economy/part2_riba-1.mp3', durationSec: 141.192000 },
+        { path: '/audio/research/economy/part2_riba-2.mp3', durationSec: 139.992000 },
+      ] },
       { articleId: 'part3_vision', title: 'পর্ব ৩ — বাংলাদেশ ভিশন', subtitle: 'নতুন বাংলাদেশের স্বপ্ন', order: 4, totalChunksExpected: 7, chunks: [] },
       { articleId: 'part4_zakat', title: 'পর্ব ৪ — যাকাত ব্যবস্থা', subtitle: 'দারিদ্র্যমুক্তির রোডম্যাপ', order: 5, totalChunksExpected: 6, chunks: [] },
       { articleId: 'part5_business', title: 'পর্ব ৫ — ব্যবসা ও প্রযুক্তি', subtitle: 'ইসলামী ব্যবসার নীতি', order: 6, totalChunksExpected: 7, chunks: [] },
