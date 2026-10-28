@@ -50,7 +50,14 @@ export const RESEARCH_AUDIO: Record<string, ResearchCategoryAudio> = {
     voiceLabel: 'Charon (Gemini TTS, বাংলা পুরুষ কণ্ঠ)',
     model: 'gemini-3.8-flash-tts',
     articles: [
-      { articleId: 'overview', title: 'অর্থনীতি — সূচনা', subtitle: 'কুরআনে অর্থনৈতিক নীতি', order: 1, totalChunksExpected: 6, chunks: [] },
+      { articleId: 'overview', title: 'অর্থনীতি — সূচনা', subtitle: 'কুরআনে অর্থনৈতিক নীতি', order: 1, totalChunksExpected: 6, chunks: [
+        { path: '/audio/research/economy/overview-0.mp3', durationSec: 158.047417 },
+        { path: '/audio/research/economy/overview-1.mp3', durationSec: 161.064000 },
+        { path: '/audio/research/economy/overview-2.mp3', durationSec: 144.024000 },
+        { path: '/audio/research/economy/overview-3.mp3', durationSec: 155.592000 },
+        { path: '/audio/research/economy/overview-4.mp3', durationSec: 156.816000 },
+        { path: '/audio/research/economy/overview-5.mp3', durationSec: 120.144000 },
+      ] },
       { articleId: 'part1_problem', title: 'পর্ব ১ — বর্তমান সংকট', subtitle: 'আজকের অর্থনীতির রোগ', order: 2, totalChunksExpected: 5, chunks: [] },
       { articleId: 'part2_riba', title: 'পর্ব ২ — সুদের বিকল্প', subtitle: 'সুদ ছাড়া অর্থনীতি কীভাবে?', order: 3, totalChunksExpected: 5, chunks: [] },
       { articleId: 'part3_vision', title: 'পর্ব ৩ — বাংলাদেশ ভিশন', subtitle: 'নতুন বাংলাদেশের স্বপ্ন', order: 4, totalChunksExpected: 7, chunks: [] },
