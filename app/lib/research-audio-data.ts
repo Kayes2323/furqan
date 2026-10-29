@@ -84,6 +84,10 @@ export const RESEARCH_AUDIO: Record<string, ResearchCategoryAudio> = {
       { articleId: 'part4_zakat', title: 'পর্ব ৪ — যাকাত ব্যবস্থা', subtitle: 'দারিদ্র্যমুক্তির রোডম্যাপ', order: 5, totalChunksExpected: 6, chunks: [
         { path: '/audio/research/economy/part4_zakat-0.mp3', durationSec: 154.896000 },
         { path: '/audio/research/economy/part4_zakat-1.mp3', durationSec: 135.744000 },
+        { path: '/audio/research/economy/part4_zakat-2.mp3', durationSec: 151.872000 },
+        { path: '/audio/research/economy/part4_zakat-3.mp3', durationSec: 149.136000 },
+        { path: '/audio/research/economy/part4_zakat-4.mp3', durationSec: 157.584000 },
+        { path: '/audio/research/economy/part4_zakat-5.mp3', durationSec: 109.344000 },
       ] },
       { articleId: 'part5_business', title: 'পর্ব ৫ — ব্যবসা ও প্রযুক্তি', subtitle: 'ইসলামী ব্যবসার নীতি', order: 6, totalChunksExpected: 7, chunks: [] },
       { articleId: 'part6_complete', title: 'পর্ব ৬ — পূর্ণাঙ্গ ব্যবস্থা', subtitle: 'সম্পূর্ণ ইসলামী অর্থনীতি', order: 7, totalChunksExpected: 6, chunks: [] },
