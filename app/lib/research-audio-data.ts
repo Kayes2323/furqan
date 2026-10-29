@@ -69,6 +69,8 @@ export const RESEARCH_AUDIO: Record<string, ResearchCategoryAudio> = {
         { path: '/audio/research/economy/part2_riba-0.mp3', durationSec: 165.192000 },
         { path: '/audio/research/economy/part2_riba-1.mp3', durationSec: 141.192000 },
         { path: '/audio/research/economy/part2_riba-2.mp3', durationSec: 139.992000 },
+        { path: '/audio/research/economy/part2_riba-3.mp3', durationSec: 154.776000 },
+        { path: '/audio/research/economy/part2_riba-4.mp3', durationSec: 136.704000 },
       ] },
       { articleId: 'part3_vision', title: 'পর্ব ৩ — বাংলাদেশ ভিশন', subtitle: 'নতুন বাংলাদেশের স্বপ্ন', order: 4, totalChunksExpected: 7, chunks: [] },
       { articleId: 'part4_zakat', title: 'পর্ব ৪ — যাকাত ব্যবস্থা', subtitle: 'দারিদ্র্যমুক্তির রোডম্যাপ', order: 5, totalChunksExpected: 6, chunks: [] },
