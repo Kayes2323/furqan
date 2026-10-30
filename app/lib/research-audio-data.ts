@@ -98,7 +98,14 @@ export const RESEARCH_AUDIO: Record<string, ResearchCategoryAudio> = {
         { path: '/audio/research/economy/part5_business-5.mp3', durationSec: 163.584000 },
         { path: '/audio/research/economy/part5_business-6.mp3', durationSec: 49.656000 },
       ] },
-      { articleId: 'part6_complete', title: 'পর্ব ৬ — পূর্ণাঙ্গ ব্যবস্থা', subtitle: 'সম্পূর্ণ ইসলামী অর্থনীতি', order: 7, totalChunksExpected: 6, chunks: [] },
+      { articleId: 'part6_complete', title: 'পর্ব ৬ — পূর্ণাঙ্গ ব্যবস্থা', subtitle: 'সম্পূর্ণ ইসলামী অর্থনীতি', order: 7, totalChunksExpected: 6, chunks: [
+        { path: '/audio/research/economy/part6_complete-0.mp3', durationSec: 133.104000 },
+        { path: '/audio/research/economy/part6_complete-1.mp3', durationSec: 169.896000 },
+        { path: '/audio/research/economy/part6_complete-2.mp3', durationSec: 161.736000 },
+        { path: '/audio/research/economy/part6_complete-3.mp3', durationSec: 154.104000 },
+        { path: '/audio/research/economy/part6_complete-4.mp3', durationSec: 151.824000 },
+        { path: '/audio/research/economy/part6_complete-5.mp3', durationSec: 166.032000 },
+      ] },
     ],
   },
   politics: {
