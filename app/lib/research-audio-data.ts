@@ -96,6 +96,7 @@ export const RESEARCH_AUDIO: Record<string, ResearchCategoryAudio> = {
         { path: '/audio/research/economy/part5_business-3.mp3', durationSec: 155.304000 },
         { path: '/audio/research/economy/part5_business-4.mp3', durationSec: 143.832000 },
         { path: '/audio/research/economy/part5_business-5.mp3', durationSec: 163.584000 },
+        { path: '/audio/research/economy/part5_business-6.mp3', durationSec: 49.656000 },
       ] },
       { articleId: 'part6_complete', title: 'পর্ব ৬ — পূর্ণাঙ্গ ব্যবস্থা', subtitle: 'সম্পূর্ণ ইসলামী অর্থনীতি', order: 7, totalChunksExpected: 6, chunks: [] },
     ],
