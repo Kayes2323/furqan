@@ -122,7 +122,12 @@ export const RESEARCH_AUDIO: Record<string, ResearchCategoryAudio> = {
         { path: '/audio/research/politics/overview-5.mp3', durationSec: 159.696000 },
         { path: '/audio/research/politics/overview-6.mp3', durationSec: 118.032000 },
       ] },
-      { articleId: 'part2_election', title: 'পর্ব ২ — খলিফা নির্বাচন', subtitle: 'যোগ্যতা ও মজলিসে শুরা', order: 2, totalChunksExpected: 4, chunks: [] },
+      { articleId: 'part2_election', title: 'পর্ব ২ — খলিফা নির্বাচন', subtitle: 'যোগ্যতা ও মজলিসে শুরা', order: 2, totalChunksExpected: 4, chunks: [
+        { path: '/audio/research/politics/part2_election-0.mp3', durationSec: 158.352000 },
+        { path: '/audio/research/politics/part2_election-1.mp3', durationSec: 168.432000 },
+        { path: '/audio/research/politics/part2_election-2.mp3', durationSec: 153.072000 },
+        { path: '/audio/research/politics/part2_election-3.mp3', durationSec: 10.104000 },
+      ] },
       { articleId: 'part3_ministries', title: 'পর্ব ৩ — মন্ত্রণালয় ব্যবস্থা', subtitle: 'সরকার কাঠামো', order: 3, totalChunksExpected: 4, chunks: [] },
       { articleId: 'part4_economy', title: 'পর্ব ৪ — অর্থনৈতিক শাসন', subtitle: 'বায়তুলমাল থেকে বাজেট', order: 4, totalChunksExpected: 5, chunks: [] },
       { articleId: 'part5_foreign', title: 'পর্ব ৫ — পররাষ্ট্রনীতি', subtitle: 'ইসলামী কূটনীতি', order: 5, totalChunksExpected: 4, chunks: [] },
