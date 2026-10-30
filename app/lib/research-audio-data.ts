@@ -134,7 +134,11 @@ export const RESEARCH_AUDIO: Record<string, ResearchCategoryAudio> = {
         { path: '/audio/research/politics/part3_ministries-2.mp3', durationSec: 171.984000 },
         { path: '/audio/research/politics/part3_ministries-3.mp3', durationSec: 94.632000 },
       ] },
-      { articleId: 'part4_economy', title: 'পর্ব ৪ — অর্থনৈতিক শাসন', subtitle: 'বায়তুলমাল থেকে বাজেট', order: 4, totalChunksExpected: 5, chunks: [] },
+      { articleId: 'part4_economy', title: 'পর্ব ৪ — অর্থনৈতিক শাসন', subtitle: 'বায়তুলমাল থেকে বাজেট', order: 4, totalChunksExpected: 5, chunks: [
+        { path: '/audio/research/politics/part4_economy-0.mp3', durationSec: 160.176000 },
+        { path: '/audio/research/politics/part4_economy-1.mp3', durationSec: 174.672000 },
+        { path: '/audio/research/politics/part4_economy-2.mp3', durationSec: 169.584000 },
+      ] },
       { articleId: 'part5_foreign', title: 'পর্ব ৫ — পররাষ্ট্রনীতি', subtitle: 'ইসলামী কূটনীতি', order: 5, totalChunksExpected: 4, chunks: [] },
       { articleId: 'part6_women', title: 'পর্ব ৬ — নারী ও সংখ্যালঘু', subtitle: 'খিলাফতে তাদের অধিকার', order: 6, totalChunksExpected: 4, chunks: [] },
       { articleId: 'part7_western', title: 'পর্ব ৭ — পশ্চিমের বাধা', subtitle: 'ষড়যন্ত্র মোকাবেলা', order: 7, totalChunksExpected: 3, chunks: [] },
