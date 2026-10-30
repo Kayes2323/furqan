@@ -113,7 +113,15 @@ export const RESEARCH_AUDIO: Record<string, ResearchCategoryAudio> = {
     voiceLabel: 'Charon (Gemini TTS, বাংলা পুরুষ কণ্ঠ)',
     model: 'gemini-3.8-flash-tts',
     articles: [
-      { articleId: 'overview', title: 'খিলাফত — সূচনা', subtitle: 'ইসলামী শাসনব্যবস্থা', order: 1, totalChunksExpected: 7, chunks: [] },
+      { articleId: 'overview', title: 'খিলাফত — সূচনা', subtitle: 'ইসলামী শাসনব্যবস্থা', order: 1, totalChunksExpected: 7, chunks: [
+        { path: '/audio/research/politics/overview-0.mp3', durationSec: 154.416000 },
+        { path: '/audio/research/politics/overview-1.mp3', durationSec: 146.016000 },
+        { path: '/audio/research/politics/overview-2.mp3', durationSec: 159.336000 },
+        { path: '/audio/research/politics/overview-3.mp3', durationSec: 162.984000 },
+        { path: '/audio/research/politics/overview-4.mp3', durationSec: 159.984000 },
+        { path: '/audio/research/politics/overview-5.mp3', durationSec: 159.696000 },
+        { path: '/audio/research/politics/overview-6.mp3', durationSec: 118.032000 },
+      ] },
       { articleId: 'part2_election', title: 'পর্ব ২ — খলিফা নির্বাচন', subtitle: 'যোগ্যতা ও মজলিসে শুরা', order: 2, totalChunksExpected: 4, chunks: [] },
       { articleId: 'part3_ministries', title: 'পর্ব ৩ — মন্ত্রণালয় ব্যবস্থা', subtitle: 'সরকার কাঠামো', order: 3, totalChunksExpected: 4, chunks: [] },
       { articleId: 'part4_economy', title: 'পর্ব ৪ — অর্থনৈতিক শাসন', subtitle: 'বায়তুলমাল থেকে বাজেট', order: 4, totalChunksExpected: 5, chunks: [] },
