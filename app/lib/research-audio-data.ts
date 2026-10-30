@@ -128,7 +128,12 @@ export const RESEARCH_AUDIO: Record<string, ResearchCategoryAudio> = {
         { path: '/audio/research/politics/part2_election-2.mp3', durationSec: 153.072000 },
         { path: '/audio/research/politics/part2_election-3.mp3', durationSec: 10.104000 },
       ] },
-      { articleId: 'part3_ministries', title: 'পর্ব ৩ — মন্ত্রণালয় ব্যবস্থা', subtitle: 'সরকার কাঠামো', order: 3, totalChunksExpected: 4, chunks: [] },
+      { articleId: 'part3_ministries', title: 'পর্ব ৩ — মন্ত্রণালয় ব্যবস্থা', subtitle: 'সরকার কাঠামো', order: 3, totalChunksExpected: 4, chunks: [
+        { path: '/audio/research/politics/part3_ministries-0.mp3', durationSec: 172.296000 },
+        { path: '/audio/research/politics/part3_ministries-1.mp3', durationSec: 167.664000 },
+        { path: '/audio/research/politics/part3_ministries-2.mp3', durationSec: 171.984000 },
+        { path: '/audio/research/politics/part3_ministries-3.mp3', durationSec: 94.632000 },
+      ] },
       { articleId: 'part4_economy', title: 'পর্ব ৪ — অর্থনৈতিক শাসন', subtitle: 'বায়তুলমাল থেকে বাজেট', order: 4, totalChunksExpected: 5, chunks: [] },
       { articleId: 'part5_foreign', title: 'পর্ব ৫ — পররাষ্ট্রনীতি', subtitle: 'ইসলামী কূটনীতি', order: 5, totalChunksExpected: 4, chunks: [] },
       { articleId: 'part6_women', title: 'পর্ব ৬ — নারী ও সংখ্যালঘু', subtitle: 'খিলাফতে তাদের অধিকার', order: 6, totalChunksExpected: 4, chunks: [] },
