@@ -147,7 +147,12 @@ export const RESEARCH_AUDIO: Record<string, ResearchCategoryAudio> = {
         { path: '/audio/research/politics/part5_foreign-2.mp3', durationSec: 160.656000 },
         { path: '/audio/research/politics/part5_foreign-3.mp3', durationSec: 39.456000 },
       ] },
-      { articleId: 'part6_women', title: 'পর্ব ৬ — নারী ও সংখ্যালঘু', subtitle: 'খিলাফতে তাদের অধিকার', order: 6, totalChunksExpected: 4, chunks: [] },
+      { articleId: 'part6_women', title: 'পর্ব ৬ — নারী ও সংখ্যালঘু', subtitle: 'খিলাফতে তাদের অধিকার', order: 6, totalChunksExpected: 4, chunks: [
+        { path: '/audio/research/politics/part6_women-0.mp3', durationSec: 155.664000 },
+        { path: '/audio/research/politics/part6_women-1.mp3', durationSec: 155.784000 },
+        { path: '/audio/research/politics/part6_women-2.mp3', durationSec: 162.864000 },
+        { path: '/audio/research/politics/part6_women-3.mp3', durationSec: 62.712000 },
+      ] },
       { articleId: 'part7_western', title: 'পর্ব ৭ — পশ্চিমের বাধা', subtitle: 'ষড়যন্ত্র মোকাবেলা', order: 7, totalChunksExpected: 3, chunks: [] },
       { articleId: 'part8_rasul', title: 'পর্ব ৮ — রাসূল ২০২৬-এ', subtitle: 'আধুনিক যুগে নবীজি', order: 8, totalChunksExpected: 5, chunks: [] },
       { articleId: 'part10_world', title: 'পর্ব ৯ — বিশ্ব খিলাফত', subtitle: 'সম্ভব কিনা, কীভাবে?', order: 9, totalChunksExpected: 4, chunks: [] },
