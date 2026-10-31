@@ -141,7 +141,12 @@ export const RESEARCH_AUDIO: Record<string, ResearchCategoryAudio> = {
         { path: '/audio/research/politics/part4_economy-3.mp3', durationSec: 160.392000 },
         { path: '/audio/research/politics/part4_economy-4.mp3', durationSec: 53.304000 },
       ] },
-      { articleId: 'part5_foreign', title: 'পর্ব ৫ — পররাষ্ট্রনীতি', subtitle: 'ইসলামী কূটনীতি', order: 5, totalChunksExpected: 4, chunks: [] },
+      { articleId: 'part5_foreign', title: 'পর্ব ৫ — পররাষ্ট্রনীতি', subtitle: 'ইসলামী কূটনীতি', order: 5, totalChunksExpected: 4, chunks: [
+        { path: '/audio/research/politics/part5_foreign-0.mp3', durationSec: 169.872000 },
+        { path: '/audio/research/politics/part5_foreign-1.mp3', durationSec: 173.904000 },
+        { path: '/audio/research/politics/part5_foreign-2.mp3', durationSec: 160.656000 },
+        { path: '/audio/research/politics/part5_foreign-3.mp3', durationSec: 39.456000 },
+      ] },
       { articleId: 'part6_women', title: 'পর্ব ৬ — নারী ও সংখ্যালঘু', subtitle: 'খিলাফতে তাদের অধিকার', order: 6, totalChunksExpected: 4, chunks: [] },
       { articleId: 'part7_western', title: 'পর্ব ৭ — পশ্চিমের বাধা', subtitle: 'ষড়যন্ত্র মোকাবেলা', order: 7, totalChunksExpected: 3, chunks: [] },
       { articleId: 'part8_rasul', title: 'পর্ব ৮ — রাসূল ২০২৬-এ', subtitle: 'আধুনিক যুগে নবীজি', order: 8, totalChunksExpected: 5, chunks: [] },
