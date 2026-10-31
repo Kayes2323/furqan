@@ -138,6 +138,8 @@ export const RESEARCH_AUDIO: Record<string, ResearchCategoryAudio> = {
         { path: '/audio/research/politics/part4_economy-0.mp3', durationSec: 160.176000 },
         { path: '/audio/research/politics/part4_economy-1.mp3', durationSec: 174.672000 },
         { path: '/audio/research/politics/part4_economy-2.mp3', durationSec: 169.584000 },
+        { path: '/audio/research/politics/part4_economy-3.mp3', durationSec: 160.392000 },
+        { path: '/audio/research/politics/part4_economy-4.mp3', durationSec: 53.304000 },
       ] },
       { articleId: 'part5_foreign', title: 'পর্ব ৫ — পররাষ্ট্রনীতি', subtitle: 'ইসলামী কূটনীতি', order: 5, totalChunksExpected: 4, chunks: [] },
       { articleId: 'part6_women', title: 'পর্ব ৬ — নারী ও সংখ্যালঘু', subtitle: 'খিলাফতে তাদের অধিকার', order: 6, totalChunksExpected: 4, chunks: [] },
