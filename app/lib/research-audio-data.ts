@@ -165,8 +165,17 @@ export const RESEARCH_AUDIO: Record<string, ResearchCategoryAudio> = {
         { path: '/audio/research/politics/part8_rasul-3.mp3', durationSec: 160.944000 },
         { path: '/audio/research/politics/part8_rasul-4.mp3', durationSec: 40.824000 },
       ] },
-      { articleId: 'part10_world', title: 'পর্ব ৯ — বিশ্ব খিলাফত', subtitle: 'সম্ভব কিনা, কীভাবে?', order: 9, totalChunksExpected: 4, chunks: [] },
-      { articleId: 'part11_nonmuslims', title: 'পর্ব ১০ — বিধর্মীদের অধিকার', subtitle: 'শুধু মুসলিমদের জন্য নয়', order: 10, totalChunksExpected: 5, chunks: [] },
+      { articleId: 'part10_world', title: 'পর্ব ৯ — বিশ্ব খিলাফত', subtitle: 'সম্ভব কিনা, কীভাবে?', order: 9, totalChunksExpected: 4, chunks: [
+        { path: '/audio/research/politics/part10_world-0.mp3', durationSec: 189.984000 },
+        { path: '/audio/research/politics/part10_world-1.mp3', durationSec: 166.584000 },
+        { path: '/audio/research/politics/part10_world-2.mp3', durationSec: 160.656000 },
+        { path: '/audio/research/politics/part10_world-3.mp3', durationSec: 46.032000 },
+      ] },
+      { articleId: 'part11_nonmuslims', title: 'পর্ব ১০ — বিধর্মীদের অধিকার', subtitle: 'শুধু মুসলিমদের জন্য নয়', order: 10, totalChunksExpected: 5, chunks: [
+        { path: '/audio/research/politics/part11_nonmuslims-0.mp3', durationSec: 161.976000 },
+        { path: '/audio/research/politics/part11_nonmuslims-1.mp3', durationSec: 164.064000 },
+        { path: '/audio/research/politics/part11_nonmuslims-2.mp3', durationSec: 144.936000 },
+      ] },
     ],
   },
 };
