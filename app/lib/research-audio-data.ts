@@ -156,8 +156,15 @@ export const RESEARCH_AUDIO: Record<string, ResearchCategoryAudio> = {
       { articleId: 'part7_western', title: 'পর্ব ৭ — পশ্চিমের বাধা', subtitle: 'ষড়যন্ত্র মোকাবেলা', order: 7, totalChunksExpected: 3, chunks: [
         { path: '/audio/research/politics/part7_western-0.mp3', durationSec: 163.584000 },
         { path: '/audio/research/politics/part7_western-1.mp3', durationSec: 153.432000 },
+        { path: '/audio/research/politics/part7_western-2.mp3', durationSec: 133.536000 },
       ] },
-      { articleId: 'part8_rasul', title: 'পর্ব ৮ — রাসূল ২০২৬-এ', subtitle: 'আধুনিক যুগে নবীজি', order: 8, totalChunksExpected: 5, chunks: [] },
+      { articleId: 'part8_rasul', title: 'পর্ব ৮ — রাসূল ২০২৬-এ', subtitle: 'আধুনিক যুগে নবীজি', order: 8, totalChunksExpected: 5, chunks: [
+        { path: '/audio/research/politics/part8_rasul-0.mp3', durationSec: 173.064000 },
+        { path: '/audio/research/politics/part8_rasul-1.mp3', durationSec: 142.632000 },
+        { path: '/audio/research/politics/part8_rasul-2.mp3', durationSec: 154.704000 },
+        { path: '/audio/research/politics/part8_rasul-3.mp3', durationSec: 160.944000 },
+        { path: '/audio/research/politics/part8_rasul-4.mp3', durationSec: 40.824000 },
+      ] },
       { articleId: 'part10_world', title: 'পর্ব ৯ — বিশ্ব খিলাফত', subtitle: 'সম্ভব কিনা, কীভাবে?', order: 9, totalChunksExpected: 4, chunks: [] },
       { articleId: 'part11_nonmuslims', title: 'পর্ব ১০ — বিধর্মীদের অধিকার', subtitle: 'শুধু মুসলিমদের জন্য নয়', order: 10, totalChunksExpected: 5, chunks: [] },
     ],
