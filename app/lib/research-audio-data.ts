@@ -175,6 +175,8 @@ export const RESEARCH_AUDIO: Record<string, ResearchCategoryAudio> = {
         { path: '/audio/research/politics/part11_nonmuslims-0.mp3', durationSec: 161.976000 },
         { path: '/audio/research/politics/part11_nonmuslims-1.mp3', durationSec: 164.064000 },
         { path: '/audio/research/politics/part11_nonmuslims-2.mp3', durationSec: 144.936000 },
+        { path: '/audio/research/politics/part11_nonmuslims-3.mp3', durationSec: 160.632000 },
+        { path: '/audio/research/politics/part11_nonmuslims-4.mp3', durationSec: 52.536000 },
       ] },
     ],
   },
