@@ -165,6 +165,13 @@ export function useAppNavigation(scrollContainerRef?: RefObject<HTMLElement | nu
     navigate({ screen: 'quran-hub' });
   }, [navigate]);
 
+  const openResearch = useCallback(
+    (researchCategory?: string) => {
+      navigate({ screen: 'research', researchCategory });
+    },
+    [navigate],
+  );
+
   const openQuranTopics = useCallback(() => {
     navigate({ screen: 'quran-topics' });
   }, [navigate]);
@@ -214,6 +221,7 @@ export function useAppNavigation(scrollContainerRef?: RefObject<HTMLElement | nu
     importantId: route.importantId ?? 'al-mulk',
     lifeAreaId: route.lifeAreaId ?? 'relationship-with-allah',
     practiceId: route.practiceId ?? 'sp-fajr-prayer',
+    researchCategoryId: route.researchCategory,
     navigate,
     navigateScreen,
     back,
@@ -234,6 +242,7 @@ export function useAppNavigation(scrollContainerRef?: RefObject<HTMLElement | nu
     openNazeraSetup,
     openRecite,
     openQuranHub,
+    openResearch,
     openQuranTopics,
     openTopicDetail,
     openImportantDetail,

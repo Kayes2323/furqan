@@ -11,6 +11,9 @@ import ResearchAudioPlayer from './ResearchAudioPlayer';
 
 interface Props {
   onBack: () => void;
+  /** Category to open on, when arriving from a direct link (e.g. a home-screen
+   *  topic chip). Falls back to the first category. */
+  initialCategoryId?: string;
 }
 
 interface Article {
@@ -21,11 +24,15 @@ interface Article {
   content: string;
 }
 
-export default function ResearchScreen({ onBack }: Props) {
+export default function ResearchScreen({ onBack, initialCategoryId }: Props) {
   const { theme } = useTheme();
   const isDark = theme === 'dark';
 
-  const [activeId, setActiveId] = useState('science');
+  const [activeId, setActiveId] = useState(
+    initialCategoryId && researchCategories.some((c) => c.id === initialCategoryId)
+      ? initialCategoryId
+      : researchCategories[0].id,
+  );
   const [articles, setArticles] = useState<Article[]>([]);
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
   const [articleLoading, setArticleLoading] = useState(false);

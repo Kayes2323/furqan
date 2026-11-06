@@ -1,32 +1,91 @@
 'use client';
-import { BookOpen, BookMarked, Route, FlaskConical, Sparkles, Bookmark, Compass, ShieldCheck, LayoutGrid } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import {
+  BookOpen, BookMarked, Route, FlaskConical, Sparkles, Bookmark, Compass,
+  ShieldCheck, LayoutGrid, Scroll, Sun, CalendarCheck, ChevronRight, ArrowRight,
+} from 'lucide-react';
 import type { Screen } from '../types';
+import { getDailyAyah } from '../lib/daily-ayah';
+import { getLastRead } from '../lib/reader-progress';
+import { loadSurahMeta } from '../lib/reader-data';
+import { researchCategories } from '../lib/research-data';
 
 interface Props {
   onNavigate: (s: Screen) => void;
+  onOpenReaderSurah: (surah: number, ayah?: number) => void;
+  onOpenResearch: (categoryId?: string) => void;
 }
 
-const DAILY_AYAH = {
-  arabic: 'أَفَلَا يَتَدَبَّرُونَ الْقُرْآنَ',
-  bangla: 'তারা কি কুরআন নিয়ে গভীরভাবে চিন্তা করে না?',
-  ref: 'সূরা মুহাম্মদ ৪৭:২৪',
-};
+interface SectionItem {
+  icon: React.ElementType;
+  title: string;
+  sub: string;
+  screen: Screen;
+}
 
-const QUICK = [
-  { icon: BookMarked, title: 'কুরআন', sub: 'সম্পূর্ণ কুরআন পড়ুন', screen: 'reader' as Screen },
-  { icon: LayoutGrid, title: 'বিষয়ভিত্তিক কুরআন', sub: 'সবর, দোয়া ও গুরুত্বপূর্ণ আয়াত', screen: 'quran-topics' as Screen },
-  { icon: Route, title: 'কুরআন যাত্রা', sub: 'খতম, নাযেরা ও তোমার পরিকল্পনা', screen: 'quran-journey' as Screen },
-  { icon: BookOpen, title: 'তাফসির', sub: '১১৪টি সূরা', screen: 'tafsir' as Screen },
-  { icon: FlaskConical, title: 'গবেষণা', sub: 'বিজ্ঞান থেকে রাজনীতি', screen: 'research' as Screen },
-  { icon: Sparkles, title: 'NUR কে জিজ্ঞেস করো', sub: 'যেকোনো প্রশ্ন', screen: 'nur' as Screen },
-  { icon: Compass, title: 'কিবলা', sub: 'দিক নির্ণয় করুন', screen: 'qibla' as Screen },
-  { icon: ShieldCheck, title: 'আমল', sub: 'তাসবিহ ও আত্মরক্ষার আমল', screen: 'zikr' as Screen },
-  { icon: Bookmark, title: 'বুকমার্ক', sub: 'সংরক্ষিত আয়াত', screen: 'reader-bookmarks' as Screen },
+interface HomeSection {
+  heading: string;
+  /** One accent per section, so colour groups related destinations instead of
+   *  cycling arbitrarily by position as it used to. */
+  tint: { bg: string; fg: string };
+  items: SectionItem[];
+}
+
+const SECTIONS: HomeSection[] = [
+  {
+    heading: 'কুরআন',
+    tint: { bg: 'rgba(31,122,76,0.12)', fg: 'var(--accent)' },
+    items: [
+      { icon: BookMarked, title: 'কুরআন পড়ুন', sub: '১১৪টি সূরা, অনুবাদ ও তাফসিরসহ', screen: 'reader' },
+      { icon: LayoutGrid, title: 'বিষয়ভিত্তিক', sub: 'সবর, দোয়া ও গুরুত্বপূর্ণ আয়াত', screen: 'quran-topics' },
+      { icon: Route, title: 'কুরআন যাত্রা', sub: 'খতম ও নাযেরার পরিকল্পনা', screen: 'quran-journey' },
+      { icon: Bookmark, title: 'বুকমার্ক', sub: 'সংরক্ষিত আয়াত', screen: 'reader-bookmarks' },
+    ],
+  },
+  {
+    heading: 'জ্ঞান ও গবেষণা',
+    tint: { bg: 'rgba(150,112,42,0.16)', fg: 'var(--gold)' },
+    items: [
+      { icon: FlaskConical, title: 'গবেষণা', sub: 'বিজ্ঞান থেকে দর্শন — ৬টি বিষয়', screen: 'research' },
+      { icon: Scroll, title: 'সীরাত', sub: 'নবীজির (ﷺ) জীবনী', screen: 'sirah' },
+      { icon: Sun, title: 'সুন্নাহ জীবন', sub: 'প্রতিদিনের সুন্নাহ অনুশীলন', screen: 'sunnah-life' },
+    ],
+  },
+  {
+    heading: 'দৈনন্দিন আমল',
+    tint: { bg: 'rgba(47,160,107,0.14)', fg: 'var(--green-light)' },
+    items: [
+      { icon: ShieldCheck, title: 'আমল', sub: 'তাসবিহ ও আত্মরক্ষার আমল', screen: 'zikr' },
+      { icon: CalendarCheck, title: 'আমল ট্র্যাকার', sub: 'প্রতিদিনের হিসাব রাখুন', screen: 'zikr-tracker' },
+      { icon: Compass, title: 'কিবলা', sub: 'কাবার দিক নির্ণয়', screen: 'qibla' },
+    ],
+  },
 ];
 
-const CHIPS = ['🔬 বিজ্ঞান', '💰 অর্থনীতি', '🧠 মনোবিজ্ঞান', '⚖️ রাজনীতি', '👥 সমাজ', '🌌 দর্শন'];
+export default function HomeScreen({ onNavigate, onOpenReaderSurah, onOpenResearch }: Props) {
+  const [ayah] = useState(() => getDailyAyah());
+  const [lastRead, setLastRead] = useState<ReturnType<typeof getLastRead>>(null);
+  const [lastReadName, setLastReadName] = useState<string | null>(null);
 
-export default function HomeScreen({ onNavigate }: Props) {
+  useEffect(() => {
+    const saved = getLastRead();
+    if (!saved) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- reading saved progress on mount is the intended pattern here (matches ReaderScreen)
+    setLastRead(saved);
+    let cancelled = false;
+    loadSurahMeta()
+      .then((metas) => {
+        if (cancelled) return;
+        const match = metas.find((m) => m.number === saved.surah);
+        if (match) setLastReadName(match.banglaName);
+      })
+      // The card still works without the name — it falls back to the number.
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   return (
     <div style={{ padding: '0 0 16px' }}>
       {/* Header */}
@@ -37,6 +96,33 @@ export default function HomeScreen({ onNavigate }: Props) {
         </div>
         <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 2 }}>الفرقان — কুরআন পড়ো না, বোঝো</div>
       </div>
+
+      {/* Continue where you left off — only when there is real progress */}
+      {lastRead && (
+        <button
+          onClick={() => onOpenReaderSurah(lastRead.surah, lastRead.ayah)}
+          style={{
+            display: 'flex', alignItems: 'center', gap: 12, width: 'calc(100% - 32px)',
+            margin: '0 16px 14px', padding: '14px 16px', textAlign: 'left',
+            background: 'var(--card)', border: '1px solid var(--border)',
+            borderRadius: 16, cursor: 'pointer', fontFamily: 'Hind Siliguri, sans-serif',
+            boxShadow: '0 3px 14px rgba(15,42,25,0.08)',
+          }}
+        >
+          <div style={{
+            width: 40, height: 40, borderRadius: 12, flexShrink: 0,
+            background: 'rgba(31,122,76,0.12)', color: 'var(--accent)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}><BookMarked size={20} strokeWidth={1.8} /></div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 2 }}>যেখানে ছিলেন</div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text)' }}>
+              {lastReadName ? `সূরা ${lastReadName}` : `সূরা ${lastRead.surah}`} — আয়াত {lastRead.ayah}
+            </div>
+          </div>
+          <ArrowRight size={18} color="var(--accent)" />
+        </button>
+      )}
 
       {/* Daily Ayah Hero */}
       <div style={{
@@ -64,79 +150,97 @@ export default function HomeScreen({ onNavigate }: Props) {
         }}><Sparkles size={11} />আজকের আয়াত</div>
 
         <div style={{ fontFamily: 'Amiri, serif', fontSize: 24, color: 'white', textAlign: 'right', direction: 'rtl', lineHeight: 1.8, marginBottom: 10 }}>
-          {DAILY_AYAH.arabic}
+          {ayah.arabic}
         </div>
         <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.85)', lineHeight: 1.6, marginBottom: 8 }}>
-          {DAILY_AYAH.bangla}
+          {ayah.bangla}
         </div>
         <div style={{ fontSize: 11, color: '#E4C878', opacity: 0.8, marginBottom: 14 }}>
-          {DAILY_AYAH.ref}
+          {ayah.ref}
         </div>
 
-        <div style={{ display: 'flex', gap: 8 }}>
-          {[
-            { label: 'NUR কে জিজ্ঞেস করো', icon: Sparkles, target: 'nur' as Screen },
-            { label: 'তাফসির দেখো', icon: BookOpen, target: 'tafsir' as Screen },
-          ].map(btn => (
-            <button key={btn.label} onClick={() => onNavigate(btn.target)} style={{
-              background: 'rgba(255,255,255,0.12)',
-              border: '1px solid rgba(255,255,255,0.2)',
-              color: 'white', fontSize: 11,
-              padding: '7px 14px', borderRadius: 20,
-              cursor: 'pointer', fontFamily: 'Hind Siliguri, sans-serif',
-              display: 'inline-flex', alignItems: 'center', gap: 6,
-            }}><btn.icon size={13} />{btn.label}</button>
-          ))}
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          <HeroButton
+            icon={BookOpen}
+            label="আয়াতটি পড়ুন"
+            onClick={() => onOpenReaderSurah(ayah.surah, ayah.ayah)}
+          />
+          <HeroButton
+            icon={Sparkles}
+            label="NUR কে জিজ্ঞেস করো"
+            onClick={() => onNavigate('nur')}
+          />
         </div>
       </div>
 
-      {/* Quick Access */}
-      <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text)', padding: '0 20px', marginBottom: 10 }}>
-        দ্রুত অ্যাক্সেস
-      </div>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, padding: '0 16px 16px' }}>
-        {QUICK.map((q, i) => {
-          const tints = [
-            { bg: 'rgba(31,122,76,0.12)', fg: 'var(--accent)' },
-            { bg: 'rgba(150,112,42,0.16)', fg: 'var(--gold)' },
-            { bg: 'rgba(47,160,107,0.14)', fg: 'var(--green-light)' },
-            { bg: 'rgba(31,122,76,0.12)', fg: 'var(--accent)' },
-          ];
-          const tint = tints[i % tints.length];
-          return (
-            <div key={q.title} onClick={() => onNavigate(q.screen)} style={{
-              background: 'var(--card)',
-              borderRadius: 16, padding: 16, cursor: 'pointer',
-              boxShadow: '0 3px 14px rgba(15,42,25,0.08)',
-              border: '1px solid var(--border)',
-            }}>
-              <div style={{
-                width: 38, height: 38, borderRadius: 11, marginBottom: 10,
-                background: tint.bg, color: tint.fg,
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-              }}><q.icon size={19} strokeWidth={1.8} /></div>
-              <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text)', marginBottom: 2 }}>{q.title}</div>
-              <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>{q.sub}</div>
-            </div>
-          );
-        })}
-      </div>
+      {/* Grouped sections */}
+      {SECTIONS.map((section) => (
+        <div key={section.heading}>
+          <div style={{
+            fontSize: 14, fontWeight: 700, color: 'var(--text)',
+            padding: '0 20px', marginBottom: 10,
+          }}>{section.heading}</div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, padding: '0 16px 18px' }}>
+            {section.items.map((item) => (
+              <button key={item.title} onClick={() => onNavigate(item.screen)} style={{
+                background: 'var(--card)', textAlign: 'left',
+                borderRadius: 16, padding: 16, cursor: 'pointer',
+                boxShadow: '0 3px 14px rgba(15,42,25,0.08)',
+                border: '1px solid var(--border)',
+                fontFamily: 'Hind Siliguri, sans-serif',
+              }}>
+                <div style={{
+                  width: 38, height: 38, borderRadius: 11, marginBottom: 10,
+                  background: section.tint.bg, color: section.tint.fg,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}><item.icon size={19} strokeWidth={1.8} /></div>
+                <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text)', marginBottom: 2 }}>{item.title}</div>
+                <div style={{ fontSize: 11, color: 'var(--text-muted)', lineHeight: 1.45 }}>{item.sub}</div>
+              </button>
+            ))}
+          </div>
+        </div>
+      ))}
 
-      {/* Research chips */}
-      <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text)', padding: '0 20px', marginBottom: 10 }}>
-        বিষয়ভিত্তিক অন্বেষণ
+      {/* Research categories — each chip opens that category, not the generic list */}
+      <div style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        padding: '0 20px', marginBottom: 10,
+      }}>
+        <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text)' }}>গবেষণার বিষয়</div>
+        <button onClick={() => onOpenResearch()} style={{
+          background: 'none', border: 'none', cursor: 'pointer', padding: 0,
+          fontSize: 11.5, color: 'var(--accent)', fontWeight: 600,
+          fontFamily: 'Hind Siliguri, sans-serif',
+          display: 'inline-flex', alignItems: 'center', gap: 2,
+        }}>সবগুলো<ChevronRight size={13} /></button>
       </div>
       <div style={{ display: 'flex', gap: 8, overflowX: 'auto', padding: '0 16px 4px', scrollbarWidth: 'none' }}>
-        {CHIPS.map(c => (
-          <div key={c} onClick={() => onNavigate('research')} style={{
+        {researchCategories.map((c) => (
+          <button key={c.id} onClick={() => onOpenResearch(c.id)} style={{
             background: 'var(--card)', border: '1px solid var(--border)',
             borderRadius: 12, padding: '10px 14px', whiteSpace: 'nowrap',
             cursor: 'pointer', fontSize: 12, color: 'var(--text)',
             fontWeight: 500, boxShadow: '0 2px 8px rgba(15,42,25,0.06)',
-            flexShrink: 0,
-          }}>{c}</div>
+            flexShrink: 0, fontFamily: 'Hind Siliguri, sans-serif',
+          }}>{c.icon} {c.name}</button>
         ))}
       </div>
     </div>
+  );
+}
+
+function HeroButton({ icon: Icon, label, onClick }: {
+  icon: React.ElementType; label: string; onClick: () => void;
+}) {
+  return (
+    <button onClick={onClick} style={{
+      background: 'rgba(255,255,255,0.12)',
+      border: '1px solid rgba(255,255,255,0.2)',
+      color: 'white', fontSize: 11,
+      padding: '7px 14px', borderRadius: 20,
+      cursor: 'pointer', fontFamily: 'Hind Siliguri, sans-serif',
+      display: 'inline-flex', alignItems: 'center', gap: 6,
+    }}><Icon size={13} />{label}</button>
   );
 }

@@ -55,6 +55,7 @@ function AppShell() {
     importantId,
     lifeAreaId,
     practiceId,
+    researchCategoryId,
     navigateScreen,
     back,
     openChapter,
@@ -77,6 +78,7 @@ function AppShell() {
     openSunnahLifeAreas,
     openSunnahLifeAreaDetail,
     openSunnahPracticeDetail,
+    openResearch,
   } = useAppNavigation(scrollRef);
 
   const isDesktop = useIsDesktop();
@@ -132,10 +134,16 @@ function AppShell() {
 
   const screenContent = (
     <>
-        {screen === 'home' && <HomeScreen onNavigate={navigateScreen} />}
+        {screen === 'home' && (
+          <HomeScreen
+            onNavigate={navigateScreen}
+            onOpenReaderSurah={openReaderSurah}
+            onOpenResearch={openResearch}
+          />
+        )}
         {screen === 'nur' && <NurScreen onOpenReaderSurah={openReaderSurah} />}
         {screen === 'knowledge' && <KnowledgeScreen onNavigate={navigateScreen} />}
-        {screen === 'research' && <ResearchScreen onBack={back} />}
+        {screen === 'research' && <ResearchScreen onBack={back} initialCategoryId={researchCategoryId} />}
         {screen === 'sirah' && (
           <SirahJourneyScreen onBack={back} onOpenPart={openPart} onOpenChapter={openChapter} />
         )}

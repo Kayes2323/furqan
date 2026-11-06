@@ -1,10 +1,12 @@
 import type { Screen } from '../types';
 import { JOURNEY_TABS, type JourneyTab } from './journey-types.ts';
+import { researchCategories } from './research-data.ts';
 
 export interface AppRoute {
   screen: Screen;
   chapter?: string;
   part?: string;
+  researchCategory?: string;
   zikrSection?: string;
   zikrItem?: string;
   readerSurah?: number;
@@ -41,11 +43,16 @@ export function isValidScreen(value: string | null): value is Screen {
   return VALID_SCREENS.includes(value as Screen);
 }
 
+export function isResearchCategory(value: string | null): boolean {
+  return value !== null && researchCategories.some((c) => c.id === value);
+}
+
 export function routeToParams(route: AppRoute): URLSearchParams {
   const params = new URLSearchParams();
   params.set('s', route.screen);
   if (route.chapter) params.set('chapter', route.chapter);
   if (route.part) params.set('part', route.part);
+  if (route.researchCategory) params.set('rcat', route.researchCategory);
   if (route.zikrSection) params.set('zsec', route.zikrSection);
   if (route.zikrItem) params.set('zitem', route.zikrItem);
   if (route.readerSurah != null) params.set('rsurah', String(route.readerSurah));
@@ -84,6 +91,11 @@ export function paramsToRoute(params: URLSearchParams): AppRoute {
   if (screen === 'quran-journey') {
     const tab = params.get('jt');
     return { screen, journeyTab: isJourneyTab(tab) ? tab : 'plan' };
+  }
+
+  if (screen === 'research') {
+    const cat = params.get('rcat');
+    return { screen, researchCategory: isResearchCategory(cat) ? (cat as string) : undefined };
   }
 
   if (screen === 'sunnah-life-area-detail') {
@@ -126,6 +138,7 @@ export function routesEqual(a: AppRoute, b: AppRoute): boolean {
     a.screen === b.screen &&
     a.chapter === b.chapter &&
     a.part === b.part &&
+    a.researchCategory === b.researchCategory &&
     a.zikrSection === b.zikrSection &&
     a.zikrItem === b.zikrItem &&
     a.readerSurah === b.readerSurah &&

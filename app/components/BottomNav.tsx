@@ -7,31 +7,58 @@ interface Props {
   onNavigate: (s: Screen) => void;
 }
 
-export default function BottomNav({ current, onNavigate }: Props) {
-  const isQuranActive =
-    current === 'quran-hub' ||
-    current === 'quran-topics' ||
-    current === 'topic-detail' ||
-    current === 'important-detail' ||
-    current === 'reader' ||
-    current === 'reader-surah' ||
-    current === 'reader-search' ||
-    current === 'reader-bookmarks' ||
-    current === 'quran-journey' ||
-    current === 'khatm-setup' ||
-    current === 'nazera-setup';
+type NavSection = 'home' | 'quran' | 'nur' | 'knowledge' | 'profile';
 
-  const isKnowledgeActive =
-    current === 'knowledge' ||
-    current === 'research' ||
-    current === 'sirah' ||
-    current === 'sirah-part' ||
-    current === 'sirah-read' ||
-    current === 'qibla' ||
-    current === 'zikr' ||
-    current === 'zikr-section' ||
-    current === 'zikr-read' ||
-    current === 'recite';
+/**
+ * Which bottom-nav tab owns each screen. Declared as one exhaustive map
+ * rather than a chain of `||` comparisons per tab: with the chains, every
+ * screen added to the app had to be remembered in two separate places, and
+ * several (the Zikr tracker, all four Sunnah-life screens) were missed — on
+ * those screens no tab lit up at all, so the app looked like it had lost
+ * track of where you were. `Record<Screen, …>` makes the compiler refuse a
+ * new screen until it is filed under a tab.
+ */
+const SCREEN_SECTION: Record<Screen, NavSection> = {
+  home: 'home',
+  nur: 'nur',
+
+  'quran-hub': 'quran',
+  'quran-topics': 'quran',
+  'topic-detail': 'quran',
+  'important-detail': 'quran',
+  reader: 'quran',
+  'reader-surah': 'quran',
+  'reader-search': 'quran',
+  'reader-bookmarks': 'quran',
+  'quran-journey': 'quran',
+  'khatm-setup': 'quran',
+  'nazera-setup': 'quran',
+  recite: 'quran',
+
+  knowledge: 'knowledge',
+  research: 'knowledge',
+  sirah: 'knowledge',
+  'sirah-part': 'knowledge',
+  'sirah-read': 'knowledge',
+  qibla: 'knowledge',
+  zikr: 'knowledge',
+  'zikr-section': 'knowledge',
+  'zikr-read': 'knowledge',
+  'zikr-tracker': 'knowledge',
+  'sunnah-life': 'knowledge',
+  'sunnah-life-areas': 'knowledge',
+  'sunnah-life-area-detail': 'knowledge',
+  'sunnah-practice-detail': 'knowledge',
+
+  profile: 'profile',
+};
+
+function sectionForScreen(screen: Screen): NavSection {
+  return SCREEN_SECTION[screen];
+}
+
+export default function BottomNav({ current, onNavigate }: Props) {
+  const section = sectionForScreen(current);
 
   return (
     <nav
@@ -47,8 +74,8 @@ export default function BottomNav({ current, onNavigate }: Props) {
         zIndex: 100,
       }}
     >
-      <NavItem icon={Home} label="হোম" active={current === 'home'} onClick={() => onNavigate('home')} />
-      <NavItem icon={BookMarked} label="কুরআন" active={isQuranActive} onClick={() => onNavigate('quran-hub')} />
+      <NavItem icon={Home} label="হোম" active={section === 'home'} onClick={() => onNavigate('home')} />
+      <NavItem icon={BookMarked} label="কুরআন" active={section === 'quran'} onClick={() => onNavigate('quran-hub')} />
 
       <button onClick={() => onNavigate('nur')} style={{
         width: 58, height: 58, borderRadius: 19,
@@ -57,7 +84,7 @@ export default function BottomNav({ current, onNavigate }: Props) {
         display: 'flex', flexDirection: 'column',
         alignItems: 'center', justifyContent: 'center',
         marginTop: -20,
-        boxShadow: current === 'nur'
+        boxShadow: section === 'nur'
           ? '0 0 0 3px rgba(31,122,76,0.3), 0 4px 20px rgba(31,122,76,0.5)'
           : '0 4px 20px rgba(31,122,76,0.4)',
       }}>
@@ -65,8 +92,8 @@ export default function BottomNav({ current, onNavigate }: Props) {
         <span style={{ fontSize: 8, color: 'rgba(255,255,255,0.85)', fontWeight: 700, letterSpacing: 0.5, marginTop: 2 }}>NUR</span>
       </button>
 
-      <NavItem icon={LayoutGrid} label="জ্ঞান" active={isKnowledgeActive} onClick={() => onNavigate('knowledge')} />
-      <NavItem icon={User} label="প্রোফাইল" active={current === 'profile'} onClick={() => onNavigate('profile')} />
+      <NavItem icon={LayoutGrid} label="জ্ঞান" active={section === 'knowledge'} onClick={() => onNavigate('knowledge')} />
+      <NavItem icon={User} label="প্রোফাইল" active={section === 'profile'} onClick={() => onNavigate('profile')} />
     </nav>
   );
 }
