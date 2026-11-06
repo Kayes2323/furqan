@@ -9,6 +9,10 @@ import {
   formatBearing,
   formatDistanceKm,
   extractCompassHeading,
+  smallestAngleDifference,
+  continuousRotation,
+  smoothHeading,
+  isFacingQibla,
 } from './qibla.ts';
 
 // Reference bearings/distances below are cross-checked against independently
@@ -106,4 +110,89 @@ test('extractCompassHeading returns null for non-absolute orientation (would be 
 
 test('extractCompassHeading returns null when alpha is missing entirely', () => {
   assert.equal(extractCompassHeading({ absolute: true }), null);
+});
+
+test('extractCompassHeading trusts alpha from deviceorientationabsolute even when the absolute flag is unset', () => {
+  // Several Chrome/Android builds deliver earth-referenced alpha on
+  // deviceorientationabsolute while leaving `absolute` false; rejecting those
+  // left those devices with no live compass at all.
+  const result = extractCompassHeading({ absolute: false, alpha: 90 }, true);
+  assert.deepEqual(result, { heading: 270, source: 'absolute-alpha' });
+});
+
+test('extractCompassHeading still refuses a relative reading from the non-absolute event', () => {
+  assert.equal(extractCompassHeading({ absolute: false, alpha: 90 }, false), null);
+});
+
+test('smallestAngleDifference takes the short way round and is signed', () => {
+  assert.equal(smallestAngleDifference(350, 10), 20);
+  assert.equal(smallestAngleDifference(10, 350), -20);
+  assert.equal(smallestAngleDifference(0, 0), 0);
+  assert.equal(smallestAngleDifference(0, 180), 180);
+  assert.equal(smallestAngleDifference(0, 181), -179);
+});
+
+test('smallestAngleDifference always lands in (-180, 180]', () => {
+  for (let from = 0; from < 360; from += 7) {
+    for (let to = 0; to < 360; to += 11) {
+      const diff = smallestAngleDifference(from, to);
+      assert.ok(diff > -180 && diff <= 180, `diff ${diff} out of range for ${from}->${to}`);
+    }
+  }
+});
+
+test('continuousRotation keeps the dial from unwinding a full circle past north', () => {
+  // Rendered at 359°, target 1°: must continue to 361°, not jump back to 1°.
+  assert.equal(continuousRotation(359, 1), 361);
+  assert.equal(continuousRotation(1, 359), -1);
+});
+
+test('continuousRotation is idempotent and stays congruent to the target', () => {
+  const once = continuousRotation(720, 45);
+  const twice = continuousRotation(once, 45);
+  assert.equal(twice, once);
+  assert.equal(((once % 360) + 360) % 360, 45);
+});
+
+test('smoothHeading adopts the first reading exactly', () => {
+  assert.equal(smoothHeading(null, 123.4), 123.4);
+});
+
+test('smoothHeading moves toward the new reading along the short arc', () => {
+  // 350 -> 10 is +20; a quarter of that is +5, landing at 355.
+  assert.equal(smoothHeading(350, 10, 0.25), 355);
+  // And the reverse direction wraps below zero back into [0,360).
+  assert.equal(smoothHeading(10, 350, 0.25), 5);
+});
+
+test('smoothHeading always returns a value in [0, 360)', () => {
+  let heading = 0;
+  for (const reading of [359, 1, 180, 270, 90, 0, 359.9]) {
+    heading = smoothHeading(heading, reading);
+    assert.ok(heading >= 0 && heading < 360, `heading ${heading} out of range`);
+  }
+});
+
+test('isFacingQibla is true only within tolerance of straight ahead, across the seam', () => {
+  assert.equal(isFacingQibla(0), true);
+  assert.equal(isFacingQibla(5), true);
+  assert.equal(isFacingQibla(355), true);
+  assert.equal(isFacingQibla(6), false);
+  assert.equal(isFacingQibla(354), false);
+  assert.equal(isFacingQibla(180), false);
+});
+
+test('a live needle and the Kaaba marker agree: both sit at the Qibla bearing in the rotated dial', () => {
+  // The dial rotates by -heading and the marker/needle are drawn at
+  // bearingDeg inside it, so their on-screen angle is exactly the value
+  // qiblaArrowRotation reports — the two can never diverge.
+  const bearingDeg = 277.57;
+  for (const heading of [0, 45, 123.4, 270, 359]) {
+    const dialRotation = -heading;
+    const onScreen = ((bearingDeg + dialRotation) % 360 + 360) % 360;
+    assert.ok(
+      Math.abs(onScreen - qiblaArrowRotation(bearingDeg, heading)) < 1e-9,
+      `heading ${heading}: dial puts Qibla at ${onScreen}°, arrow math says ${qiblaArrowRotation(bearingDeg, heading)}°`,
+    );
+  }
 });
