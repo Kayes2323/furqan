@@ -185,8 +185,20 @@ export const RESEARCH_AUDIO: Record<string, ResearchCategoryAudio> = {
     voiceLabel: 'Charon (Gemini TTS, বাংলা পুরুষ কণ্ঠ)',
     model: 'gemini-3.8-flash-tts',
     articles: [
-      { articleId: 'astronomy', title: 'জ্যোতির্বিজ্ঞান', subtitle: 'মহাকাশ ও মহাবিশ্ব', order: 1, totalChunksExpected: 6, chunks: [] },
-      { articleId: 'embryology', title: 'ভ্রূণবিদ্যা', subtitle: 'মানব সৃষ্টির ধাপ', order: 2, totalChunksExpected: 6, chunks: [] },
+      { articleId: 'astronomy', title: 'জ্যোতির্বিজ্ঞান', subtitle: 'মহাকাশ ও মহাবিশ্ব', order: 1, totalChunksExpected: 6, chunks: [
+        { path: '/audio/research/science/astronomy-0.mp3', durationSec: 163.776000 },
+        { path: '/audio/research/science/astronomy-1.mp3', durationSec: 150.072000 },
+        { path: '/audio/research/science/astronomy-2.mp3', durationSec: 153.432000 },
+        { path: '/audio/research/science/astronomy-3.mp3', durationSec: 153.192000 },
+        { path: '/audio/research/science/astronomy-4.mp3', durationSec: 162.936000 },
+        { path: '/audio/research/science/astronomy-5.mp3', durationSec: 85.056000 },
+      ] },
+      { articleId: 'embryology', title: 'ভ্রূণবিদ্যা', subtitle: 'মানব সৃষ্টির ধাপ', order: 2, totalChunksExpected: 6, chunks: [
+        { path: '/audio/research/science/embryology-0.mp3', durationSec: 163.032000 },
+        { path: '/audio/research/science/embryology-1.mp3', durationSec: 162.264000 },
+        { path: '/audio/research/science/embryology-2.mp3', durationSec: 163.992000 },
+        { path: '/audio/research/science/embryology-3.mp3', durationSec: 138.264000 },
+      ] },
       { articleId: 'oceanography', title: 'সমুদ্রবিজ্ঞান', subtitle: 'সমুদ্রের গভীর রহস্য', order: 3, totalChunksExpected: 5, chunks: [] },
       { articleId: 'geography', title: 'ভূগোল', subtitle: 'পৃথিবী ও ভূমির বিজ্ঞান', order: 4, totalChunksExpected: 6, chunks: [] },
       { articleId: 'mountain', title: 'পাহাড়ের রহস্য', subtitle: 'পৃথিবীর খুঁটি', order: 5, totalChunksExpected: 2, chunks: [] },
