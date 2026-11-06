@@ -180,6 +180,54 @@ export const RESEARCH_AUDIO: Record<string, ResearchCategoryAudio> = {
       ] },
     ],
   },
+  science: {
+    categoryId: 'science',
+    voiceLabel: 'Charon (Gemini TTS, বাংলা পুরুষ কণ্ঠ)',
+    model: 'gemini-3.8-flash-tts',
+    articles: [
+      { articleId: 'astronomy', title: 'জ্যোতির্বিজ্ঞান', subtitle: 'মহাকাশ ও মহাবিশ্ব', order: 1, totalChunksExpected: 6, chunks: [] },
+      { articleId: 'embryology', title: 'ভ্রূণবিদ্যা', subtitle: 'মানব সৃষ্টির ধাপ', order: 2, totalChunksExpected: 6, chunks: [] },
+      { articleId: 'oceanography', title: 'সমুদ্রবিজ্ঞান', subtitle: 'সমুদ্রের গভীর রহস্য', order: 3, totalChunksExpected: 5, chunks: [] },
+      { articleId: 'geography', title: 'ভূগোল', subtitle: 'পৃথিবী ও ভূমির বিজ্ঞান', order: 4, totalChunksExpected: 6, chunks: [] },
+      { articleId: 'mountain', title: 'পাহাড়ের রহস্য', subtitle: 'পৃথিবীর খুঁটি', order: 5, totalChunksExpected: 2, chunks: [] },
+      { articleId: 'medicine', title: 'চিকিৎসাবিজ্ঞান', subtitle: 'কুরআনে স্বাস্থ্য ও চিকিৎসা', order: 6, totalChunksExpected: 7, chunks: [] },
+      { articleId: 'botany', title: 'উদ্ভিদবিজ্ঞান', subtitle: 'গাছপালা ও কৃষি', order: 7, totalChunksExpected: 7, chunks: [] },
+    ],
+  },
+  psychology: {
+    categoryId: 'psychology',
+    voiceLabel: 'Charon (Gemini TTS, বাংলা পুরুষ কণ্ঠ)',
+    model: 'gemini-3.8-flash-tts',
+    articles: [
+      { articleId: 'part1_mental_health', title: 'পর্ব ১ — মানসিক স্বাস্থ্য', subtitle: 'উদ্বেগ ও বিষণ্নতার সমাধান', order: 1, totalChunksExpected: 6, chunks: [] },
+      { articleId: 'part2_nafs', title: 'পর্ব ২ — নফস', subtitle: 'আপনি আসলে কে?', order: 2, totalChunksExpected: 5, chunks: [] },
+      { articleId: 'part3_forgiveness', title: 'পর্ব ৩ — ক্ষমা', subtitle: 'মনের মুক্তির পথ', order: 3, totalChunksExpected: 4, chunks: [] },
+    ],
+  },
+  sociology: {
+    categoryId: 'sociology',
+    voiceLabel: 'Charon (Gemini TTS, বাংলা পুরুষ কণ্ঠ)',
+    model: 'gemini-3.8-flash-tts',
+    articles: [
+      { articleId: 'part1_family', title: 'পর্ব ১ — পরিবার', subtitle: 'সমাজের মূল ভিত্তি', order: 1, totalChunksExpected: 3, chunks: [] },
+      { articleId: 'part2_justice', title: 'পর্ব ২ — ন্যায়বিচার', subtitle: 'ইসলামে সামাজিক সমতা', order: 2, totalChunksExpected: 2, chunks: [] },
+      { articleId: 'part3_women', title: 'পর্ব ৩ — নারীর অধিকার', subtitle: 'ইসলামের দৃষ্টিভঙ্গি', order: 3, totalChunksExpected: 3, chunks: [] },
+      { articleId: 'part4_hudud', title: 'পর্ব ৪ — শাস্তির বিধান', subtitle: 'কঠোর শাস্তি কেন?', order: 4, totalChunksExpected: 4, chunks: [] },
+      { articleId: 'part5_coexistence', title: 'পর্ব ৫ — সহাবস্থান', subtitle: 'ভিন্নতার মধ্যে ঐক্য', order: 5, totalChunksExpected: 2, chunks: [] },
+      { articleId: 'part6_social_diseases', title: 'পর্ব ৬ — সামাজিক রোগ', subtitle: 'মাদক, দুর্নীতি, পর্নোগ্রাফি', order: 6, totalChunksExpected: 4, chunks: [] },
+    ],
+  },
+  philosophy: {
+    categoryId: 'philosophy',
+    voiceLabel: 'Charon (Gemini TTS, বাংলা পুরুষ কণ্ঠ)',
+    model: 'gemini-3.8-flash-tts',
+    articles: [
+      { articleId: 'overview', title: 'দর্শন — সূচনা', subtitle: 'জীবনের বড় প্রশ্নগুলো', order: 1, totalChunksExpected: 7, chunks: [] },
+      { articleId: 'part2_tawhid', title: 'পর্ব ২ — তাওহীদ', subtitle: 'একত্ববাদের দর্শন', order: 2, totalChunksExpected: 3, chunks: [] },
+      { articleId: 'part3_epistemology', title: 'পর্ব ৩ — জ্ঞানতত্ত্ব', subtitle: 'আমরা কীভাবে জানি?', order: 3, totalChunksExpected: 3, chunks: [] },
+      { articleId: 'part4_ethics', title: 'পর্ব ৪ — নৈতিকতা', subtitle: 'ভালো ও মন্দ কে নির্ধারণ করে?', order: 4, totalChunksExpected: 3, chunks: [] },
+    ],
+  },
 };
 
 export function getCategoryAudio(categoryId: string): ResearchCategoryAudio | undefined {

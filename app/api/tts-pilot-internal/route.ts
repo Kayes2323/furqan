@@ -8,8 +8,10 @@ import { extractNarrationText, splitIntoNarrationChunks } from '../../lib/markdo
 // see docs/audio-reader-pilot.md). Generates Bengali TTS audio for
 // Research (গবেষণা) articles, one chunk at a time, server-side (where
 // GEMINI_API_KEY already lives). Deliberately narrow:
-// - Only accepts a whitelisted categoryId ('economy' | 'politics'),
-//   never arbitrary text — cannot be abused as a general TTS proxy.
+// - Only accepts a whitelisted categoryId ('economy' | 'politics' |
+//   'science' | 'psychology' | 'sociology' | 'philosophy' — i.e. every
+//   Research category), never arbitrary text — cannot be abused as a
+//   general TTS proxy.
 // - Fetches the article's canonical Markdown straight from Firestore
 //   (the same source ResearchScreen.tsx reads), extracts narration-safe
 //   text (Arabic ayahs stripped — see markdown-narration.ts), and
@@ -26,7 +28,7 @@ export const maxDuration = 60;
 // dedicated key isn't set.
 const client = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY_TTS || process.env.GEMINI_API_KEY });
 
-const ALLOWED_CATEGORY_IDS = ['economy', 'politics'];
+const ALLOWED_CATEGORY_IDS = ['economy', 'politics', 'science', 'psychology', 'sociology', 'philosophy'];
 const TTS_MODEL = 'gemini-3.8-flash-tts';
 const DEFAULT_VOICE = 'Charon';
 
