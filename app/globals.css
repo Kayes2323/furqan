@@ -65,12 +65,26 @@ body {
 .qibla-spin { animation: qiblaSpin 1s linear infinite; }
 
 .qibla-needle {
-  transition: transform 0.25s ease-out;
+  transition: transform 0.18s cubic-bezier(0.22, 0.61, 0.36, 1);
 }
+
+@keyframes qiblaAlignedGlow {
+  0%, 100% { opacity: 0.35; transform: scale(1); }
+  50% { opacity: 0.75; transform: scale(1.045); }
+}
+.qibla-aligned-glow { animation: qiblaAlignedGlow 2.2s ease-in-out infinite; }
+
+@keyframes qiblaTapHint {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 1; }
+}
+.qibla-tap-hint { animation: qiblaTapHint 1.8s ease-in-out infinite; }
 
 @media (prefers-reduced-motion: reduce) {
   .qibla-spin { animation-duration: 2.4s; }
   .qibla-needle { transition: none; }
+  .qibla-aligned-glow,
+  .qibla-tap-hint { animation: none; }
 }
 
 @keyframes zikrPulse {

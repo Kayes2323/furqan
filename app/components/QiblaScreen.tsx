@@ -1,15 +1,16 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   Compass,
   Loader2,
   AlertTriangle,
   MapPinOff,
   ShieldAlert,
-  Navigation2,
   RotateCw,
   CheckCircle2,
+  CornerUpLeft,
+  CornerUpRight,
 } from 'lucide-react';
 import BackButton from './BackButton';
 import {
@@ -38,16 +39,16 @@ type LocationState =
   | { status: 'error'; message: string }
   | { status: 'ready'; bearingDeg: number; distanceKm: number };
 
-type OrientationState =
-  | 'unavailable'      // no DeviceOrientationEvent at all on this browser
-  | 'needs-permission' // iOS 13+ style — must be requested from a tap
-  | 'denied'           // user declined the iOS permission prompt
-  | 'pending'          // listener attached, waiting for a trustworthy reading
-  | 'unreliable'       // events arrived but never carried an absolute heading
-  | 'active';          // live, trustworthy heading available
+type CompassState =
+  | 'unavailable'      // this browser has no DeviceOrientationEvent at all
+  | 'probing'          // listening; nothing trustworthy has arrived yet
+  | 'needs-permission' // iOS-style gate: one tap is required by the platform
+  | 'denied'           // the user declined that prompt
+  | 'unreliable'       // events arrive but never carry an absolute heading
+  | 'active';          // live, trustworthy heading
 
-// iOS Safari exposes a ready-to-use true-north heading that isn't part of
-// the standard DeviceOrientationEvent typings.
+// iOS Safari exposes a ready-made compass heading that isn't in the standard
+// DeviceOrientationEvent typings.
 interface WebkitOrientationEvent extends DeviceOrientationEvent {
   webkitCompassHeading?: number;
 }
@@ -56,62 +57,78 @@ interface DeviceOrientationEventStaticWithPermission {
   requestPermission?: () => Promise<'granted' | 'denied'>;
 }
 
-// Sensors need a moment to warm up, and the location permission prompt can
-// hold the page's attention while they do — 4s was tight enough that devices
-// with a perfectly good compass were being written off as unreliable.
+// How long to listen before concluding the platform is gating the sensor
+// behind a tap. Short enough not to feel like a hang, long enough that an
+// already-granted device never flashes the prompt.
+const PERMISSION_PROBE_MS = 1200;
+// How long to keep waiting for a trustworthy reading before offering a retry.
 const UNRELIABLE_TIMEOUT_MS = 8000;
+
+function currentScreenAngle(): number {
+  if (typeof window === 'undefined') return 0;
+  const angle = window.screen?.orientation?.angle;
+  return typeof angle === 'number' ? angle : 0;
+}
+
+function permissionGate(): DeviceOrientationEventStaticWithPermission | null {
+  if (typeof window === 'undefined' || typeof window.DeviceOrientationEvent === 'undefined') return null;
+  const candidate = window.DeviceOrientationEvent as unknown as DeviceOrientationEventStaticWithPermission;
+  return typeof candidate.requestPermission === 'function' ? candidate : null;
+}
 
 export default function QiblaScreen({ onBack }: Props) {
   const [location, setLocation] = useState<LocationState>({ status: 'checking' });
-  const [orientation, setOrientation] = useState<OrientationState>('unavailable');
+  const [compass, setCompass] = useState<CompassState>('probing');
   const [heading, setHeading] = useState<number | null>(null);
   const [dialRotation, setDialRotation] = useState(0);
 
+  const probeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const unreliableTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const listenerCleanup = useRef<(() => void) | null>(null);
   const watchId = useRef<number | null>(null);
-  // Smoothed heading and the unwrapped dial angle are tracked in refs so each
-  // sensor event can derive the next value synchronously, without a state
-  // updater having to read other state.
+  const screenAngle = useRef(0);
+  // Smoothed heading and the unwrapped dial angle live in refs so each sensor
+  // event can derive the next value synchronously.
   const smoothedHeading = useRef<number | null>(null);
   const continuousDial = useRef(0);
 
-  function requestLocation() {
+  // ── Location ──────────────────────────────────────────────────────────
+  const requestLocation = useCallback(() => {
     if (typeof window === 'undefined') return;
 
     if (!window.isSecureContext) {
       setLocation({ status: 'insecure' });
       return;
     }
-
     if (!('geolocation' in navigator)) {
       setLocation({ status: 'unsupported' });
       return;
     }
 
-    setLocation({ status: 'loading' });
+    setLocation((current) => (current.status === 'ready' ? current : { status: 'loading' }));
 
     if (watchId.current != null) {
       navigator.geolocation.clearWatch(watchId.current);
       watchId.current = null;
     }
 
-    // watchPosition rather than a single fix: the bearing is recomputed as the
-    // fix sharpens (and as the user moves), so the number on screen keeps
-    // matching where they actually are.
+    // Watched rather than read once, so the bearing keeps matching where the
+    // user actually is as the fix sharpens or they move.
     watchId.current = navigator.geolocation.watchPosition(
       (position) => {
-        // Derive and keep only the numbers we need to display — the raw
-        // coordinates are used here, synchronously, and never stored.
+        // Only the derived numbers are kept; the raw coordinates are used
+        // here, synchronously, and never stored.
         const coords = { lat: position.coords.latitude, lng: position.coords.longitude };
-        const bearingDeg = calculateQiblaBearing(coords);
-        const distanceKm = calculateDistanceToKaaba(coords);
-        setLocation({ status: 'ready', bearingDeg, distanceKm });
+        setLocation({
+          status: 'ready',
+          bearingDeg: calculateQiblaBearing(coords),
+          distanceKm: calculateDistanceToKaaba(coords),
+        });
       },
       (err) => {
         setLocation((current) => {
-          // A dropped update after a good fix is not worth throwing the
-          // working screen away — keep showing the last known bearing.
+          // A dropped update after a good fix is no reason to throw the
+          // working screen away.
           if (current.status === 'ready') return current;
           if (err.code === err.PERMISSION_DENIED) return { status: 'denied' };
           if (err.code === err.TIMEOUT) {
@@ -122,33 +139,39 @@ export default function QiblaScreen({ onBack }: Props) {
       },
       { enableHighAccuracy: true, timeout: 15000, maximumAge: 60 * 1000 },
     );
-  }
-
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- initial fetch-on-mount is the intended pattern here (matches app/lib/theme.tsx and the Sirah screens)
-    requestLocation();
   }, []);
 
-  function attachOrientationListener() {
-    // Retrying must not stack a second listener on top of the first.
+  // ── Compass ───────────────────────────────────────────────────────────
+  const attachListener = useCallback(() => {
+    if (typeof window === 'undefined' || typeof window.DeviceOrientationEvent === 'undefined') {
+      setCompass('unavailable');
+      return;
+    }
+
     if (listenerCleanup.current) {
       listenerCleanup.current();
       listenerCleanup.current = null;
     }
-    if (unreliableTimer.current) {
-      clearTimeout(unreliableTimer.current);
-      unreliableTimer.current = null;
-    }
+    if (probeTimer.current) clearTimeout(probeTimer.current);
+    if (unreliableTimer.current) clearTimeout(unreliableTimer.current);
 
-    setOrientation('pending');
+    setCompass('probing');
 
     const usesAbsoluteEvent = 'ondeviceorientationabsolute' in window;
     const eventName = usesAbsoluteEvent ? 'deviceorientationabsolute' : 'deviceorientation';
 
     const handler = (event: Event) => {
-      const parsed = extractCompassHeading(event as WebkitOrientationEvent, usesAbsoluteEvent);
+      const parsed = extractCompassHeading(
+        event as WebkitOrientationEvent,
+        usesAbsoluteEvent,
+        screenAngle.current,
+      );
       if (!parsed) return;
 
+      if (probeTimer.current) {
+        clearTimeout(probeTimer.current);
+        probeTimer.current = null;
+      }
       if (unreliableTimer.current) {
         clearTimeout(unreliableTimer.current);
         unreliableTimer.current = null;
@@ -156,82 +179,78 @@ export default function QiblaScreen({ onBack }: Props) {
 
       const smoothed = smoothHeading(smoothedHeading.current, parsed.heading);
       smoothedHeading.current = smoothed;
-      // The dial turns opposite the device so its N keeps pointing at real
-      // north; unwrapping keeps that rotation continuous past the 0/360 seam.
+      // The dial turns opposite the device so its N holds real north;
+      // unwrapping keeps that continuous across the 0/360 seam.
       continuousDial.current = continuousRotation(continuousDial.current, -smoothed);
 
       setHeading(smoothed);
       setDialRotation(continuousDial.current);
-      setOrientation('active');
+      setCompass('active');
     };
 
     window.addEventListener(eventName, handler as EventListener);
     listenerCleanup.current = () => window.removeEventListener(eventName, handler as EventListener);
 
-    // The listener deliberately stays attached past this deadline, so a
-    // late-arriving trustworthy reading still promotes the screen to 'active'
-    // instead of leaving it stuck on the fallback copy forever.
-    unreliableTimer.current = setTimeout(() => {
-      setOrientation((current) => (current === 'active' ? current : 'unreliable'));
-    }, UNRELIABLE_TIMEOUT_MS);
-  }
+    // If the platform gates the sensor behind a gesture, nothing arrives —
+    // only then is the tap affordance shown. A device that already granted
+    // permission goes live without the user ever seeing it.
+    probeTimer.current = setTimeout(() => {
+      setCompass((current) => {
+        if (current === 'active') return current;
+        return permissionGate() ? 'needs-permission' : current;
+      });
+    }, PERMISSION_PROBE_MS);
 
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    if (typeof window.DeviceOrientationEvent === 'undefined') {
-      // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time feature detection on mount, not a data sync loop
-      setOrientation('unavailable');
-      return;
-    }
-    const withPermission = window.DeviceOrientationEvent as unknown as DeviceOrientationEventStaticWithPermission;
-    if (typeof withPermission.requestPermission === 'function') {
-      // iOS 13+: the sensor must stay off until the user explicitly taps
-      // "enable compass" — requestPermission() has to run inside that tap's
-      // own gesture handler, so we only mark it as available here.
-      setOrientation('needs-permission');
-    } else {
-      // Most non-iOS browsers don't gate orientation behind a permission
-      // prompt at all, so we can start listening right away.
-      attachOrientationListener();
-    }
+    // The listener stays attached past this deadline, so a late trustworthy
+    // reading still promotes the screen rather than stranding it.
+    unreliableTimer.current = setTimeout(() => {
+      setCompass((current) => (current === 'active' || current === 'needs-permission' ? current : 'unreliable'));
+    }, UNRELIABLE_TIMEOUT_MS);
   }, []);
 
-  async function handleEnableCompass() {
-    const withPermission = window.DeviceOrientationEvent as unknown as DeviceOrientationEventStaticWithPermission;
-
-    if (typeof withPermission.requestPermission === 'function') {
-      try {
-        const result = await withPermission.requestPermission();
-        if (result === 'granted') {
-          attachOrientationListener();
-        } else {
-          setOrientation('denied');
-        }
-      } catch {
-        setOrientation('denied');
-      }
+  const enableCompass = useCallback(async () => {
+    const gate = permissionGate();
+    if (!gate?.requestPermission) {
+      attachListener();
       return;
     }
+    try {
+      const result = await gate.requestPermission();
+      if (result === 'granted') attachListener();
+      else setCompass('denied');
+    } catch {
+      setCompass('denied');
+    }
+  }, [attachListener]);
 
-    attachOrientationListener();
-  }
-
+  // ── Lifecycle ─────────────────────────────────────────────────────────
   useEffect(() => {
+    screenAngle.current = currentScreenAngle();
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- starting location + sensor on mount is the intended pattern here (matches ReaderScreen)
+    requestLocation();
+    attachListener();
+
+    const onScreenChange = () => {
+      screenAngle.current = currentScreenAngle();
+    };
+    window.screen?.orientation?.addEventListener?.('change', onScreenChange);
+    window.addEventListener('orientationchange', onScreenChange);
+
     return () => {
+      if (probeTimer.current) clearTimeout(probeTimer.current);
       if (unreliableTimer.current) clearTimeout(unreliableTimer.current);
       if (listenerCleanup.current) listenerCleanup.current();
       if (watchId.current != null && typeof navigator !== 'undefined' && 'geolocation' in navigator) {
         navigator.geolocation.clearWatch(watchId.current);
       }
+      window.screen?.orientation?.removeEventListener?.('change', onScreenChange);
+      window.removeEventListener('orientationchange', onScreenChange);
     };
-  }, []);
+  }, [requestLocation, attachListener]);
 
   return (
-    <div style={{ minHeight: '100%', background: 'var(--bg)', paddingBottom: 24 }}>
-      <div style={{
-        padding: '44px 16px 14px',
-        display: 'flex', alignItems: 'center', gap: 10,
-      }}>
+    <div style={{ minHeight: '100%', background: 'var(--bg)', paddingBottom: 28 }}>
+      <div style={{ padding: '44px 16px 10px', display: 'flex', alignItems: 'center', gap: 10 }}>
         <BackButton onClick={onBack} variant="dark" />
         <div style={{ flex: 1 }}>
           <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--text)' }}>কিবলা</div>
@@ -245,25 +264,25 @@ export default function QiblaScreen({ onBack }: Props) {
           <StateCard
             icon={<Loader2 size={28} className="qibla-spin" color="var(--accent)" />}
             title="অবস্থান নির্ণয় করা হচ্ছে…"
-            message="কিবলার দিক হিসাব করতে আপনার অবস্থান জানা প্রয়োজন। অনুমতি দেয়ার জন্য একটি প্রম্পট দেখতে পারেন।"
+            message="কিবলার দিক হিসাব করতে আপনার অবস্থান প্রয়োজন। অনুমতির একটি প্রম্পট দেখতে পারেন।"
           />
         ) : location.status === 'insecure' ? (
           <StateCard
             icon={<ShieldAlert size={28} color="var(--gold)" />}
             title="নিরাপদ সংযোগ প্রয়োজন"
-            message="অবস্থান ও কম্পাস ফিচার শুধু HTTPS সংযোগে কাজ করে। অনুগ্রহ করে নিরাপদ (https://) ঠিকানা থেকে অ্যাপটি খুলুন।"
+            message="অবস্থান ও কম্পাস শুধু HTTPS সংযোগে কাজ করে। নিরাপদ (https://) ঠিকানা থেকে অ্যাপটি খুলুন।"
           />
         ) : location.status === 'unsupported' ? (
           <StateCard
             icon={<MapPinOff size={28} color="var(--gold)" />}
             title="এই ব্রাউজারে সমর্থিত নয়"
-            message="আপনার ব্রাউজার অবস্থান (Location) সুবিধা সমর্থন করে না, তাই কিবলার দিক স্বয়ংক্রিয়ভাবে বের করা সম্ভব নয়।"
+            message="আপনার ব্রাউজার অবস্থান সুবিধা সমর্থন করে না, তাই কিবলার দিক স্বয়ংক্রিয়ভাবে বের করা সম্ভব নয়।"
           />
         ) : location.status === 'denied' ? (
           <StateCard
             icon={<MapPinOff size={28} color="var(--gold)" />}
             title="অবস্থানের অনুমতি প্রয়োজন"
-            message="কিবলার দিক বের করতে আপনার অবস্থান জানা দরকার। ব্রাউজারের সেটিংস থেকে অবস্থানের অনুমতি চালু করে আবার চেষ্টা করুন।"
+            message="কিবলার দিক বের করতে আপনার অবস্থান জানা দরকার। ব্রাউজারের সেটিংস থেকে অনুমতি দিয়ে আবার চেষ্টা করুন।"
             action={{ label: 'আবার চেষ্টা করুন', onClick: requestLocation }}
           />
         ) : location.status === 'error' ? (
@@ -277,11 +296,11 @@ export default function QiblaScreen({ onBack }: Props) {
           <QiblaReady
             bearingDeg={location.bearingDeg}
             distanceKm={location.distanceKm}
-            orientation={orientation}
+            compass={compass}
             heading={heading}
             dialRotation={dialRotation}
-            onEnableCompass={handleEnableCompass}
-            onRetryCompass={attachOrientationListener}
+            onEnableCompass={enableCompass}
+            onRetryCompass={attachListener}
           />
         )}
       </div>
@@ -290,10 +309,7 @@ export default function QiblaScreen({ onBack }: Props) {
 }
 
 function StateCard({
-  icon,
-  title,
-  message,
-  action,
+  icon, title, message, action,
 }: {
   icon: React.ReactNode;
   title: string;
@@ -316,7 +332,7 @@ function StateCard({
       <div style={{ fontSize: 12.5, color: 'var(--text-muted)', lineHeight: 1.6, maxWidth: 280 }}>{message}</div>
       {action && (
         <button onClick={action.onClick} style={{
-          marginTop: 8, background: 'var(--accent)', color: '#fff', border: 'none',
+          marginTop: 8, background: 'var(--accent)', color: 'var(--on-accent)', border: 'none',
           borderRadius: 100, padding: '9px 20px', fontSize: 13, fontWeight: 700,
           cursor: 'pointer', fontFamily: 'Hind Siliguri, sans-serif',
           display: 'inline-flex', alignItems: 'center', gap: 6,
@@ -327,293 +343,399 @@ function StateCard({
 }
 
 function QiblaReady({
-  bearingDeg,
-  distanceKm,
-  orientation,
-  heading,
-  dialRotation,
-  onEnableCompass,
-  onRetryCompass,
+  bearingDeg, distanceKm, compass, heading, dialRotation, onEnableCompass, onRetryCompass,
 }: {
   bearingDeg: number;
   distanceKm: number;
-  orientation: OrientationState;
+  compass: CompassState;
   heading: number | null;
   dialRotation: number;
   onEnableCompass: () => void;
   onRetryCompass: () => void;
 }) {
-  const isLive = orientation === 'active' && heading != null;
+  const isLive = compass === 'active' && heading != null;
   // Where the Qibla sits on screen, clockwise from the device's top edge.
   const qiblaScreenAngle = isLive ? qiblaArrowRotation(bearingDeg, heading as number) : null;
   const facing = qiblaScreenAngle != null && isFacingQibla(qiblaScreenAngle);
-  // Positive means the Qibla is to the user's right.
+  // Positive = the Qibla is to the user's right.
   const turnDeg = qiblaScreenAngle != null ? smallestAngleDifference(0, qiblaScreenAngle) : null;
 
   return (
     <div>
-      {/* Stats row */}
-      <div style={{
-        display: 'flex', background: 'var(--card)', border: '1px solid var(--border)',
-        borderRadius: 16, overflow: 'hidden', marginTop: 16,
-      }}>
-        <StatTile value={`${formatDistanceKm(distanceKm)} কিমি`} label="কাবা শরীফের দূরত্ব" />
-        <div style={{ width: 1, background: 'var(--border)' }} />
-        <StatTile value={formatBearing(bearingDeg)} label="কিবলার কৌণিক দিক" />
-        {isLive && <div style={{ width: 1, background: 'var(--border)' }} />}
-        {isLive && <StatTile value={formatBearing(heading as number)} label="ডিভাইস যেদিকে আছে" />}
-      </div>
-
-      {/* Status pill */}
-      <div style={{ display: 'flex', justifyContent: 'center', marginTop: 16 }}>
-        {facing ? (
-          <Pill tone="accent" icon={<CheckCircle2 size={13} />}>
-            আপনি এখন কিবলামুখী — এই দিকেই নামাজ পড়ুন
-          </Pill>
-        ) : isLive ? (
-          <Pill tone="accent" icon={<Navigation2 size={13} />}>
-            {turnDeg != null && turnDeg >= 0
-              ? `ডানদিকে ${Math.round(Math.abs(turnDeg))}° ঘুরুন`
-              : `বামদিকে ${Math.round(Math.abs(turnDeg ?? 0))}° ঘুরুন`}
-          </Pill>
-        ) : (
-          <Pill tone="muted" icon={<Compass size={13} />}>
-            গণনাকৃত দিক প্রস্তুত — কম্পাসে উপরের দিক উত্তর ধরে মেলান
-          </Pill>
-        )}
-      </div>
+      {/* Primary instruction */}
+      <GuidanceBanner
+        compass={compass}
+        facing={facing}
+        turnDeg={turnDeg}
+        bearingDeg={bearingDeg}
+      />
 
       {/* Dial */}
-      <div style={{ display: 'flex', justifyContent: 'center', margin: '28px 0 10px' }}>
+      <div style={{ display: 'flex', justifyContent: 'center', margin: '22px 0 8px' }}>
         <CompassDial
           bearingDeg={bearingDeg}
           dialRotation={isLive ? dialRotation : 0}
           isLive={isLive}
           facing={facing}
+          awaitingTap={compass === 'needs-permission'}
+          onActivate={onEnableCompass}
         />
       </div>
 
-      {/* Enable-compass button / calibration guidance */}
-      <div style={{ display: 'flex', justifyContent: 'center', marginTop: 4 }}>
-        {orientation === 'needs-permission' && (
-          <ActionPill icon={<Compass size={14} />} label="লাইভ কম্পাস চালু করো" onClick={onEnableCompass} />
-        )}
-        {orientation === 'pending' && (
-          <div style={{ fontSize: 11.5, color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: 6 }}>
-            <Loader2 size={13} className="qibla-spin" />কম্পাস সেন্সর চালু হচ্ছে…
-          </div>
-        )}
-        {orientation === 'denied' && (
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
-            <div style={{ fontSize: 11.5, color: 'var(--text-muted)', textAlign: 'center', maxWidth: 260 }}>
-              কম্পাসের অনুমতি দেয়া হয়নি। ওপরের সংখ্যা ব্যবহার করুন, অথবা ব্রাউজারের সেটিংস থেকে অনুমতি দিয়ে আবার চেষ্টা করুন।
-            </div>
-            <ActionPill icon={<RotateCw size={14} />} label="আবার চেষ্টা করুন" onClick={onEnableCompass} />
-          </div>
-        )}
-        {orientation === 'unreliable' && (
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
-            <div style={{ fontSize: 11.5, color: 'var(--text-muted)', textAlign: 'center', maxWidth: 270 }}>
-              এখনো নির্ভরযোগ্য কম্পাস রিডিং আসেনি। ফোনটি সমতলে ধরে ৮-আকৃতিতে কয়েকবার ঘোরান — সেন্সর ক্যালিব্রেট হলে নিজেই চালু হয়ে যাবে। অথবা ওপরের {formatBearing(bearingDeg)} অনুযায়ী যেকোনো কম্পাসে উত্তর বরাবর মিলিয়ে নিন।
-            </div>
-            <ActionPill icon={<RotateCw size={14} />} label="আবার চেষ্টা করুন" onClick={onRetryCompass} />
-          </div>
-        )}
-        {orientation === 'unavailable' && (
-          <div style={{ fontSize: 11.5, color: 'var(--text-muted)', textAlign: 'center', maxWidth: 270 }}>
-            এই ব্রাউজার/ডিভাইসে লাইভ কম্পাস সমর্থিত নয়। ওপরের {formatBearing(bearingDeg)} অনুযায়ী যেকোনো কম্পাস দিয়ে উত্তর বরাবর ঘুরে কিবলা নির্ণয় করুন।
-          </div>
-        )}
+      {/* Numbers */}
+      <div style={{
+        display: 'flex', background: 'var(--card)', border: '1px solid var(--border)',
+        borderRadius: 16, overflow: 'hidden', marginTop: 18,
+      }}>
+        <StatTile value={formatBearing(bearingDeg)} label="কিবলার কোণ" />
+        <Divider />
+        <StatTile value={`${formatDistanceKm(distanceKm)}`} label="দূরত্ব (কিমি)" />
+        <Divider />
+        <StatTile
+          value={isLive ? formatBearing(heading as number) : '—'}
+          label="আপনি যেদিকে"
+          dim={!isLive}
+        />
       </div>
 
-      {isLive && (
-        <div style={{
-          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-          marginTop: 14, fontSize: 10.5, color: 'var(--text-light)',
-          textAlign: 'center', lineHeight: 1.6,
-        }}>
-          <RotateCw size={12} style={{ flexShrink: 0 }} />
-          <span>
-            ফোনটি সমতল রেখে ধরুন। রিডিং অস্থির হলে ৮-আকৃতিতে ঘুরিয়ে ক্যালিব্রেট করুন — ডিভাইসের চৌম্বক কম্পাস ভিত্তিক, তাই ১-২° পার্থক্য হতে পারে।
-          </span>
-        </div>
-      )}
-      {!isLive && (
-        <div style={{
-          marginTop: 14, fontSize: 10.5, color: 'var(--text-light)',
-          textAlign: 'center', lineHeight: 1.6, padding: '0 20px',
-        }}>
-          লাইভ কম্পাস ছাড়া ডায়ালের উপরের দিক উত্তর ধরে আঁকা হয়েছে — তাই আগে উত্তর ঠিক করে নিন, তারপর 🕋 চিহ্নের দিক অনুসরণ করুন।
-        </div>
-      )}
+      {/* Secondary state / help */}
+      <div style={{ marginTop: 14, display: 'flex', justifyContent: 'center' }}>
+        {compass === 'probing' && (
+          <HintRow>
+            <Loader2 size={12} className="qibla-spin" />
+            কম্পাস সেন্সর চালু হচ্ছে…
+          </HintRow>
+        )}
+        {compass === 'denied' && (
+          <HelpBlock
+            text="কম্পাসের অনুমতি দেওয়া হয়নি। নিচের কোণ ব্যবহার করুন, অথবা অনুমতি দিয়ে আবার চেষ্টা করুন।"
+            action={{ label: 'অনুমতি দিন', onClick: onEnableCompass }}
+          />
+        )}
+        {compass === 'unreliable' && (
+          <HelpBlock
+            text={`এখনো নির্ভরযোগ্য রিডিং আসেনি। ফোনটি হাতে নিয়ে ৮-আকৃতিতে কয়েকবার ঘোরান — সেন্সর ক্যালিব্রেট হলে নিজেই চালু হবে। অথবা ${formatBearing(bearingDeg)} কোণ ধরে যেকোনো কম্পাসে মিলিয়ে নিন।`}
+            action={{ label: 'আবার চেষ্টা করুন', onClick: onRetryCompass }}
+          />
+        )}
+        {compass === 'unavailable' && (
+          <HelpBlock
+            text={`এই ডিভাইসে লাইভ কম্পাস নেই। ${formatBearing(bearingDeg)} কোণ ধরে যেকোনো কম্পাসে উত্তর বরাবর মিলিয়ে কিবলা নির্ণয় করুন।`}
+          />
+        )}
+        {isLive && (
+          <HintRow>
+            <RotateCw size={12} />
+            যেকোনোভাবে ধরতে পারেন — কাত করলেও হিসাব ঠিক থাকে। রিডিং অস্থির হলে ৮-আকৃতিতে ঘুরিয়ে ক্যালিব্রেট করুন।
+          </HintRow>
+        )}
+      </div>
     </div>
   );
 }
 
-function StatTile({ value, label }: { value: string; label: string }) {
-  return (
-    <div style={{ flex: 1, padding: '14px 10px', textAlign: 'center' }}>
-      <div style={{ fontSize: 17, fontWeight: 700, color: 'var(--text)', fontVariantNumeric: 'tabular-nums' }}>{value}</div>
-      <div style={{ fontSize: 10.5, color: 'var(--text-muted)', marginTop: 2 }}>{label}</div>
-    </div>
-  );
-}
+function GuidanceBanner({
+  compass, facing, turnDeg, bearingDeg,
+}: {
+  compass: CompassState;
+  facing: boolean;
+  turnDeg: number | null;
+  bearingDeg: number;
+}) {
+  if (facing) {
+    return (
+      <div style={{
+        marginTop: 16, padding: '16px 18px', borderRadius: 18,
+        background: 'linear-gradient(135deg, rgba(31,122,76,0.16), rgba(47,160,107,0.10))',
+        border: '1px solid rgba(31,122,76,0.35)',
+        display: 'flex', alignItems: 'center', gap: 12,
+      }}>
+        <CheckCircle2 size={26} color="var(--accent)" strokeWidth={2} />
+        <div>
+          <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--accent)' }}>আপনি কিবলামুখী</div>
+          <div style={{ fontSize: 11.5, color: 'var(--text-muted)', marginTop: 1 }}>
+            এই দিকেই নামাজ পড়ুন
+          </div>
+        </div>
+      </div>
+    );
+  }
 
-function Pill({ children, tone, icon }: { children: React.ReactNode; tone: 'accent' | 'muted'; icon: React.ReactNode }) {
-  const styles = tone === 'accent'
-    ? { background: 'rgba(31,122,76,0.12)', color: 'var(--accent)', border: '1px solid rgba(31,122,76,0.25)' }
-    : { background: 'rgba(150,112,42,0.1)', color: 'var(--gold)', border: '1px solid rgba(150,112,42,0.2)' };
+  if (turnDeg != null) {
+    const right = turnDeg >= 0;
+    const amount = Math.round(Math.abs(turnDeg));
+    return (
+      <div style={{
+        marginTop: 16, padding: '14px 18px', borderRadius: 18,
+        background: 'var(--card)', border: '1px solid var(--border)',
+        display: 'flex', alignItems: 'center', gap: 14,
+      }}>
+        <div style={{
+          width: 44, height: 44, borderRadius: 14, flexShrink: 0,
+          background: 'rgba(31,122,76,0.12)', color: 'var(--accent)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}>
+          {right ? <CornerUpRight size={22} strokeWidth={2} /> : <CornerUpLeft size={22} strokeWidth={2} />}
+        </div>
+        <div style={{ lineHeight: 1.25 }}>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: 5 }}>
+            <span style={{ fontSize: 26, fontWeight: 700, color: 'var(--text)', fontVariantNumeric: 'tabular-nums' }}>
+              {amount}°
+            </span>
+            <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)' }}>
+              {right ? 'ডানে ঘুরুন' : 'বামে ঘুরুন'}
+            </span>
+          </div>
+          <div style={{ fontSize: 11.5, color: 'var(--text-muted)', marginTop: 2 }}>
+            🕋 চিহ্নটি উপরের তীরের সাথে মেলান
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // No live heading yet — state the one thing that is already known for sure.
+  const waiting = compass === 'probing';
   return (
     <div style={{
-      ...styles, borderRadius: 100, padding: '6px 14px', fontSize: 11, fontWeight: 600,
-      display: 'inline-flex', alignItems: 'center', gap: 6, textAlign: 'center', maxWidth: 320,
-    }}>{icon}{children}</div>
+      marginTop: 16, padding: '14px 18px', borderRadius: 18,
+      background: 'var(--card)', border: '1px solid var(--border)',
+      display: 'flex', alignItems: 'center', gap: 14,
+    }}>
+      <div style={{
+        width: 44, height: 44, borderRadius: 14, flexShrink: 0,
+        background: 'rgba(150,112,42,0.14)', color: 'var(--gold)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+      }}>
+        {waiting
+          ? <Loader2 size={20} className="qibla-spin" />
+          : <Compass size={22} strokeWidth={1.9} />}
+      </div>
+      <div style={{ lineHeight: 1.3 }}>
+        <div style={{ fontSize: 14.5, fontWeight: 700, color: 'var(--text)' }}>
+          কিবলা {formatBearing(bearingDeg)} — উত্তর থেকে
+        </div>
+        <div style={{ fontSize: 11.5, color: 'var(--text-muted)', marginTop: 2 }}>
+          {compass === 'needs-permission'
+            ? 'লাইভ দিক দেখতে নিচের কম্পাসে একবার চাপ দিন'
+            : waiting
+              ? 'লাইভ কম্পাস খোঁজা হচ্ছে…'
+              : 'ডায়ালের উপরের দিক উত্তর ধরা হয়েছে'}
+        </div>
+      </div>
+    </div>
   );
 }
 
-function ActionPill({ icon, label, onClick }: { icon: React.ReactNode; label: string; onClick: () => void }) {
+function Divider() {
+  return <div style={{ width: 1, background: 'var(--border)' }} />;
+}
+
+function StatTile({ value, label, dim }: { value: string; label: string; dim?: boolean }) {
   return (
-    <button onClick={onClick} style={{
-      background: 'var(--accent)', color: '#fff', border: 'none', borderRadius: 100,
-      padding: '10px 22px', fontSize: 13, fontWeight: 700, cursor: 'pointer',
-      fontFamily: 'Hind Siliguri, sans-serif', display: 'inline-flex', alignItems: 'center', gap: 7,
-      boxShadow: '0 4px 16px rgba(31,122,76,0.3)',
-    }}>{icon}{label}</button>
+    <div style={{ flex: 1, padding: '13px 8px', textAlign: 'center' }}>
+      <div style={{
+        fontSize: 16, fontWeight: 700,
+        color: dim ? 'var(--text-light)' : 'var(--text)',
+        fontVariantNumeric: 'tabular-nums',
+      }}>{value}</div>
+      <div style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 3 }}>{label}</div>
+    </div>
+  );
+}
+
+function HintRow({ children }: { children: React.ReactNode }) {
+  return (
+    <div style={{
+      display: 'flex', alignItems: 'center', gap: 6,
+      fontSize: 10.5, color: 'var(--text-light)', lineHeight: 1.6,
+      textAlign: 'center', maxWidth: 300, justifyContent: 'center',
+    }}>
+      {children}
+    </div>
+  );
+}
+
+function HelpBlock({ text, action }: { text: string; action?: { label: string; onClick: () => void } }) {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, maxWidth: 300 }}>
+      <div style={{ fontSize: 11.5, color: 'var(--text-muted)', textAlign: 'center', lineHeight: 1.65 }}>{text}</div>
+      {action && (
+        <button onClick={action.onClick} style={{
+          background: 'var(--accent)', color: 'var(--on-accent)', border: 'none', borderRadius: 100,
+          padding: '9px 20px', fontSize: 12.5, fontWeight: 700, cursor: 'pointer',
+          fontFamily: 'Hind Siliguri, sans-serif', display: 'inline-flex', alignItems: 'center', gap: 6,
+        }}><RotateCw size={13} />{action.label}</button>
+      )}
+    </div>
   );
 }
 
 /**
- * The dial face is drawn in the *world* frame: N/E/S/W, the tick marks, the
- * Kaaba marker and the needle all live inside one group that rotates by
- * `dialRotation` (= −heading) so that N keeps pointing at real north as the
- * phone turns. Because the Kaaba marker and the needle are both placed at
- * `bearingDeg` inside that group, the needle always points straight at the
- * marker — they cannot disagree. The only thing outside the rotating group is
- * the triangle at the top, which marks the direction the phone itself faces;
- * lining the 🕋 up with that triangle means you are facing the Qibla.
+ * The dial face is drawn in the *world* frame: ticks, cardinals, the Kaaba
+ * marker and the ray to it all sit in one group rotated by `dialRotation`
+ * (= −heading), so N holds real north as the phone turns. Because the marker
+ * and the ray are both placed at `bearingDeg` inside that group they cannot
+ * disagree. Only the arrow at the top sits outside the group: it marks the
+ * direction the phone itself faces, so lining the 🕋 up with it means facing
+ * the Qibla.
  *
  * With no live heading the group sits at 0°, i.e. the dial reads as
- * "screen-up is north" — which the surrounding copy states explicitly.
+ * "screen-up is north" — which the copy above it states outright.
  */
 function CompassDial({
-  bearingDeg,
-  dialRotation,
-  isLive,
-  facing,
+  bearingDeg, dialRotation, isLive, facing, awaitingTap, onActivate,
 }: {
   bearingDeg: number;
   dialRotation: number;
   isLive: boolean;
   facing: boolean;
+  awaitingTap: boolean;
+  onActivate: () => void;
 }) {
-  const size = 'min(80vw, 300px)';
-  const ticks = Array.from({ length: 24 }, (_, i) => i * 15);
+  const size = 'min(78vw, 310px)';
+  const ticks = Array.from({ length: 72 }, (_, i) => i * 5);
   const cardinals: Array<{ label: string; angle: number }> = [
-    { label: 'N', angle: 0 },
-    { label: 'E', angle: 90 },
-    { label: 'S', angle: 180 },
-    { label: 'W', angle: 270 },
+    { label: 'উ', angle: 0 },
+    { label: 'পূ', angle: 90 },
+    { label: 'দ', angle: 180 },
+    { label: 'প', angle: 270 },
   ];
-  // Labels and the 🕋 glyph counter-rotate by their own angle *plus* the
-  // group's, so they stay upright however the dial is turned.
+  // Labels counter-rotate by their own angle plus the group's, so they stay
+  // upright however the dial turns.
   const uprightFor = (angle: number) => -(angle + dialRotation);
 
+  const Wrapper = awaitingTap ? 'button' : 'div';
+
   return (
-    <div style={{ position: 'relative', width: size, aspectRatio: '1 / 1' }}>
-      {/* fixed "you are facing this way" reference marker */}
+    <Wrapper
+      onClick={awaitingTap ? onActivate : undefined}
+      aria-label={awaitingTap ? 'লাইভ কম্পাস চালু করুন' : undefined}
+      style={{
+        position: 'relative', width: size, aspectRatio: '1 / 1',
+        padding: 0, border: 'none', background: 'none',
+        cursor: awaitingTap ? 'pointer' : 'default',
+        fontFamily: 'Hind Siliguri, sans-serif',
+      }}
+    >
+      {/* soft aligned halo */}
+      {facing && (
+        <div className="qibla-aligned-glow" style={{
+          position: 'absolute', inset: -10, borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(31,122,76,0.30) 0%, rgba(31,122,76,0) 70%)',
+          pointerEvents: 'none',
+        }} />
+      )}
+
+      {/* fixed "you are facing this way" marker */}
       <div style={{
-        position: 'absolute', top: -14, left: '50%', transform: 'translateX(-50%)',
-        width: 0, height: 0,
-        borderLeft: '7px solid transparent', borderRight: '7px solid transparent',
-        borderBottom: `11px solid ${facing ? 'var(--accent)' : 'var(--gold)'}`,
-        transition: 'border-bottom-color 0.2s ease-out',
-        zIndex: 2,
+        position: 'absolute', top: -2, left: '50%', transform: 'translateX(-50%)',
+        width: 0, height: 0, zIndex: 3,
+        borderLeft: '8px solid transparent', borderRight: '8px solid transparent',
+        borderTop: `13px solid ${facing ? 'var(--accent)' : 'var(--gold)'}`,
+        transition: 'border-top-color 0.2s ease-out',
       }} />
 
       {/* dial face */}
       <div style={{
         position: 'absolute', inset: 0, borderRadius: '50%',
-        background: '#FBF9F0',
+        background: 'var(--card)',
+        border: `1px solid ${facing ? 'var(--accent)' : 'var(--border)'}`,
         boxShadow: facing
-          ? '0 8px 30px rgba(31,122,76,0.35), inset 0 0 0 2px var(--accent)'
-          : '0 8px 30px rgba(15,42,25,0.18), inset 0 0 0 1px rgba(0,0,0,0.04)',
-        transition: 'box-shadow 0.2s ease-out',
+          ? '0 10px 34px rgba(31,122,76,0.26), inset 0 0 0 1px rgba(31,122,76,0.35)'
+          : '0 10px 30px rgba(15,42,25,0.14)',
+        transition: 'box-shadow 0.25s ease-out, border-color 0.25s ease-out',
+        overflow: 'hidden',
       }}>
-        {/* world-frame group: everything here turns with the compass */}
+        {/* world-frame group — everything here turns with the compass */}
         <div
           className={isLive ? 'qibla-needle' : undefined}
-          style={{
-            position: 'absolute', inset: 0,
-            transform: `rotate(${dialRotation}deg)`,
-          }}
+          style={{ position: 'absolute', inset: 0, transform: `rotate(${dialRotation}deg)` }}
         >
-          {/* tick marks */}
-          {ticks.map((angle) => (
-            <div key={angle} style={{
-              position: 'absolute', inset: 0,
-              transform: `rotate(${angle}deg)`,
-            }}>
-              <div style={{
-                position: 'absolute', top: 10, left: '50%', transform: 'translateX(-50%)',
-                width: angle % 90 === 0 ? 3 : 1.5,
-                height: angle % 90 === 0 ? 16 : 10,
-                background: angle % 90 === 0 ? '#16241B' : '#B9B296',
-                borderRadius: 2,
-              }} />
-            </div>
-          ))}
+          {ticks.map((angle) => {
+            const major = angle % 90 === 0;
+            const medium = !major && angle % 30 === 0;
+            return (
+              <div key={angle} style={{ position: 'absolute', inset: 0, transform: `rotate(${angle}deg)` }}>
+                <div style={{
+                  position: 'absolute', top: 8, left: '50%', transform: 'translateX(-50%)',
+                  width: major ? 2.5 : medium ? 2 : 1,
+                  height: major ? 15 : medium ? 10 : 6,
+                  background: major ? 'var(--text)' : medium ? 'var(--text-muted)' : 'var(--border)',
+                  borderRadius: 2,
+                }} />
+              </div>
+            );
+          })}
 
-          {/* N/E/S/W labels */}
           {cardinals.map((c) => (
-            <div key={c.label} style={{
-              position: 'absolute', inset: 0,
-              transform: `rotate(${c.angle}deg)`,
-            }}>
+            <div key={c.label} style={{ position: 'absolute', inset: 0, transform: `rotate(${c.angle}deg)` }}>
               <div style={{
-                position: 'absolute', top: 30, left: '50%',
+                position: 'absolute', top: 27, left: '50%',
                 transform: `translateX(-50%) rotate(${uprightFor(c.angle)}deg)`,
-                fontSize: 17, fontWeight: 700,
-                color: c.label === 'N' ? '#8C2B2B' : '#16241B',
+                fontSize: 15, fontWeight: 700,
+                color: c.angle === 0 ? '#C0392B' : 'var(--text)',
               }}>{c.label}</div>
             </div>
           ))}
 
-          {/* Kaaba marker, at the calculated Qibla bearing */}
-          <div style={{
-            position: 'absolute', inset: 0,
-            transform: `rotate(${bearingDeg}deg)`,
-          }}>
+          {/* ray from the centre out to the Kaaba marker */}
+          <div style={{ position: 'absolute', inset: 0, transform: `rotate(${bearingDeg}deg)` }}>
             <div style={{
-              position: 'absolute', top: 46, left: '50%',
-              transform: `translateX(-50%) rotate(${uprightFor(bearingDeg)}deg)`,
-              width: 34, height: 34, borderRadius: '50%',
-              background: 'var(--gold-light)',
-              border: `2px solid ${facing ? 'var(--accent)' : 'var(--gold)'}`,
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: 17, boxShadow: '0 2px 8px rgba(150,112,42,0.35)',
-            }} aria-label="কাবা শরীফের দিক">🕋</div>
+              position: 'absolute', top: '16%', left: '50%', transform: 'translateX(-50%)',
+              width: 3, height: '34%', borderRadius: 3,
+              background: `linear-gradient(to bottom, ${facing ? 'var(--accent)' : 'var(--gold)'}, rgba(0,0,0,0))`,
+              opacity: isLive ? 1 : 0.55,
+              transition: 'background 0.25s ease-out',
+            }} />
           </div>
 
-          {/* needle — points along the same bearing, so straight at the 🕋.
-              Only drawn with a trustworthy live heading. */}
-          {isLive && (
+          {/* Kaaba marker at the calculated Qibla bearing */}
+          <div style={{ position: 'absolute', inset: 0, transform: `rotate(${bearingDeg}deg)` }}>
             <div style={{
-              position: 'absolute', inset: 0,
-              transform: `rotate(${bearingDeg}deg)`,
+              // Sits inside the cardinal-label ring, so a Qibla bearing that
+              // happens to fall near N/E/S/W does not collide with its letter.
+              position: 'absolute', top: 54, left: '50%',
+              transform: `translateX(-50%) rotate(${uprightFor(bearingDeg)}deg)`,
+              width: 38, height: 38, borderRadius: '50%',
+              background: 'var(--gold-light)',
+              border: `2.5px solid ${facing ? 'var(--accent)' : 'var(--gold)'}`,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-            }}>
-              <Navigation2 size={64} color="var(--accent)" fill="var(--accent)" strokeWidth={1} />
-            </div>
-          )}
+              fontSize: 19,
+              boxShadow: facing
+                ? '0 3px 14px rgba(31,122,76,0.45)'
+                : '0 3px 10px rgba(150,112,42,0.35)',
+              transition: 'border-color 0.25s ease-out, box-shadow 0.25s ease-out',
+            }} aria-label="কাবা শরীফের দিক">🕋</div>
+          </div>
         </div>
 
-        {/* center pivot */}
+        {/* centre ornament */}
         <div style={{
           position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
-          width: 10, height: 10, borderRadius: '50%', background: 'var(--text)',
-          boxShadow: '0 0 0 3px #FBF9F0',
+          width: 14, height: 14, borderRadius: '50%',
+          background: facing ? 'var(--accent)' : 'var(--text)',
+          boxShadow: '0 0 0 4px var(--card)',
+          transition: 'background 0.25s ease-out',
         }} />
+
+        {/* iOS-style gate: the whole dial is the tap target */}
+        {awaitingTap && (
+          <div style={{
+            position: 'absolute', inset: 0, borderRadius: '50%',
+            background: 'rgba(14,42,25,0.72)', backdropFilter: 'blur(2px)',
+            display: 'flex', flexDirection: 'column',
+            alignItems: 'center', justifyContent: 'center', gap: 8,
+            color: '#fff', padding: 24, textAlign: 'center',
+          }}>
+            <Compass size={34} strokeWidth={1.6} className="qibla-tap-hint" />
+            <div style={{ fontSize: 14, fontWeight: 700 }}>লাইভ কম্পাস চালু করুন</div>
+            <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.78)', lineHeight: 1.55 }}>
+              আইফোনে সেন্সর চালু করতে একবার চাপ দেওয়া বাধ্যতামূলক
+            </div>
+          </div>
+        )}
       </div>
-    </div>
+    </Wrapper>
   );
 }

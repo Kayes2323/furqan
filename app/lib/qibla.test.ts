@@ -13,7 +13,15 @@ import {
   continuousRotation,
   smoothHeading,
   isFacingQibla,
+  headingFromOrientation,
 } from './qibla.ts';
+
+/** Angle comparison that treats 359.9 and 0.1 as 0.2 apart, not 359.8. */
+function assertHeading(actual: number | null, expected: number, msg: string, tol = 0.5) {
+  assert.ok(actual !== null, `${msg}: got null`);
+  const diff = Math.abs(((((actual as number) - expected) % 360) + 540) % 360 - 180);
+  assert.ok(diff <= tol, `${msg}: expected ~${expected}°, got ${(actual as number).toFixed(2)}°`);
+}
 
 // Reference bearings/distances below are cross-checked against independently
 // published Qibla-calculator values for these cities (not derived from this
@@ -180,6 +188,118 @@ test('isFacingQibla is true only within tolerance of straight ahead, across the 
   assert.equal(isFacingQibla(6), false);
   assert.equal(isFacingQibla(354), false);
   assert.equal(isFacingQibla(180), false);
+});
+
+// ── Tilt-compensated heading ────────────────────────────────────────────
+// The device frame is x=right, y=top-of-screen, z=out-of-screen; the earth
+// frame is x=east, y=north, z=up. beta is the front-to-back tilt, so beta=0
+// is flat on a table and beta=90 is held upright facing the user.
+
+test('flat on a table: heading is the classic 360-alpha for every alpha', () => {
+  for (const alpha of [0, 30, 90, 177, 270, 359]) {
+    assertHeading(
+      headingFromOrientation({ alpha, beta: 0, gamma: 0 }),
+      (360 - alpha) % 360,
+      `flat alpha=${alpha}`,
+    );
+  }
+});
+
+test('flat on a table: the four cardinal directions', () => {
+  assertHeading(headingFromOrientation({ alpha: 0, beta: 0, gamma: 0 }), 0, 'flat north');
+  assertHeading(headingFromOrientation({ alpha: 270, beta: 0, gamma: 0 }), 90, 'flat east');
+  assertHeading(headingFromOrientation({ alpha: 180, beta: 0, gamma: 0 }), 180, 'flat south');
+  assertHeading(headingFromOrientation({ alpha: 90, beta: 0, gamma: 0 }), 270, 'flat west');
+});
+
+test('held upright: the same alpha gives the same heading as lying flat', () => {
+  // This is the defect the old alpha-only formula had — upright, alpha alone
+  // carries no horizontal information and the reading fell apart.
+  for (const alpha of [0, 45, 90, 180, 270, 315]) {
+    assertHeading(
+      headingFromOrientation({ alpha, beta: 90, gamma: 0 }),
+      (360 - alpha) % 360,
+      `upright alpha=${alpha}`,
+    );
+  }
+});
+
+test('held at a natural reading angle (~60°) agrees with flat', () => {
+  for (const alpha of [0, 120, 240]) {
+    assertHeading(
+      headingFromOrientation({ alpha, beta: 60, gamma: 0 }),
+      (360 - alpha) % 360,
+      `tilted-60 alpha=${alpha}`,
+    );
+  }
+});
+
+test('the heading stays continuous while tilting from flat to upright', () => {
+  // Sweeping beta must not make the reading jump: the two candidate axes have
+  // to agree where the implementation switches between them.
+  const alpha = 123;
+  const expected = (360 - alpha) % 360;
+  for (let beta = 0; beta <= 90; beta += 5) {
+    assertHeading(
+      headingFromOrientation({ alpha, beta, gamma: 0 }),
+      expected,
+      `beta=${beta} during tilt sweep`,
+      1.5,
+    );
+  }
+});
+
+test('landscape: the screen angle is taken into account', () => {
+  // Flat on a table, device rotated so its top points west (alpha=90 -> 270),
+  // but the UI has rotated 90° so what the user sees as "up" is a different
+  // physical edge. The reported heading must follow the screen, not the case.
+  const portrait = headingFromOrientation({ alpha: 90, beta: 0, gamma: 0, screenAngle: 0 });
+  const landscape = headingFromOrientation({ alpha: 90, beta: 0, gamma: 0, screenAngle: 90 });
+  assertHeading(portrait, 270, 'portrait reference');
+  assertHeading(landscape, 0, 'landscape rotates the reference edge by 90°');
+});
+
+test('screenAngle of 0 and an omitted screenAngle are identical', () => {
+  const withZero = headingFromOrientation({ alpha: 200, beta: 35, gamma: 10, screenAngle: 0 });
+  const omitted = headingFromOrientation({ alpha: 200, beta: 35, gamma: 10 });
+  assert.equal(withZero, omitted);
+});
+
+test('a sideways roll does not swing the heading around', () => {
+  // gamma is roll about the viewing axis; tipping the phone left or right
+  // while still pointing it the same way must not move the needle much.
+  const flat = headingFromOrientation({ alpha: 0, beta: 90, gamma: 0 });
+  for (const gamma of [-20, -10, 10, 20]) {
+    assertHeading(
+      headingFromOrientation({ alpha: 0, beta: 90, gamma }),
+      flat as number,
+      `upright with gamma=${gamma}`,
+      25,
+    );
+  }
+});
+
+test('headings always land in [0, 360)', () => {
+  for (let alpha = 0; alpha < 360; alpha += 23) {
+    for (const beta of [-90, -45, 0, 45, 90]) {
+      for (const gamma of [-60, 0, 60]) {
+        const h = headingFromOrientation({ alpha, beta, gamma });
+        if (h === null) continue;
+        assert.ok(h >= 0 && h < 360, `heading ${h} out of range at ${alpha}/${beta}/${gamma}`);
+      }
+    }
+  }
+});
+
+test('extractCompassHeading feeds tilt through, so an upright phone reads correctly', () => {
+  const result = extractCompassHeading({ absolute: true, alpha: 270, beta: 90, gamma: 0 });
+  assert.equal(result?.source, 'absolute-alpha');
+  assertHeading(result?.heading ?? null, 90, 'upright facing east via extractCompassHeading');
+});
+
+test('extractCompassHeading treats missing beta/gamma as flat', () => {
+  const result = extractCompassHeading({ absolute: true, alpha: 90 });
+  assertHeading(result?.heading ?? null, 270, 'alpha-only falls back to the flat reading');
 });
 
 test('a live needle and the Kaaba marker agree: both sit at the Qibla bearing in the rotated dial', () => {

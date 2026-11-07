@@ -151,6 +151,88 @@ export function formatDistanceKm(distanceKm: number): string {
 
 export type CompassSource = 'ios-webkit' | 'absolute-alpha';
 
+export interface OrientationAngles {
+  /** Rotation about the screen-normal axis, degrees. */
+  alpha: number;
+  /** Front-to-back tilt, degrees. 0 = flat on its back, 90 = held upright. */
+  beta: number;
+  /** Left-to-right tilt, degrees. */
+  gamma: number;
+  /** `screen.orientation.angle` — 0 in portrait, 90/270 in landscape. */
+  screenAngle?: number;
+}
+
+/**
+ * Compass heading (degrees clockwise from north) for the direction the user
+ * is facing, derived from the full device orientation rather than `alpha`
+ * alone.
+ *
+ * Why the full matrix: `360 - alpha` is only the heading while the phone lies
+ * flat on its back. The moment it is tilted up — which is how anyone actually
+ * holds a phone to look at it — `alpha` stops describing where the device
+ * points, and at 90° (upright) it carries no horizontal information at all.
+ * That is why the dial read plausibly on a table and nonsensically in the
+ * hand.
+ *
+ * The device-to-earth rotation is built from the spec's intrinsic Z-X'-Y''
+ * order, with the earth frame X = east, Y = north, Z = up. Two candidate
+ * "forward" directions are projected onto the horizon:
+ *
+ *   - the top edge of the screen, which is forward when the phone is flat
+ *     (and which, flat, reduces to exactly `360 - alpha`);
+ *   - the back of the phone, which is forward when it is held upright.
+ *
+ * Whichever projects more strongly onto the horizon wins, so the reading
+ * stays stable at every tilt between the two instead of collapsing in the
+ * middle. Returns null only when the device is edge-on, where no horizontal
+ * direction exists and any number would be invented.
+ */
+export function headingFromOrientation({
+  alpha,
+  beta,
+  gamma,
+  screenAngle = 0,
+}: OrientationAngles): number | null {
+  const rad = Math.PI / 180;
+  const a = alpha * rad;
+  const b = beta * rad;
+  const g = gamma * rad;
+  const s = screenAngle * rad;
+
+  const cA = Math.cos(a), sA = Math.sin(a);
+  const cB = Math.cos(b), sB = Math.sin(b);
+  const cG = Math.cos(g), sG = Math.sin(g);
+
+  // Columns of R = Rz(alpha)·Rx(beta)·Ry(gamma), device axes in earth frame.
+  const r00 = cA * cG - sA * sB * sG;
+  const r01 = -sA * cB;
+  const r02 = cA * sG + sA * sB * cG;
+  const r10 = sA * cG + cA * sB * sG;
+  const r11 = cA * cB;
+  const r12 = sA * sG - cA * sB * cG;
+
+  // "Up the screen" in device coordinates, rotated by the screen's own
+  // orientation so landscape does not read 90° off.
+  const ux = Math.sin(s);
+  const uy = Math.cos(s);
+  const upEast = r00 * ux + r01 * uy;
+  const upNorth = r10 * ux + r11 * uy;
+
+  // Out of the back of the phone — the way you look when holding it upright.
+  const backEast = -r02;
+  const backNorth = -r12;
+
+  const upMag = Math.hypot(upEast, upNorth);
+  const backMag = Math.hypot(backEast, backNorth);
+
+  const east = upMag >= backMag ? upEast : backEast;
+  const north = upMag >= backMag ? upNorth : backNorth;
+
+  if (Math.hypot(east, north) < 1e-9) return null;
+
+  return normalizeDeg(Math.atan2(east, north) / rad);
+}
+
 /**
  * Extracts a trustworthy true-north-relative compass heading (0-360,
  * clockwise from true north) from a DeviceOrientationEvent, or null if the
@@ -168,6 +250,8 @@ export function extractCompassHeading(
   event: {
     absolute?: boolean;
     alpha?: number | null;
+    beta?: number | null;
+    gamma?: number | null;
     webkitCompassHeading?: number;
   },
   /**
@@ -178,6 +262,7 @@ export function extractCompassHeading(
    * no live compass at all, so the event name is treated as its own proof.
    */
   fromAbsoluteEvent = false,
+  screenAngle = 0,
 ): { heading: number; source: CompassSource } | null {
   if (typeof event.webkitCompassHeading === 'number' && !Number.isNaN(event.webkitCompassHeading)) {
     // iOS Safari hands back a ready-made compass heading, clockwise. Apple
@@ -188,10 +273,16 @@ export function extractCompassHeading(
 
   const earthAnchored = event.absolute === true || fromAbsoluteEvent;
   if (earthAnchored && typeof event.alpha === 'number' && !Number.isNaN(event.alpha)) {
-    // Standard (non-WebKit) devices: alpha increases counter-clockwise from
-    // the device's initial reference, anchored to Earth's frame only when
-    // `absolute` is true. Convert to clockwise-from-north.
-    return { heading: (360 - event.alpha) % 360, source: 'absolute-alpha' };
+    // Standard (non-WebKit) devices: alpha/beta/gamma describe the device's
+    // full attitude in Earth's frame. Tilt has to be taken into account —
+    // see headingFromOrientation for why alpha alone is not a heading.
+    const heading = headingFromOrientation({
+      alpha: event.alpha,
+      beta: typeof event.beta === 'number' && !Number.isNaN(event.beta) ? event.beta : 0,
+      gamma: typeof event.gamma === 'number' && !Number.isNaN(event.gamma) ? event.gamma : 0,
+      screenAngle,
+    });
+    return heading === null ? null : { heading, source: 'absolute-alpha' };
   }
 
   return null;
