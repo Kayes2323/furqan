@@ -245,7 +245,11 @@ export const RESEARCH_AUDIO: Record<string, ResearchCategoryAudio> = {
     voiceLabel: 'Charon (Gemini TTS, বাংলা পুরুষ কণ্ঠ)',
     model: 'gemini-3.8-flash-tts',
     articles: [
-      { articleId: 'part1_mental_health', title: 'পর্ব ১ — মানসিক স্বাস্থ্য', subtitle: 'উদ্বেগ ও বিষণ্নতার সমাধান', order: 1, totalChunksExpected: 6, chunks: [] },
+      { articleId: 'part1_mental_health', title: 'পর্ব ১ — মানসিক স্বাস্থ্য', subtitle: 'উদ্বেগ ও বিষণ্নতার সমাধান', order: 1, totalChunksExpected: 6, chunks: [
+        { path: '/audio/research/psychology/part1_mental_health-0.mp3', durationSec: 144.264000 },
+        { path: '/audio/research/psychology/part1_mental_health-1.mp3', durationSec: 146.784000 },
+        { path: '/audio/research/psychology/part1_mental_health-2.mp3', durationSec: 160.776000 },
+      ] },
       { articleId: 'part2_nafs', title: 'পর্ব ২ — নফস', subtitle: 'আপনি আসলে কে?', order: 2, totalChunksExpected: 5, chunks: [] },
       { articleId: 'part3_forgiveness', title: 'পর্ব ৩ — ক্ষমা', subtitle: 'মনের মুক্তির পথ', order: 3, totalChunksExpected: 4, chunks: [] },
     ],
