@@ -276,15 +276,30 @@ export const RESEARCH_AUDIO: Record<string, ResearchCategoryAudio> = {
       { articleId: 'part1_family', title: 'পর্ব ১ — পরিবার', subtitle: 'সমাজের মূল ভিত্তি', order: 1, totalChunksExpected: 3, chunks: [
         { path: '/audio/research/sociology/part1_family-0.mp3', durationSec: 158.712000 },
         { path: '/audio/research/sociology/part1_family-1.mp3', durationSec: 155.496000 },
+        { path: '/audio/research/sociology/part1_family-2.mp3', durationSec: 108.456000 },
       ] },
       { articleId: 'part2_justice', title: 'পর্ব ২ — ন্যায়বিচার', subtitle: 'ইসলামে সামাজিক সমতা', order: 2, totalChunksExpected: 2, chunks: [
         { path: '/audio/research/sociology/part2_justice-0.mp3', durationSec: 227.856000 },
         { path: '/audio/research/sociology/part2_justice-1.mp3', durationSec: 110.256000 },
       ] },
-      { articleId: 'part3_women', title: 'পর্ব ৩ — নারীর অধিকার', subtitle: 'ইসলামের দৃষ্টিভঙ্গি', order: 3, totalChunksExpected: 3, chunks: [] },
-      { articleId: 'part4_hudud', title: 'পর্ব ৪ — শাস্তির বিধান', subtitle: 'কঠোর শাস্তি কেন?', order: 4, totalChunksExpected: 4, chunks: [] },
-      { articleId: 'part5_coexistence', title: 'পর্ব ৫ — সহাবস্থান', subtitle: 'ভিন্নতার মধ্যে ঐক্য', order: 5, totalChunksExpected: 2, chunks: [] },
-      { articleId: 'part6_social_diseases', title: 'পর্ব ৬ — সামাজিক রোগ', subtitle: 'মাদক, দুর্নীতি, পর্নোগ্রাফি', order: 6, totalChunksExpected: 4, chunks: [] },
+      { articleId: 'part3_women', title: 'পর্ব ৩ — নারীর অধিকার', subtitle: 'ইসলামের দৃষ্টিভঙ্গি', order: 3, totalChunksExpected: 3, chunks: [
+        { path: '/audio/research/sociology/part3_women-0.mp3', durationSec: 165.336000 },
+        { path: '/audio/research/sociology/part3_women-1.mp3', durationSec: 170.304000 },
+        { path: '/audio/research/sociology/part3_women-2.mp3', durationSec: 51.312000 },
+      ] },
+      { articleId: 'part4_hudud', title: 'পর্ব ৪ — শাস্তির বিধান', subtitle: 'কঠোর শাস্তি কেন?', order: 4, totalChunksExpected: 4, chunks: [
+        { path: '/audio/research/sociology/part4_hudud-0.mp3', durationSec: 155.736000 },
+        { path: '/audio/research/sociology/part4_hudud-1.mp3', durationSec: 155.592000 },
+        { path: '/audio/research/sociology/part4_hudud-2.mp3', durationSec: 153.984000 },
+        { path: '/audio/research/sociology/part4_hudud-3.mp3', durationSec: 159.864000 },
+      ] },
+      { articleId: 'part5_coexistence', title: 'পর্ব ৫ — সহাবস্থান', subtitle: 'ভিন্নতার মধ্যে ঐক্য', order: 5, totalChunksExpected: 2, chunks: [
+        { path: '/audio/research/sociology/part5_coexistence-0.mp3', durationSec: 150.624000 },
+        { path: '/audio/research/sociology/part5_coexistence-1.mp3', durationSec: 60.552000 },
+      ] },
+      { articleId: 'part6_social_diseases', title: 'পর্ব ৬ — সামাজিক রোগ', subtitle: 'মাদক, দুর্নীতি, পর্নোগ্রাফি', order: 6, totalChunksExpected: 4, chunks: [
+        { path: '/audio/research/sociology/part6_social_diseases-0.mp3', durationSec: 170.184000 },
+      ] },
     ],
   },
   philosophy: {
