@@ -12,7 +12,10 @@ const KEY = 'furqan_nur_pending_query';
 
 export interface PendingNurQuery {
   text: string;
-  surah: number;
+  /** Omitted when the handoff carries no specific ayah — e.g. a research
+   *  article asking NUR to go deeper on its topic. NUR then answers from
+   *  the text alone, with no ayah pinned as context. */
+  surah?: number;
   ayah?: number;
 }
 
@@ -31,7 +34,8 @@ export function consumePendingNurQuery(): PendingNurQuery | null {
     if (!raw) return null;
     sessionStorage.removeItem(KEY);
     const parsed = JSON.parse(raw) as PendingNurQuery;
-    if (typeof parsed.text !== 'string' || typeof parsed.surah !== 'number') return null;
+    if (typeof parsed.text !== 'string') return null;
+    if (parsed.surah !== undefined && typeof parsed.surah !== 'number') return null;
     return parsed;
   } catch {
     return null;

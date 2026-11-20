@@ -143,7 +143,13 @@ function AppShell() {
         )}
         {screen === 'nur' && <NurScreen onOpenReaderSurah={openReaderSurah} />}
         {screen === 'knowledge' && <KnowledgeScreen onNavigate={navigateScreen} />}
-        {screen === 'research' && <ResearchScreen onBack={back} initialCategoryId={researchCategoryId} />}
+        {screen === 'research' && (
+          <ResearchScreen
+            onBack={back}
+            initialCategoryId={researchCategoryId}
+            onAskNur={() => navigateScreen('nur')}
+          />
+        )}
         {screen === 'sirah' && (
           <SirahJourneyScreen onBack={back} onOpenPart={openPart} onOpenChapter={openChapter} />
         )}

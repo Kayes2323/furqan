@@ -33,12 +33,18 @@ export default function NurScreen({ onOpenReaderSurah }: Props) {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  // Consume a one-shot "ask NUR about this ayah" handoff from the Reader,
-  // if one was set, and auto-send it with its explicit surah/ayah context
-  // — NUR never has to guess which ayah is meant in this flow.
+  // Consume a one-shot "ask NUR about this" handoff, if one was set, and
+  // auto-send it. From the Reader it carries an explicit surah/ayah, so NUR
+  // never has to guess which ayah is meant; from a Research article there is
+  // no single ayah, so it is sent as plain text with no pinned context.
   useEffect(() => {
     const pending = consumePendingNurQuery();
-    if (pending) send(pending.text, { surah: pending.surah, ayah: pending.ayah });
+    if (pending) {
+      send(
+        pending.text,
+        pending.surah !== undefined ? { surah: pending.surah, ayah: pending.ayah } : undefined,
+      );
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
