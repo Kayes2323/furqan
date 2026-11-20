@@ -299,6 +299,9 @@ export const RESEARCH_AUDIO: Record<string, ResearchCategoryAudio> = {
       ] },
       { articleId: 'part6_social_diseases', title: 'পর্ব ৬ — সামাজিক রোগ', subtitle: 'মাদক, দুর্নীতি, পর্নোগ্রাফি', order: 6, totalChunksExpected: 4, chunks: [
         { path: '/audio/research/sociology/part6_social_diseases-0.mp3', durationSec: 170.184000 },
+        { path: '/audio/research/sociology/part6_social_diseases-1.mp3', durationSec: 166.776000 },
+        { path: '/audio/research/sociology/part6_social_diseases-2.mp3', durationSec: 174.624000 },
+        { path: '/audio/research/sociology/part6_social_diseases-3.mp3', durationSec: 37.392000 },
       ] },
     ],
   },
@@ -307,8 +310,20 @@ export const RESEARCH_AUDIO: Record<string, ResearchCategoryAudio> = {
     voiceLabel: 'Charon (Gemini TTS, বাংলা পুরুষ কণ্ঠ)',
     model: 'gemini-3.8-flash-tts',
     articles: [
-      { articleId: 'overview', title: 'দর্শন — সূচনা', subtitle: 'জীবনের বড় প্রশ্নগুলো', order: 1, totalChunksExpected: 7, chunks: [] },
-      { articleId: 'part2_tawhid', title: 'পর্ব ২ — তাওহীদ', subtitle: 'একত্ববাদের দর্শন', order: 2, totalChunksExpected: 3, chunks: [] },
+      { articleId: 'overview', title: 'দর্শন — সূচনা', subtitle: 'জীবনের বড় প্রশ্নগুলো', order: 1, totalChunksExpected: 7, chunks: [
+        { path: '/audio/research/philosophy/overview-0.mp3', durationSec: 149.976000 },
+        { path: '/audio/research/philosophy/overview-1.mp3', durationSec: 152.496000 },
+        { path: '/audio/research/philosophy/overview-2.mp3', durationSec: 151.752000 },
+        { path: '/audio/research/philosophy/overview-3.mp3', durationSec: 140.952000 },
+        { path: '/audio/research/philosophy/overview-4.mp3', durationSec: 171.192000 },
+        { path: '/audio/research/philosophy/overview-5.mp3', durationSec: 177.192000 },
+        { path: '/audio/research/philosophy/overview-6.mp3', durationSec: 83.904000 },
+      ] },
+      { articleId: 'part2_tawhid', title: 'পর্ব ২ — তাওহীদ', subtitle: 'একত্ববাদের দর্শন', order: 2, totalChunksExpected: 3, chunks: [
+        { path: '/audio/research/philosophy/part2_tawhid-0.mp3', durationSec: 166.416000 },
+        { path: '/audio/research/philosophy/part2_tawhid-1.mp3', durationSec: 161.304000 },
+        { path: '/audio/research/philosophy/part2_tawhid-2.mp3', durationSec: 37.344000 },
+      ] },
       { articleId: 'part3_epistemology', title: 'পর্ব ৩ — জ্ঞানতত্ত্ব', subtitle: 'আমরা কীভাবে জানি?', order: 3, totalChunksExpected: 3, chunks: [] },
       { articleId: 'part4_ethics', title: 'পর্ব ৪ — নৈতিকতা', subtitle: 'ভালো ও মন্দ কে নির্ধারণ করে?', order: 4, totalChunksExpected: 3, chunks: [] },
     ],
