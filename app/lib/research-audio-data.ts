@@ -324,8 +324,16 @@ export const RESEARCH_AUDIO: Record<string, ResearchCategoryAudio> = {
         { path: '/audio/research/philosophy/part2_tawhid-1.mp3', durationSec: 161.304000 },
         { path: '/audio/research/philosophy/part2_tawhid-2.mp3', durationSec: 37.344000 },
       ] },
-      { articleId: 'part3_epistemology', title: 'পর্ব ৩ — জ্ঞানতত্ত্ব', subtitle: 'আমরা কীভাবে জানি?', order: 3, totalChunksExpected: 3, chunks: [] },
-      { articleId: 'part4_ethics', title: 'পর্ব ৪ — নৈতিকতা', subtitle: 'ভালো ও মন্দ কে নির্ধারণ করে?', order: 4, totalChunksExpected: 3, chunks: [] },
+      { articleId: 'part3_epistemology', title: 'পর্ব ৩ — জ্ঞানতত্ত্ব', subtitle: 'আমরা কীভাবে জানি?', order: 3, totalChunksExpected: 3, chunks: [
+        { path: '/audio/research/philosophy/part3_epistemology-0.mp3', durationSec: 163.104000 },
+        { path: '/audio/research/philosophy/part3_epistemology-1.mp3', durationSec: 170.304000 },
+        { path: '/audio/research/philosophy/part3_epistemology-2.mp3', durationSec: 58.224000 },
+      ] },
+      { articleId: 'part4_ethics', title: 'পর্ব ৪ — নৈতিকতা', subtitle: 'ভালো ও মন্দ কে নির্ধারণ করে?', order: 4, totalChunksExpected: 3, chunks: [
+        { path: '/audio/research/philosophy/part4_ethics-0.mp3', durationSec: 158.496000 },
+        { path: '/audio/research/philosophy/part4_ethics-1.mp3', durationSec: 184.944000 },
+        { path: '/audio/research/philosophy/part4_ethics-2.mp3', durationSec: 78.144000 },
+      ] },
     ],
   },
 };
