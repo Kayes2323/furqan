@@ -1,25 +1,24 @@
 // ═══════════════════════════════════════════
 // FURQAN — Sirah Audio Reader: static audio manifest
 //
-// Pilot scope: ONE chapter (ch-11, "হেরা গুহা ও প্রথম ওহী"), Bengali male
-// voice narration generated via the Gemini API's TTS model (see
-// docs/audio-reader-pilot.md for the full generation method, voice
-// choice, verification, and licensing notes). No other chapter has
-// audio — isChapterAudioAvailable() / anyAudioAvailable() are the single
-// source of truth other components check before showing a listen option,
-// so this never silently expands to chapters that don't actually have audio.
+// Bengali male voice narration generated via the Gemini API's TTS model
+// (see docs/audio-reader-pilot.md for the full generation method, voice
+// choice, verification, and licensing notes). Chapters are narrated one
+// at a time as the daily free-tier quota allows — isChapterAudioAvailable()
+// / anyAudioAvailable() are the single source of truth other components
+// check before showing a listen option, so this never claims audio for a
+// chapter that does not actually have it.
 //
 // A chapter's narration is stored as one or more small MP3 chunks per
 // section (not one giant file) — this lets a long chapter split across
 // several TTS generation calls while the PLAYER still presents it as one
 // continuous, gapless listen, in the article's original paragraph order.
 //
-// Honesty note: due to a hard daily quota on the free TTS tier used for
-// this pilot (see docs/audio-reader-pilot.md), ch-11 is narrated for 5
-// of its 6 sections as of this commit. The missing section is tracked
-// explicitly below (sectionId present, chunks: []) — never silently
-// skipped — so the player can tell the listener honestly that one part
-// isn't narrated yet instead of jumping over it unannounced.
+// Honesty note: a partly-narrated section is recorded with the chunks it
+// actually has (and a section with none as `chunks: []`) — never silently
+// skipped — so the player can tell the listener which parts aren't
+// narrated yet instead of jumping over them unannounced.
+// Status: ch-11 complete (6/6 sections). ch-01 in progress.
 // ═══════════════════════════════════════════
 
 export interface SirahAudioChunk {
@@ -60,10 +59,8 @@ export const SIRAH_AUDIO: Record<string, SirahChapterAudio> = {
         chunks: [{ id: 'ch-11-s-01', sectionId: 'ch-11-s-01', path: '/audio/sirah/ch-11/ch-11-s-01.mp3', durationSec: 132.456 }],
       },
       {
-        // Free-tier daily TTS quota (10 requests/day) was exhausted before
-        // this section could be generated — see docs/audio-reader-pilot.md.
         sectionId: 'ch-11-s-02',
-        chunks: [],
+        chunks: [{ id: 'ch-11-s-02', sectionId: 'ch-11-s-02', path: '/audio/sirah/ch-11/ch-11-s-02.mp3', durationSec: 116.352 }],
       },
       {
         sectionId: 'ch-11-s-03',
@@ -78,11 +75,34 @@ export const SIRAH_AUDIO: Record<string, SirahChapterAudio> = {
         chunks: [{ id: 'ch-11-s-05', sectionId: 'ch-11-s-05', path: '/audio/sirah/ch-11/ch-11-s-05.mp3', durationSec: 148.224 }],
       },
       {
-        // Only the first half of this (longer) section was generated
-        // before the quota ran out — the second half is tracked as a gap,
-        // not silently dropped.
         sectionId: 'ch-11-s-06',
-        chunks: [{ id: 'ch-11-s-06a', sectionId: 'ch-11-s-06', path: '/audio/sirah/ch-11/ch-11-s-06a.mp3', durationSec: 83.376 }],
+        chunks: [
+          { id: 'ch-11-s-06a', sectionId: 'ch-11-s-06', path: '/audio/sirah/ch-11/ch-11-s-06a.mp3', durationSec: 83.376 },
+          { id: 'ch-11-s-06b', sectionId: 'ch-11-s-06', path: '/audio/sirah/ch-11/ch-11-s-06b.mp3', durationSec: 72.384 },
+        ],
+      },
+    ],
+  },
+  'ch-01': {
+    chapterId: 'ch-01',
+    voiceLabel: 'Charon (Gemini TTS, বাংলা পুরুষ কণ্ঠ)',
+    model: 'gemini-3.8-flash-tts',
+    generatedAt: '2026-11-21',
+    sections: [
+      {
+        sectionId: 'ch-01-s-01',
+        chunks: [
+          { id: 'ch-01-s-01-0', sectionId: 'ch-01-s-01', path: '/audio/sirah/ch-01/ch-01-s-01-0.mp3', durationSec: 123.504 },
+          { id: 'ch-01-s-01-1', sectionId: 'ch-01-s-01', path: '/audio/sirah/ch-01/ch-01-s-01-1.mp3', durationSec: 50.304 },
+        ],
+      },
+      {
+        // 1 of this section's 11 chunks so far — the rest follow as the
+        // daily free-tier quota allows. Tracked, never silently skipped.
+        sectionId: 'ch-01-s-02',
+        chunks: [
+          { id: 'ch-01-s-02-0', sectionId: 'ch-01-s-02', path: '/audio/sirah/ch-01/ch-01-s-02-0.mp3', durationSec: 148.584 },
+        ],
       },
     ],
   },
