@@ -3,19 +3,23 @@ import { GoogleGenAI } from '@google/genai';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../../lib/firebase';
 import { extractNarrationText, splitIntoNarrationChunks } from '../../lib/markdown-narration';
+import { getChapter } from '../../lib/sirah-data';
+import { sectionNarrationChunks } from '../../lib/sirah-narration';
 
 // TEMPORARY, PILOT-ONLY route (second use, after the Sirah ch-11 pilot —
 // see docs/audio-reader-pilot.md). Generates Bengali TTS audio for
 // Research (গবেষণা) articles, one chunk at a time, server-side (where
 // GEMINI_API_KEY already lives). Deliberately narrow:
-// - Only accepts a whitelisted categoryId ('economy' | 'politics' |
-//   'science' | 'psychology' | 'sociology' | 'philosophy' — i.e. every
-//   Research category), never arbitrary text — cannot be abused as a
-//   general TTS proxy.
-// - Fetches the article's canonical Markdown straight from Firestore
-//   (the same source ResearchScreen.tsx reads), extracts narration-safe
-//   text (Arabic ayahs stripped — see markdown-narration.ts), and
-//   requires an explicit chunkIndex so each call is reproducible.
+// - Only accepts a whitelisted categoryId: the six Research categories,
+//   or 'sirah' for Ar-Raheeq Al-Makhtum chapters. Never arbitrary text —
+//   cannot be abused as a general TTS proxy.
+// - Research: fetches the article's canonical Markdown straight from
+//   Firestore (the same source ResearchScreen.tsx reads) and extracts
+//   narration-safe text (Arabic ayahs stripped — see markdown-narration.ts).
+//   Sirah: reads the chapter from the in-repo sirah-data and narrates ONE
+//   section at a time (sectionId required), matching the section-shaped
+//   SIRAH_AUDIO manifest the player reads.
+// - Always requires an explicit chunkIndex so each call is reproducible.
 // - Gated behind TTS_PILOT_SECRET.
 // - Removed once this batch of articles is fully narrated.
 export const maxDuration = 60;
@@ -28,7 +32,9 @@ export const maxDuration = 60;
 // dedicated key isn't set.
 const client = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY_TTS || process.env.GEMINI_API_KEY });
 
-const ALLOWED_CATEGORY_IDS = ['economy', 'politics', 'science', 'psychology', 'sociology', 'philosophy'];
+const RESEARCH_CATEGORY_IDS = ['economy', 'politics', 'science', 'psychology', 'sociology', 'philosophy'];
+const SIRAH_CATEGORY_ID = 'sirah';
+const ALLOWED_CATEGORY_IDS = [...RESEARCH_CATEGORY_IDS, SIRAH_CATEGORY_ID];
 const TTS_MODEL = 'gemini-3.8-flash-tts';
 const DEFAULT_VOICE = 'Charon';
 
@@ -69,17 +75,44 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'articleId and chunkIndex are required' }, { status: 400 });
   }
   const chunkIndex = parseInt(chunkIndexRaw, 10);
+  const sectionId = searchParams.get('sectionId');
 
   let narrationChunks: string[];
-  try {
-    const docSnap = await getDoc(doc(db, 'research', categoryId, 'articles', articleId));
-    if (!docSnap.exists()) {
-      return NextResponse.json({ error: 'article not found in Firestore' }, { status: 404 });
+  let totalSections: number | undefined;
+
+  if (categoryId === SIRAH_CATEGORY_ID) {
+    // articleId is the chapter id (e.g. 'ch-12'); sectionId picks the
+    // section within it, so generated chunks map 1:1 onto SIRAH_AUDIO.
+    const chapter = getChapter(articleId);
+    if (!chapter) {
+      return NextResponse.json({ error: `sirah chapter not found: ${articleId}` }, { status: 404 });
     }
-    const content = (docSnap.data().content as string) || '';
-    narrationChunks = splitIntoNarrationChunks(extractNarrationText(content));
-  } catch (err) {
-    return NextResponse.json({ error: `firestore fetch failed: ${String(err instanceof Error ? err.message : err)}` }, { status: 502 });
+    totalSections = chapter.sections.length;
+    if (!sectionId) {
+      return NextResponse.json({
+        error: 'sectionId is required for sirah',
+        sections: chapter.sections.map((s) => ({ sectionId: s.id, title: s.title })),
+      }, { status: 400 });
+    }
+    const section = chapter.sections.find((s) => s.id === sectionId);
+    if (!section) {
+      return NextResponse.json({
+        error: `section not found in ${articleId}: ${sectionId}`,
+        sections: chapter.sections.map((s) => s.id),
+      }, { status: 404 });
+    }
+    narrationChunks = sectionNarrationChunks(section);
+  } else {
+    try {
+      const docSnap = await getDoc(doc(db, 'research', categoryId, 'articles', articleId));
+      if (!docSnap.exists()) {
+        return NextResponse.json({ error: 'article not found in Firestore' }, { status: 404 });
+      }
+      const content = (docSnap.data().content as string) || '';
+      narrationChunks = splitIntoNarrationChunks(extractNarrationText(content));
+    } catch (err) {
+      return NextResponse.json({ error: `firestore fetch failed: ${String(err instanceof Error ? err.message : err)}` }, { status: 502 });
+    }
   }
 
   const text = narrationChunks[chunkIndex];
@@ -110,6 +143,8 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({
       categoryId,
       articleId,
+      sectionId: sectionId ?? undefined,
+      totalSections,
       chunkIndex,
       totalChunks: narrationChunks.length,
       voice,
