@@ -18,7 +18,7 @@
 // actually has (and a section with none as `chunks: []`) — never silently
 // skipped — so the player can tell the listener which parts aren't
 // narrated yet instead of jumping over them unannounced.
-// Status: ch-11 complete (6/6 sections). ch-01 in progress.
+// Status: ch-01 and ch-11 complete. Other chapters not started.
 // ═══════════════════════════════════════════
 
 export interface SirahAudioChunk {
@@ -97,11 +97,19 @@ export const SIRAH_AUDIO: Record<string, SirahChapterAudio> = {
         ],
       },
       {
-        // 1 of this section's 11 chunks so far — the rest follow as the
-        // daily free-tier quota allows. Tracked, never silently skipped.
         sectionId: 'ch-01-s-02',
         chunks: [
           { id: 'ch-01-s-02-0', sectionId: 'ch-01-s-02', path: '/audio/sirah/ch-01/ch-01-s-02-0.mp3', durationSec: 148.584 },
+          { id: 'ch-01-s-02-1', sectionId: 'ch-01-s-02', path: '/audio/sirah/ch-01/ch-01-s-02-1.mp3', durationSec: 87.336 },
+          { id: 'ch-01-s-02-2', sectionId: 'ch-01-s-02', path: '/audio/sirah/ch-01/ch-01-s-02-2.mp3', durationSec: 95.952 },
+          { id: 'ch-01-s-02-3', sectionId: 'ch-01-s-02', path: '/audio/sirah/ch-01/ch-01-s-02-3.mp3', durationSec: 145.416 },
+          { id: 'ch-01-s-02-4', sectionId: 'ch-01-s-02', path: '/audio/sirah/ch-01/ch-01-s-02-4.mp3', durationSec: 119.952 },
+          { id: 'ch-01-s-02-5', sectionId: 'ch-01-s-02', path: '/audio/sirah/ch-01/ch-01-s-02-5.mp3', durationSec: 40.464 },
+          { id: 'ch-01-s-02-6', sectionId: 'ch-01-s-02', path: '/audio/sirah/ch-01/ch-01-s-02-6.mp3', durationSec: 96.264 },
+          { id: 'ch-01-s-02-7', sectionId: 'ch-01-s-02', path: '/audio/sirah/ch-01/ch-01-s-02-7.mp3', durationSec: 107.112 },
+          { id: 'ch-01-s-02-8', sectionId: 'ch-01-s-02', path: '/audio/sirah/ch-01/ch-01-s-02-8.mp3', durationSec: 126.624 },
+          { id: 'ch-01-s-02-9', sectionId: 'ch-01-s-02', path: '/audio/sirah/ch-01/ch-01-s-02-9.mp3', durationSec: 131.376 },
+          { id: 'ch-01-s-02-10', sectionId: 'ch-01-s-02', path: '/audio/sirah/ch-01/ch-01-s-02-10.mp3', durationSec: 132.096 },
         ],
       },
     ],
