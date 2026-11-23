@@ -18,7 +18,8 @@
 // actually has (and a section with none as `chunks: []`) — never silently
 // skipped — so the player can tell the listener which parts aren't
 // narrated yet instead of jumping over them unannounced.
-// Status: ch-01 and ch-11 complete. Other chapters not started.
+// Status: ch-01 and ch-11 complete; ch-02 in progress (s-04 partial,
+// s-05..s-07 not started).
 // ═══════════════════════════════════════════
 
 export interface SirahAudioChunk {
@@ -48,6 +49,47 @@ export interface SirahChapterAudio {
 }
 
 export const SIRAH_AUDIO: Record<string, SirahChapterAudio> = {
+  'ch-02': {
+    chapterId: 'ch-02',
+    voiceLabel: 'Charon (Gemini TTS, বাংলা পুরুষ কণ্ঠ)',
+    model: 'gemini-3.8-flash-tts',
+    generatedAt: '2026-11-23',
+    sections: [
+      {
+        sectionId: 'ch-02-s-01',
+        chunks: [
+          { id: 'ch-02-s-01-0', sectionId: 'ch-02-s-01', path: '/audio/sirah/ch-02/ch-02-s-01-0.mp3', durationSec: 122.064 },
+          { id: 'ch-02-s-01-1', sectionId: 'ch-02-s-01', path: '/audio/sirah/ch-02/ch-02-s-01-1.mp3', durationSec: 75.216 },
+        ],
+      },
+      {
+        sectionId: 'ch-02-s-02',
+        chunks: [
+          { id: 'ch-02-s-02-0', sectionId: 'ch-02-s-02', path: '/audio/sirah/ch-02/ch-02-s-02-0.mp3', durationSec: 133.344 },
+          { id: 'ch-02-s-02-1', sectionId: 'ch-02-s-02', path: '/audio/sirah/ch-02/ch-02-s-02-1.mp3', durationSec: 88.872 },
+          { id: 'ch-02-s-02-2', sectionId: 'ch-02-s-02', path: '/audio/sirah/ch-02/ch-02-s-02-2.mp3', durationSec: 65.976 },
+          { id: 'ch-02-s-02-3', sectionId: 'ch-02-s-02', path: '/audio/sirah/ch-02/ch-02-s-02-3.mp3', durationSec: 126.864 },
+          { id: 'ch-02-s-02-4', sectionId: 'ch-02-s-02', path: '/audio/sirah/ch-02/ch-02-s-02-4.mp3', durationSec: 21.312 },
+        ],
+      },
+      {
+        sectionId: 'ch-02-s-03',
+        chunks: [
+          { id: 'ch-02-s-03-0', sectionId: 'ch-02-s-03', path: '/audio/sirah/ch-02/ch-02-s-03-0.mp3', durationSec: 78.552 },
+          { id: 'ch-02-s-03-1', sectionId: 'ch-02-s-03', path: '/audio/sirah/ch-02/ch-02-s-03-1.mp3', durationSec: 110.112 },
+        ],
+      },
+      {
+        // 2 of this section's 4 chunks so far — the rest follow as the
+        // daily free-tier quota allows. Tracked, never silently skipped.
+        sectionId: 'ch-02-s-04',
+        chunks: [
+          { id: 'ch-02-s-04-0', sectionId: 'ch-02-s-04', path: '/audio/sirah/ch-02/ch-02-s-04-0.mp3', durationSec: 7.824 },
+          { id: 'ch-02-s-04-1', sectionId: 'ch-02-s-04', path: '/audio/sirah/ch-02/ch-02-s-04-1.mp3', durationSec: 170.376 },
+        ],
+      },
+    ],
+  },
   'ch-11': {
     chapterId: 'ch-11',
     voiceLabel: 'Charon (Gemini TTS, বাংলা পুরুষ কণ্ঠ)',
