@@ -18,8 +18,8 @@
 // actually has (and a section with none as `chunks: []`) — never silently
 // skipped — so the player can tell the listener which parts aren't
 // narrated yet instead of jumping over them unannounced.
-// Status: ch-01 and ch-11 complete; ch-02 in progress (s-04 partial,
-// s-05..s-07 not started).
+// Status: ch-01 and ch-11 complete; ch-02 in progress (s-06 partial,
+// s-07 not started).
 // ═══════════════════════════════════════════
 
 export interface SirahAudioChunk {
@@ -80,12 +80,32 @@ export const SIRAH_AUDIO: Record<string, SirahChapterAudio> = {
         ],
       },
       {
-        // 2 of this section's 4 chunks so far — the rest follow as the
-        // daily free-tier quota allows. Tracked, never silently skipped.
         sectionId: 'ch-02-s-04',
         chunks: [
           { id: 'ch-02-s-04-0', sectionId: 'ch-02-s-04', path: '/audio/sirah/ch-02/ch-02-s-04-0.mp3', durationSec: 7.824 },
           { id: 'ch-02-s-04-1', sectionId: 'ch-02-s-04', path: '/audio/sirah/ch-02/ch-02-s-04-1.mp3', durationSec: 170.376 },
+          { id: 'ch-02-s-04-2', sectionId: 'ch-02-s-04', path: '/audio/sirah/ch-02/ch-02-s-04-2.mp3', durationSec: 135.936 },
+          { id: 'ch-02-s-04-3', sectionId: 'ch-02-s-04', path: '/audio/sirah/ch-02/ch-02-s-04-3.mp3', durationSec: 88.2 },
+        ],
+      },
+      {
+        sectionId: 'ch-02-s-05',
+        chunks: [
+          { id: 'ch-02-s-05-0', sectionId: 'ch-02-s-05', path: '/audio/sirah/ch-02/ch-02-s-05-0.mp3', durationSec: 132.888 },
+          { id: 'ch-02-s-05-1', sectionId: 'ch-02-s-05', path: '/audio/sirah/ch-02/ch-02-s-05-1.mp3', durationSec: 66.432 },
+          { id: 'ch-02-s-05-2', sectionId: 'ch-02-s-05', path: '/audio/sirah/ch-02/ch-02-s-05-2.mp3', durationSec: 122.88 },
+          { id: 'ch-02-s-05-3', sectionId: 'ch-02-s-05', path: '/audio/sirah/ch-02/ch-02-s-05-3.mp3', durationSec: 58.584 },
+          { id: 'ch-02-s-05-4', sectionId: 'ch-02-s-05', path: '/audio/sirah/ch-02/ch-02-s-05-4.mp3', durationSec: 170.664 },
+          { id: 'ch-02-s-05-5', sectionId: 'ch-02-s-05', path: '/audio/sirah/ch-02/ch-02-s-05-5.mp3', durationSec: 99.384 },
+          { id: 'ch-02-s-05-6', sectionId: 'ch-02-s-05', path: '/audio/sirah/ch-02/ch-02-s-05-6.mp3', durationSec: 114.432 },
+        ],
+      },
+      {
+        // 1 of this section's 2 chunks so far — the rest follows as the
+        // daily free-tier quota allows. Tracked, never silently skipped.
+        sectionId: 'ch-02-s-06',
+        chunks: [
+          { id: 'ch-02-s-06-0', sectionId: 'ch-02-s-06', path: '/audio/sirah/ch-02/ch-02-s-06-0.mp3', durationSec: 108.48 },
         ],
       },
     ],
