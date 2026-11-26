@@ -18,8 +18,8 @@
 // actually has (and a section with none as `chunks: []`) — never silently
 // skipped — so the player can tell the listener which parts aren't
 // narrated yet instead of jumping over them unannounced.
-// Status: ch-01 and ch-11 complete; ch-02 in progress (s-06 partial,
-// s-07 not started).
+// Status: ch-01, ch-02 and ch-11 complete; ch-03 in progress
+// (s-02 partial, s-03 not started).
 // ═══════════════════════════════════════════
 
 export interface SirahAudioChunk {
@@ -101,11 +101,46 @@ export const SIRAH_AUDIO: Record<string, SirahChapterAudio> = {
         ],
       },
       {
-        // 1 of this section's 2 chunks so far — the rest follows as the
-        // daily free-tier quota allows. Tracked, never silently skipped.
         sectionId: 'ch-02-s-06',
         chunks: [
           { id: 'ch-02-s-06-0', sectionId: 'ch-02-s-06', path: '/audio/sirah/ch-02/ch-02-s-06-0.mp3', durationSec: 108.48 },
+          { id: 'ch-02-s-06-1', sectionId: 'ch-02-s-06', path: '/audio/sirah/ch-02/ch-02-s-06-1.mp3', durationSec: 46.488 },
+        ],
+      },
+      {
+        sectionId: 'ch-02-s-07',
+        chunks: [
+          { id: 'ch-02-s-07-0', sectionId: 'ch-02-s-07', path: '/audio/sirah/ch-02/ch-02-s-07-0.mp3', durationSec: 109.896 },
+          { id: 'ch-02-s-07-1', sectionId: 'ch-02-s-07', path: '/audio/sirah/ch-02/ch-02-s-07-1.mp3', durationSec: 64.104 },
+        ],
+      },
+    ],
+  },
+  'ch-03': {
+    chapterId: 'ch-03',
+    voiceLabel: 'Charon (Gemini TTS, বাংলা পুরুষ কণ্ঠ)',
+    model: 'gemini-3.8-flash-tts',
+    generatedAt: '2026-11-26',
+    sections: [
+      {
+        sectionId: 'ch-03-s-01',
+        chunks: [
+          { id: 'ch-03-s-01-0', sectionId: 'ch-03-s-01', path: '/audio/sirah/ch-03/ch-03-s-01-0.mp3', durationSec: 85.08 },
+          { id: 'ch-03-s-01-1', sectionId: 'ch-03-s-01', path: '/audio/sirah/ch-03/ch-03-s-01-1.mp3', durationSec: 122.616 },
+          { id: 'ch-03-s-01-2', sectionId: 'ch-03-s-01', path: '/audio/sirah/ch-03/ch-03-s-01-2.mp3', durationSec: 85.68 },
+          { id: 'ch-03-s-01-3', sectionId: 'ch-03-s-01', path: '/audio/sirah/ch-03/ch-03-s-01-3.mp3', durationSec: 108.36 },
+          { id: 'ch-03-s-01-4', sectionId: 'ch-03-s-01', path: '/audio/sirah/ch-03/ch-03-s-01-4.mp3', durationSec: 60.12 },
+          { id: 'ch-03-s-01-5', sectionId: 'ch-03-s-01', path: '/audio/sirah/ch-03/ch-03-s-01-5.mp3', durationSec: 150.792 },
+          { id: 'ch-03-s-01-6', sectionId: 'ch-03-s-01', path: '/audio/sirah/ch-03/ch-03-s-01-6.mp3', durationSec: 212.688 },
+        ],
+      },
+      {
+        // 2 of this section's 3 chunks so far — the rest follows as the
+        // daily free-tier quota allows. Tracked, never silently skipped.
+        sectionId: 'ch-03-s-02',
+        chunks: [
+          { id: 'ch-03-s-02-0', sectionId: 'ch-03-s-02', path: '/audio/sirah/ch-03/ch-03-s-02-0.mp3', durationSec: 197.256 },
+          { id: 'ch-03-s-02-1', sectionId: 'ch-03-s-02', path: '/audio/sirah/ch-03/ch-03-s-02-1.mp3', durationSec: 151.872 },
         ],
       },
     ],
