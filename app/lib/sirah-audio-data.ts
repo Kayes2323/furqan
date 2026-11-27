@@ -18,8 +18,7 @@
 // actually has (and a section with none as `chunks: []`) — never silently
 // skipped — so the player can tell the listener which parts aren't
 // narrated yet instead of jumping over them unannounced.
-// Status: ch-01, ch-02 and ch-11 complete; ch-03 in progress
-// (s-02 partial, s-03 not started).
+// Status: ch-01, ch-02, ch-03, ch-04 and ch-11 complete; ch-05 next.
 // ═══════════════════════════════════════════
 
 export interface SirahAudioChunk {
@@ -135,12 +134,50 @@ export const SIRAH_AUDIO: Record<string, SirahChapterAudio> = {
         ],
       },
       {
-        // 2 of this section's 3 chunks so far — the rest follows as the
-        // daily free-tier quota allows. Tracked, never silently skipped.
         sectionId: 'ch-03-s-02',
         chunks: [
           { id: 'ch-03-s-02-0', sectionId: 'ch-03-s-02', path: '/audio/sirah/ch-03/ch-03-s-02-0.mp3', durationSec: 197.256 },
           { id: 'ch-03-s-02-1', sectionId: 'ch-03-s-02', path: '/audio/sirah/ch-03/ch-03-s-02-1.mp3', durationSec: 151.872 },
+          { id: 'ch-03-s-02-2', sectionId: 'ch-03-s-02', path: '/audio/sirah/ch-03/ch-03-s-02-2.mp3', durationSec: 63.744 },
+        ],
+      },
+      {
+        sectionId: 'ch-03-s-03',
+        chunks: [
+          { id: 'ch-03-s-03-0', sectionId: 'ch-03-s-03', path: '/audio/sirah/ch-03/ch-03-s-03-0.mp3', durationSec: 115.776 },
+          { id: 'ch-03-s-03-1', sectionId: 'ch-03-s-03', path: '/audio/sirah/ch-03/ch-03-s-03-1.mp3', durationSec: 24.36 },
+        ],
+      },
+    ],
+  },
+  'ch-04': {
+    chapterId: 'ch-04',
+    voiceLabel: 'Charon (Gemini TTS, বাংলা পুরুষ কণ্ঠ)',
+    model: 'gemini-3.8-flash-tts',
+    generatedAt: '2026-11-27',
+    sections: [
+      {
+        sectionId: 'ch-04-s-01',
+        chunks: [
+          { id: 'ch-04-s-01-0', sectionId: 'ch-04-s-01', path: '/audio/sirah/ch-04/ch-04-s-01-0.mp3', durationSec: 107.304 },
+          { id: 'ch-04-s-01-1', sectionId: 'ch-04-s-01', path: '/audio/sirah/ch-04/ch-04-s-01-1.mp3', durationSec: 113.904 },
+          { id: 'ch-04-s-01-2', sectionId: 'ch-04-s-01', path: '/audio/sirah/ch-04/ch-04-s-01-2.mp3', durationSec: 133.008 },
+          { id: 'ch-04-s-01-3', sectionId: 'ch-04-s-01', path: '/audio/sirah/ch-04/ch-04-s-01-3.mp3', durationSec: 103.56 },
+        ],
+      },
+      {
+        sectionId: 'ch-04-s-02',
+        chunks: [
+          { id: 'ch-04-s-02-0', sectionId: 'ch-04-s-02', path: '/audio/sirah/ch-04/ch-04-s-02-0.mp3', durationSec: 108.84 },
+          { id: 'ch-04-s-02-1', sectionId: 'ch-04-s-02', path: '/audio/sirah/ch-04/ch-04-s-02-1.mp3', durationSec: 104.544 },
+          { id: 'ch-04-s-02-2', sectionId: 'ch-04-s-02', path: '/audio/sirah/ch-04/ch-04-s-02-2.mp3', durationSec: 30.312 },
+        ],
+      },
+      {
+        sectionId: 'ch-04-s-03',
+        chunks: [
+          { id: 'ch-04-s-03-0', sectionId: 'ch-04-s-03', path: '/audio/sirah/ch-04/ch-04-s-03-0.mp3', durationSec: 122.52 },
+          { id: 'ch-04-s-03-1', sectionId: 'ch-04-s-03', path: '/audio/sirah/ch-04/ch-04-s-03-1.mp3', durationSec: 103.944 },
         ],
       },
     ],
