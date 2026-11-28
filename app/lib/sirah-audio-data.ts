@@ -18,7 +18,7 @@
 // actually has (and a section with none as `chunks: []`) — never silently
 // skipped — so the player can tell the listener which parts aren't
 // narrated yet instead of jumping over them unannounced.
-// Status: ch-01, ch-02, ch-03, ch-04 and ch-11 complete; ch-05 next.
+// Status: ch-01 … ch-05 and ch-11 complete; ch-06 next.
 // ═══════════════════════════════════════════
 
 export interface SirahAudioChunk {
@@ -178,6 +178,50 @@ export const SIRAH_AUDIO: Record<string, SirahChapterAudio> = {
         chunks: [
           { id: 'ch-04-s-03-0', sectionId: 'ch-04-s-03', path: '/audio/sirah/ch-04/ch-04-s-03-0.mp3', durationSec: 122.52 },
           { id: 'ch-04-s-03-1', sectionId: 'ch-04-s-03', path: '/audio/sirah/ch-04/ch-04-s-03-1.mp3', durationSec: 103.944 },
+        ],
+      },
+    ],
+  },
+  'ch-05': {
+    chapterId: 'ch-05',
+    voiceLabel: 'Charon (Gemini TTS, বাংলা পুরুষ কণ্ঠ)',
+    model: 'gemini-3.8-flash-tts',
+    generatedAt: '2026-11-28',
+    sections: [
+      {
+        sectionId: 'ch-05-s-01',
+        chunks: [
+          { id: 'ch-05-s-01-0', sectionId: 'ch-05-s-01', path: '/audio/sirah/ch-05/ch-05-s-01-0.mp3', durationSec: 157.824 },
+        ],
+      },
+      {
+        sectionId: 'ch-05-s-02',
+        chunks: [
+          { id: 'ch-05-s-02-0', sectionId: 'ch-05-s-02', path: '/audio/sirah/ch-05/ch-05-s-02-0.mp3', durationSec: 133.776 },
+          { id: 'ch-05-s-02-1', sectionId: 'ch-05-s-02', path: '/audio/sirah/ch-05/ch-05-s-02-1.mp3', durationSec: 107.496 },
+          { id: 'ch-05-s-02-2', sectionId: 'ch-05-s-02', path: '/audio/sirah/ch-05/ch-05-s-02-2.mp3', durationSec: 116.064 },
+          { id: 'ch-05-s-02-3', sectionId: 'ch-05-s-02', path: '/audio/sirah/ch-05/ch-05-s-02-3.mp3', durationSec: 10.632 },
+        ],
+      },
+      {
+        sectionId: 'ch-05-s-03',
+        chunks: [
+          { id: 'ch-05-s-03-0', sectionId: 'ch-05-s-03', path: '/audio/sirah/ch-05/ch-05-s-03-0.mp3', durationSec: 85.92 },
+        ],
+      },
+      {
+        sectionId: 'ch-05-s-04',
+        chunks: [
+          { id: 'ch-05-s-04-0', sectionId: 'ch-05-s-04', path: '/audio/sirah/ch-05/ch-05-s-04-0.mp3', durationSec: 118.728 },
+          { id: 'ch-05-s-04-1', sectionId: 'ch-05-s-04', path: '/audio/sirah/ch-05/ch-05-s-04-1.mp3', durationSec: 128.64 },
+        ],
+      },
+      {
+        sectionId: 'ch-05-s-05',
+        chunks: [
+          { id: 'ch-05-s-05-0', sectionId: 'ch-05-s-05', path: '/audio/sirah/ch-05/ch-05-s-05-0.mp3', durationSec: 130.8 },
+          { id: 'ch-05-s-05-1', sectionId: 'ch-05-s-05', path: '/audio/sirah/ch-05/ch-05-s-05-1.mp3', durationSec: 111.456 },
+          { id: 'ch-05-s-05-2', sectionId: 'ch-05-s-05', path: '/audio/sirah/ch-05/ch-05-s-05-2.mp3', durationSec: 54.024 },
         ],
       },
     ],
